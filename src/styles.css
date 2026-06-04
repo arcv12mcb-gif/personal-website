@@ -1,0 +1,499 @@
+:root {
+  color: #f8fafc;
+  background: #0b1020;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(20, 184, 166, 0.24), transparent 34rem),
+    radial-gradient(circle at 88% 18%, rgba(251, 113, 133, 0.18), transparent 30rem),
+    linear-gradient(135deg, #080d1d 0%, #111827 44%, #17121f 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 18px 0;
+  backdrop-filter: blur(18px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.brand span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 8px;
+  color: #051016;
+  background: linear-gradient(135deg, #5eead4, #facc15);
+}
+
+.navLinks {
+  display: flex;
+  gap: 24px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.navLinks a:hover {
+  color: #ffffff;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
+  align-items: center;
+  gap: 56px;
+  width: min(1120px, calc(100% - 32px));
+  min-height: calc(100vh - 74px);
+  margin: 0 auto;
+  padding: 74px 0 56px;
+}
+
+.heroContent h1,
+.sectionIntro h2,
+.contact h2 {
+  margin: 0;
+  letter-spacing: 0;
+  line-height: 0.96;
+}
+
+.heroContent h1 {
+  max-width: 760px;
+  font-size: clamp(3.4rem, 8vw, 6.9rem);
+}
+
+.eyebrow {
+  margin: 0 0 18px;
+  color: #5eead4;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.heroText {
+  max-width: 650px;
+  margin: 26px 0 0;
+  color: #cbd5e1;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.primaryButton,
+.secondaryButton,
+.contactButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  border-radius: 8px;
+  padding: 0 20px;
+  font-weight: 800;
+}
+
+.primaryButton {
+  color: #07111c;
+  background: #5eead4;
+  box-shadow: 0 18px 42px rgba(94, 234, 212, 0.22);
+}
+
+.secondaryButton {
+  color: #e2e8f0;
+  border: 1px solid rgba(226, 232, 240, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.heroVisual {
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.16);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.36);
+}
+
+.browserTop {
+  display: flex;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.12);
+}
+
+.browserTop span {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: #fb7185;
+}
+
+.browserTop span:nth-child(2) {
+  background: #facc15;
+}
+
+.browserTop span:nth-child(3) {
+  background: #5eead4;
+}
+
+.mockSite {
+  padding: 22px;
+}
+
+.mockHeader,
+.mockCards {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 12px;
+}
+
+.mockHeader div,
+.mockCards div {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.18);
+}
+
+.mockHero {
+  min-height: 320px;
+  margin: 22px 0;
+  padding: 30px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.22), rgba(251, 113, 133, 0.2)),
+    linear-gradient(135deg, #101827, #211827);
+}
+
+.mockHero p {
+  margin: 0 0 70px;
+  color: #5eead4;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.mockHero h2 {
+  max-width: 360px;
+  margin: 0 0 24px;
+  font-size: 2.3rem;
+  line-height: 1;
+}
+
+.mockHero button {
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  color: #07111c;
+  background: #facc15;
+  font-weight: 800;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 10px;
+  background: rgba(226, 232, 240, 0.12);
+}
+
+.stats div {
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.stats strong,
+.stats span {
+  display: block;
+}
+
+.stats strong {
+  font-size: 1.3rem;
+}
+
+.stats span {
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.section,
+.processSection,
+.contact {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 104px 0 0;
+}
+
+.sectionIntro {
+  max-width: 720px;
+}
+
+.sectionIntro.compact {
+  max-width: 500px;
+}
+
+.sectionIntro h2,
+.contact h2 {
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+}
+
+.sectionIntro p:not(.eyebrow),
+.contact p {
+  color: #cbd5e1;
+  font-size: 1.08rem;
+}
+
+.project {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 34px;
+  align-items: center;
+  margin-top: 34px;
+  padding: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.projectPreview {
+  position: relative;
+  min-height: 330px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #050816;
+}
+
+.previewGlow {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.9), transparent 24rem),
+    radial-gradient(circle at 80% 72%, rgba(236, 72, 153, 0.65), transparent 24rem);
+  filter: blur(20px);
+}
+
+.previewPanel {
+  position: absolute;
+  inset: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.previewPanel p {
+  color: #f0abfc;
+  font-weight: 800;
+}
+
+.previewPanel h3 {
+  max-width: 420px;
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 0.95;
+}
+
+.previewButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.previewButtons span {
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.projectDetails h3,
+.serviceCard h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.projectDetails p,
+.serviceCard p {
+  color: #cbd5e1;
+}
+
+.projectDetails a {
+  display: inline-flex;
+  margin-top: 10px;
+  color: #5eead4;
+  font-weight: 800;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 42px;
+  align-items: start;
+}
+
+.serviceGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.serviceCard {
+  padding: 22px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.68);
+}
+
+.processSection {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 42px;
+}
+
+.processList {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.processList li {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.processList span {
+  color: #facc15;
+  font-weight: 900;
+}
+
+.contact {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+  padding-bottom: 80px;
+}
+
+.contactButton {
+  color: #07111c;
+  background: #facc15;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .nav {
+    align-items: flex-start;
+  }
+
+  .navLinks {
+    gap: 14px;
+    font-size: 0.88rem;
+  }
+
+  .hero,
+  .project,
+  .split,
+  .processSection,
+  .contact {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    gap: 34px;
+    padding-top: 48px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .contactButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .nav {
+    gap: 16px;
+    flex-direction: column;
+  }
+
+  .heroContent h1 {
+    font-size: 3rem;
+  }
+
+  .heroActions {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .mockHero {
+    min-height: 260px;
+    padding: 22px;
+  }
+
+  .mockHero h2 {
+    font-size: 1.8rem;
+  }
+
+  .section,
+  .processSection,
+  .contact {
+    padding-top: 78px;
+  }
+}
