@@ -301,7 +301,6 @@ main.themeBright .mockCards div {
 main.themeBright .contact::before,
 main.themeBright .budgetSection::before,
 main.themeBright .processPagesSection::before,
-main.themeBright .servicesSection::before,
 main.themeBright .processShowcase::before {
   opacity: 0.42;
 }
@@ -1495,7 +1494,6 @@ a {
 }
 
 .aboutSection::before,
-.servicesSection::before,
 .budgetSection::before,
 .processShowcase::before,
 .processPagesSection::before,
@@ -1600,41 +1598,6 @@ a {
     background-position: 100% 50%, 0 0;
     filter: drop-shadow(0 0 18px rgba(250, 204, 21, 0.46));
   }
-}
-
-.servicesSection::before {
-  inset: 54px -8% auto auto;
-  width: min(760px, 70vw);
-  height: 78%;
-  border-radius: 24px;
-  background:
-    repeating-linear-gradient(90deg, rgba(94, 234, 212, 0.12) 0 1px, transparent 1px 92px),
-    repeating-linear-gradient(0deg, rgba(226, 232, 240, 0.08) 0 1px, transparent 1px 68px);
-  mask-image: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.82) 18%, transparent 96%);
-  opacity: 0.7;
-  animation: gridSlide 26s linear infinite;
-}
-
-.servicesSection::after {
-  position: absolute;
-  top: 72px;
-  right: 1%;
-  z-index: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  width: min(520px, 48vw);
-  height: 170px;
-  content: "";
-  background:
-    linear-gradient(rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.62)) padding-box,
-    linear-gradient(135deg, rgba(94, 234, 212, 0.28), rgba(250, 204, 21, 0.12)) border-box;
-  border: 1px solid transparent;
-  border-radius: 16px;
-  box-shadow: inset 24px 54px 0 rgba(94, 234, 212, 0.08), inset -120px -44px 0 rgba(251, 113, 133, 0.06);
-  opacity: 0.72;
-  pointer-events: none;
-  transform: rotate(-2deg);
 }
 
 .budgetSection {
@@ -3117,8 +3080,6 @@ a {
 
   .aboutSection::before,
   .aboutSection::after,
-  .servicesSection::before,
-  .servicesSection::after,
   .budgetSection::before,
   .processShowcase::before,
   .processPagesSection::before,
@@ -3333,7 +3294,6 @@ a {
 
   .aboutSection::before,
   .aboutSection::after,
-  .servicesSection::after,
   .processShowcase::before,
   .budgetSection::before,
   .processPagesSection::before,
@@ -3342,7 +3302,6 @@ a {
     display: none;
   }
 
-  .servicesSection::before,
   .budgetSection::before,
   .processPagesSection::before,
   .contact::before {
