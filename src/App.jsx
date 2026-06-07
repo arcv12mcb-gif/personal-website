@@ -46,6 +46,53 @@ const budgetOptions = [
   },
 ];
 
+const processPages = [
+  {
+    step: "01",
+    title: "Plan the right size",
+    subtitle: "We decide what your website actually needs first.",
+    points: [
+      "Pick the main goal: calls, messages, bookings, or a stronger first impression.",
+      "Choose the pages that fit your budget now.",
+      "Collect the business details, photos, colors, and contact info.",
+    ],
+    outcome: "A clear website scope before anything is built.",
+  },
+  {
+    step: "02",
+    title: "Build the first version",
+    subtitle: "You get a working draft early, not a mystery project.",
+    points: [
+      "I create the layout, sections, and first pass of the design.",
+      "The site is checked on phone and desktop while it is being built.",
+      "You can review the direction before we polish the details.",
+    ],
+    outcome: "A live first version you can see and react to.",
+  },
+  {
+    step: "03",
+    title: "Polish the details",
+    subtitle: "This is where the site starts feeling trustworthy.",
+    points: [
+      "We tighten spacing, wording, colors, and section order.",
+      "I make the contact path easier for customers to follow.",
+      "Animations and visuals are adjusted so they feel smooth, not distracting.",
+    ],
+    outcome: "A cleaner, sharper website that feels ready to share.",
+  },
+  {
+    step: "04",
+    title: "Launch and handoff",
+    subtitle: "The final step is getting it online the right way.",
+    points: [
+      "I help publish the website and check the live link.",
+      "We make sure buttons, contact details, and mobile layout work.",
+      "You get a final link that is easy to send to customers.",
+    ],
+    outcome: "A published website with a simple next-step plan.",
+  },
+];
+
 const modelModes = [
   {
     id: "business",
@@ -549,6 +596,7 @@ function App() {
         <div className="navLinks">
           <a href="#about">About</a>
           <a href="#services">Services</a>
+          <a href="#process">Process</a>
           <a href="#contact">Contact</a>
           <button
             className="themeToggle"
@@ -905,7 +953,7 @@ function App() {
       </section>
 
       {/* PROCESS */}
-      <section className="section processShowcase">
+      <section className="section processShowcase" id="process">
         <ThreeWebsiteLab />
 
         <motion.div
@@ -1013,6 +1061,55 @@ function App() {
             </motion.li>
           ))}
         </motion.ol>
+      </section>
+
+      {/* PROCESS DETAILS */}
+      <section className="section processPagesSection" id="process-details">
+        <motion.div
+          className="sectionIntro processPagesIntro"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
+          <p className="eyebrow">Process pages</p>
+          <h2>What happens at each step.</h2>
+          <p>
+            Each part of the project has a purpose, so you always know what we are doing and what comes next.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="processPageGrid"
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
+          {processPages.map((page) => (
+            <motion.article
+              className="processPageCard"
+              key={page.title}
+              variants={fadeUp}
+              whileHover={{ y: -8 }}
+            >
+              <div className="processPageTop">
+                <span>{page.step}</span>
+                <strong>{page.title}</strong>
+              </div>
+              <p className="processSubtitle">{page.subtitle}</p>
+              <ul>
+                {page.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+              <div className="processOutcome">
+                <span>Outcome</span>
+                <p>{page.outcome}</p>
+              </div>
+            </motion.article>
+          ))}
+        </motion.div>
       </section>
 
       {/* CONTACT */}

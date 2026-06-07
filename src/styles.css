@@ -78,6 +78,7 @@ main.themeBright .servicePreview,
 main.themeBright .budgetCard,
 main.themeBright .budgetNote,
 main.themeBright .projectBuilder,
+main.themeBright .processPageCard,
 main.themeBright .processList li,
 main.themeBright .stats div {
   color: #f8fafc;
@@ -90,6 +91,10 @@ main.themeBright .servicePreview p,
 main.themeBright .budgetIntro p,
 main.themeBright .budgetCard p,
 main.themeBright .projectBuilder p,
+main.themeBright .processPagesIntro p,
+main.themeBright .processSubtitle,
+main.themeBright .processPageCard li,
+main.themeBright .processOutcome p,
 main.themeBright .stats span {
   color: #e2e8f0;
 }
@@ -1286,6 +1291,7 @@ a {
 .servicesSection::before,
 .budgetSection::before,
 .processShowcase::before,
+.processPagesSection::before,
 .contact::before {
   position: absolute;
   z-index: 0;
@@ -1654,6 +1660,191 @@ a {
   font-weight: 900;
   line-height: 1;
   pointer-events: none;
+}
+
+.processPagesSection {
+  padding-top: 88px;
+}
+
+.processPagesSection::before {
+  top: 70px;
+  right: -9%;
+  width: min(720px, 70vw);
+  height: 72%;
+  border-radius: 24px;
+  background:
+    repeating-linear-gradient(90deg, rgba(94, 234, 212, 0.1) 0 1px, transparent 1px 82px),
+    repeating-linear-gradient(0deg, rgba(226, 232, 240, 0.08) 0 1px, transparent 1px 66px),
+    radial-gradient(circle at 70% 24%, rgba(251, 113, 133, 0.12), transparent 32%);
+  mask-image: linear-gradient(90deg, transparent, #000 16%, transparent 96%);
+  opacity: 0.68;
+  animation: gridSlide 24s linear infinite;
+}
+
+.processPagesIntro {
+  position: relative;
+  z-index: 1;
+  max-width: 850px;
+}
+
+.processPagesIntro h2 {
+  margin: 0;
+  font-size: clamp(2.35rem, 5.5vw, 5.15rem);
+  line-height: 0.98;
+}
+
+.processPagesIntro p {
+  max-width: 720px;
+}
+
+.processPageGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.processPageCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 380px;
+  border: 1px solid rgba(226, 232, 240, 0.13);
+  border-radius: 12px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.1), rgba(251, 113, 133, 0.045)),
+    rgba(15, 23, 42, 0.72);
+  box-shadow: 0 22px 68px rgba(0, 0, 0, 0.16);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.processPageCard::before {
+  position: absolute;
+  top: -22%;
+  right: -12%;
+  width: 220px;
+  height: 220px;
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  border-radius: 999px;
+  content: "";
+  background: radial-gradient(circle, rgba(94, 234, 212, 0.12), transparent 66%);
+  transition: transform 180ms ease;
+}
+
+.processPageCard::after {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  content: "step";
+  color: rgba(250, 204, 21, 0.12);
+  font-size: 4.2rem;
+  font-weight: 950;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.processPageCard:hover {
+  border-color: rgba(250, 204, 21, 0.32);
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.14), rgba(251, 113, 133, 0.07)),
+    rgba(15, 23, 42, 0.86);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.22);
+}
+
+.processPageCard:hover::before {
+  transform: scale(1.12) rotate(8deg);
+}
+
+.processPageTop {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.processPageTop span {
+  display: grid;
+  min-width: 48px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(250, 204, 21, 0.32);
+  border-radius: 10px;
+  color: #07111c;
+  background: #facc15;
+  box-shadow: 0 16px 38px rgba(250, 204, 21, 0.16);
+  font-weight: 950;
+}
+
+.processPageTop strong {
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 2.5vw, 2.05rem);
+  line-height: 1;
+}
+
+.processSubtitle {
+  position: relative;
+  z-index: 1;
+  margin: 18px 0 18px;
+  color: #cbd5e1;
+  font-size: 1.02rem;
+  font-weight: 750;
+}
+
+.processPageCard ul {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.processPageCard li {
+  position: relative;
+  padding-left: 22px;
+  color: #cbd5e1;
+}
+
+.processPageCard li::before {
+  position: absolute;
+  top: 0.62em;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  content: "";
+  background: #5eead4;
+  box-shadow: 0 0 14px rgba(94, 234, 212, 0.46);
+}
+
+.processOutcome {
+  position: relative;
+  z-index: 1;
+  margin-top: 20px;
+  border-top: 1px solid rgba(226, 232, 240, 0.12);
+  padding-top: 16px;
+}
+
+.processOutcome span {
+  display: block;
+  color: #5eead4;
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.processOutcome p {
+  margin: 6px 0 0;
+  color: #e2e8f0;
+  font-weight: 760;
 }
 
 .contact::before {
@@ -2746,6 +2937,7 @@ a {
   .servicesSection::after,
   .budgetSection::before,
   .processShowcase::before,
+  .processPagesSection::before,
   .processShowcase::after,
   .contact::after {
     opacity: 0.28;
@@ -2770,6 +2962,14 @@ a {
 
   .budgetNote a {
     width: 100%;
+  }
+
+  .processPageGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .processPageCard {
+    min-height: 320px;
   }
 
   .contactButton {
@@ -2952,6 +3152,7 @@ a {
   .servicesSection::after,
   .processShowcase::before,
   .budgetSection::before,
+  .processPagesSection::before,
   .contact::after,
   .stats::before {
     display: none;
@@ -2959,6 +3160,7 @@ a {
 
   .servicesSection::before,
   .budgetSection::before,
+  .processPagesSection::before,
   .contact::before {
     opacity: 0.28;
   }
