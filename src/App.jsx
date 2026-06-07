@@ -28,6 +28,24 @@ const process = [
   "I help connect the domain and publish it.",
 ];
 
+const budgetOptions = [
+  {
+    title: "Start simple",
+    text: "A clean one-page site with the essentials: what you do, why people should trust you, and how to contact you.",
+    tag: "Best first step",
+  },
+  {
+    title: "Grow the site",
+    text: "Add extra pages, service details, stronger visuals, and more polished sections when the business is ready.",
+    tag: "Most flexible",
+  },
+  {
+    title: "Polish everything",
+    text: "A fuller build with motion, custom sections, responsive details, launch help, and final checks before sharing.",
+    tag: "Most complete",
+  },
+];
+
 const modelModes = [
   {
     id: "business",
@@ -830,6 +848,59 @@ function App() {
           <span>Selected service</span>
           <h3>{services[activeService].title}</h3>
           <p>{services[activeService].preview}</p>
+        </motion.div>
+      </section>
+
+      {/* BUDGET */}
+      <section className="section budgetSection" id="budget">
+        <motion.div
+          className="sectionIntro budgetIntro"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
+          <p className="eyebrow">Flexible budgets</p>
+          <h2>There is something for every budget.</h2>
+          <p>
+            You do not need to start with the biggest website. We can begin with what matters most, then add more when it makes sense.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="budgetGrid"
+          variants={stagger}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
+          {budgetOptions.map((option, index) => (
+            <motion.article
+              className="budgetCard"
+              key={option.title}
+              variants={scaleIn}
+              whileHover={{ y: -8 }}
+            >
+              <span className="budgetNumber">{String(index + 1).padStart(2, "0")}</span>
+              <span className="budgetTag">{option.tag}</span>
+              <h3>{option.title}</h3>
+              <p>{option.text}</p>
+            </motion.article>
+          ))}
+        </motion.div>
+
+        <motion.div
+          className="budgetNote"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+        >
+          <div>
+            <span>Budget-friendly plan</span>
+            <strong>Start with a clear scope, then upgrade only when it helps.</strong>
+          </div>
+          <a href="#contact">Talk about options</a>
         </motion.div>
       </section>
 
