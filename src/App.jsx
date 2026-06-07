@@ -596,7 +596,7 @@ function App() {
         <div className="navLinks">
           <a href="#about">About</a>
           <a href="#services">Services</a>
-          <a href="#process">Process</a>
+          <a href="#process-details">Process</a>
           <a href="#contact">Contact</a>
           <button
             className="themeToggle"
