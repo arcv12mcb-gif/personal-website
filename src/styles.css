@@ -187,18 +187,22 @@ main.themeBright .sceneReadout {
 
 main.themeBright .heroText,
 main.themeBright .sectionIntro p:not(.eyebrow),
+main.themeBright .aboutSection p:not(.eyebrow),
 main.themeBright .serviceCard p,
 main.themeBright .servicePreview p,
 main.themeBright .budgetIntro p,
 main.themeBright .budgetCard p,
 main.themeBright .projectBuilder p,
+main.themeBright .builderControls label,
+main.themeBright .threeCopy p:not(.eyebrow),
 main.themeBright .processPagesIntro p,
 main.themeBright .processSubtitle,
 main.themeBright .processPageCard li,
 main.themeBright .processOutcome p,
+main.themeBright .sceneReadout small,
 main.themeBright .stats span,
 main.themeBright .contact p {
-  color: #475569;
+  color: #334155;
 }
 
 main.themeBright .eyebrow,
@@ -247,12 +251,39 @@ main.themeBright .mockHero {
 main.themeBright .mockHero h2,
 main.themeBright .mockHero span,
 main.themeBright .mockHero p,
+main.themeBright .toolCard,
+main.themeBright .toolCard strong,
+main.themeBright .serviceCard h3,
+main.themeBright .servicePreview h3,
+main.themeBright .budgetCard h3,
+main.themeBright .projectBuilder h2,
+main.themeBright .threeCopy h2,
+main.themeBright .processPagesIntro h2,
 main.themeBright .processPageTop strong,
 main.themeBright .budgetNote strong,
 main.themeBright .builderResult strong,
 main.themeBright .sceneReadout strong,
 main.themeBright .stats strong {
   color: #102033;
+}
+
+main.themeBright .floatingChip,
+main.themeBright .designLabels span {
+  color: #102033;
+  border-color: rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.1);
+}
+
+main.themeBright .studioPlaneMain strong,
+main.themeBright .codeTag,
+main.themeBright .sliderTicks span {
+  color: #102033;
+}
+
+main.themeBright .sliderTicks .activeTick,
+main.themeBright .processList span {
+  color: #0e7490;
 }
 
 main.themeBright .mockHero button {
