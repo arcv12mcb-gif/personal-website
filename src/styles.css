@@ -2074,7 +2074,7 @@ a {
 
 .builderControls {
   display: grid;
-  gap: 10px;
+  gap: 14px;
 }
 
 .builderControls label {
@@ -2082,8 +2082,190 @@ a {
   font-weight: 900;
 }
 
-.builderControls input {
-  accent-color: #5eead4;
+.sliderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sliderHeader strong {
+  min-width: 78px;
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: #07111c;
+  background: #5eead4;
+  box-shadow: 0 12px 34px rgba(94, 234, 212, 0.2);
+  font-size: 0.86rem;
+  text-align: center;
+}
+
+.deadlineSlider {
+  --slider-progress: 40%;
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 28px 4px 0;
+}
+
+.deadlineSlider::before {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: var(--slider-progress);
+  height: 14px;
+  border-radius: 999px;
+  content: "";
+  background: linear-gradient(90deg, #5eead4, #facc15);
+  box-shadow: 0 0 24px rgba(94, 234, 212, 0.38), 0 0 30px rgba(250, 204, 21, 0.18);
+  pointer-events: none;
+  transition: width 220ms ease;
+}
+
+.deadlineSlider::after {
+  position: absolute;
+  top: 39px;
+  left: calc(var(--slider-progress) - 9px);
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  content: "";
+  background: rgba(250, 204, 21, 0.5);
+  filter: blur(8px);
+  transform: translateY(-1px);
+  transition: left 220ms ease;
+  pointer-events: none;
+}
+
+.sliderBubble {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  width: 36px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid rgba(250, 204, 21, 0.48);
+  border-radius: 10px;
+  color: #07111c;
+  background: #facc15;
+  box-shadow: 0 16px 38px rgba(250, 204, 21, 0.22);
+  font-size: 0.85rem;
+  font-weight: 950;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.sliderBubble::after {
+  position: absolute;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  content: "";
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.deadlineSlider input[type="range"] {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 18px;
+  margin: 4px 0 0;
+  appearance: none;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.62);
+  box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.12), inset 0 8px 18px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+}
+
+.deadlineSlider input[type="range"]::-webkit-slider-runnable-track {
+  height: 14px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.deadlineSlider input[type="range"]::-webkit-slider-thumb {
+  width: 26px;
+  height: 26px;
+  appearance: none;
+  border: 4px solid #07111c;
+  border-radius: 999px;
+  margin-top: -6px;
+  background: #f8fafc;
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.26), 0 14px 32px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.deadlineSlider input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 6px rgba(94, 234, 212, 0.34), 0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+.deadlineSlider input[type="range"]::-moz-range-track {
+  height: 14px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.deadlineSlider input[type="range"]::-moz-range-progress {
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5eead4, #facc15);
+}
+
+.deadlineSlider input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 4px solid #07111c;
+  border-radius: 999px;
+  background: #f8fafc;
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.26), 0 14px 32px rgba(0, 0, 0, 0.28);
+}
+
+.sliderTicks {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  color: #94a3b8;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.sliderTicks span {
+  position: relative;
+  text-align: center;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.sliderTicks span::before {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  margin: 0 auto 6px;
+  content: "";
+  background: rgba(226, 232, 240, 0.22);
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.sliderTicks .activeTick {
+  color: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.sliderTicks .activeTick::before {
+  background: #5eead4;
+  box-shadow: 0 0 16px rgba(94, 234, 212, 0.52);
+  transform: scale(1.24);
 }
 
 .launchToggle {
@@ -2111,11 +2293,15 @@ a {
 }
 
 .builderResult {
+  position: relative;
+  overflow: hidden;
   min-width: 136px;
   border: 1px solid rgba(94, 234, 212, 0.18);
   border-radius: 12px;
   padding: 18px;
-  background: rgba(2, 6, 23, 0.42);
+  background:
+    radial-gradient(circle at 74% 20%, rgba(250, 204, 21, 0.16), transparent 38%),
+    rgba(2, 6, 23, 0.42);
 }
 
 .builderResult strong {
@@ -2124,6 +2310,47 @@ a {
   color: #f8fafc;
   font-size: 2rem;
   line-height: 1;
+}
+
+.timelinePulse {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.timelinePulse span {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.18);
+  animation: timelineBeat 1.8s ease-in-out infinite;
+}
+
+.timelinePulse span:nth-child(1) {
+  background: #5eead4;
+}
+
+.timelinePulse span:nth-child(2) {
+  background: #facc15;
+  animation-delay: 0.16s;
+}
+
+.timelinePulse span:nth-child(3) {
+  background: #fb7185;
+  animation-delay: 0.32s;
+}
+
+@keyframes timelineBeat {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scaleX(0.72);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 
 .processSection {

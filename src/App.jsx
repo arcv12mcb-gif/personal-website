@@ -426,6 +426,7 @@ function App() {
     const baseDays = pageCount <= 2 ? 4 : pageCount <= 4 ? 7 : 10;
     return fastLaunch ? Math.max(3, baseDays - 2) : baseDays;
   }, [fastLaunch, pageCount]);
+  const pageProgress = ((pageCount - 1) / 5) * 100;
 
   const emailSubject = encodeURIComponent("Website project");
   const emailBody = encodeURIComponent(
@@ -852,16 +853,52 @@ function App() {
           </div>
 
           <div className="builderControls">
-            <label htmlFor="pageCount">Pages</label>
-            <input
-              id="pageCount"
-              type="range"
-              min="1"
-              max="6"
-              value={pageCount}
-              onChange={(event) => setPageCount(Number(event.target.value))}
-            />
-            <strong>{pageCount} page{pageCount === 1 ? "" : "s"}</strong>
+            <div className="sliderHeader">
+              <label htmlFor="pageCount">Pages</label>
+              <motion.strong
+                key={pageCount}
+                initial={{ y: 8, opacity: 0, scale: 0.92 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                {pageCount} page{pageCount === 1 ? "" : "s"}
+              </motion.strong>
+            </div>
+
+            <div
+              className="deadlineSlider"
+              style={{
+                "--slider-progress": `${pageProgress}%`,
+                "--slider-value": pageCount,
+              }}
+            >
+              <motion.span
+                className="sliderBubble"
+                animate={{ left: `${pageProgress}%` }}
+                transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              >
+                {pageCount}
+              </motion.span>
+              <input
+                id="pageCount"
+                type="range"
+                min="1"
+                max="6"
+                value={pageCount}
+                onChange={(event) => setPageCount(Number(event.target.value))}
+                aria-describedby="timelineEstimate"
+              />
+              <div className="sliderTicks" aria-hidden="true">
+                {[1, 2, 3, 4, 5, 6].map((value) => (
+                  <span
+                    key={value}
+                    className={pageCount >= value ? "activeTick" : ""}
+                  >
+                    {value}
+                  </span>
+                ))}
+              </div>
+            </div>
 
             <button
               className={`launchToggle ${fastLaunch ? "activeLaunch" : ""}`}
@@ -874,7 +911,20 @@ function App() {
 
           <div className="builderResult">
             <span>Estimated timeline</span>
-            <strong>{projectTimeline} days</strong>
+            <motion.strong
+              id="timelineEstimate"
+              key={projectTimeline}
+              initial={{ y: 12, opacity: 0, scale: 0.94 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 250, damping: 20 }}
+            >
+              {projectTimeline} days
+            </motion.strong>
+            <div className="timelinePulse" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         </motion.div>
 
