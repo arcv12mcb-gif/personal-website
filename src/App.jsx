@@ -154,8 +154,13 @@ function ThreeWebsiteLab() {
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     camera.position.set(0, 0.35, 6.4);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const isSmallViewport = window.matchMedia("(max-width: 700px)").matches;
+    const renderer = new THREE.WebGLRenderer({
+      antialias: !isSmallViewport,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isSmallViewport ? 1.15 : 1.5));
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
 
@@ -209,6 +214,8 @@ function ThreeWebsiteLab() {
       );
       mesh.position.set(...block.position);
       mesh.userData.name = block.name;
+      mesh.userData.baseScale = new THREE.Vector3(1, 1, 1);
+      mesh.userData.hoverScale = new THREE.Vector3(1.08, 1.08, 1.22);
       featureMeshes.push(mesh);
       group.add(mesh);
     });
@@ -231,7 +238,8 @@ function ThreeWebsiteLab() {
     group.add(flowLine);
 
     const particleGeometry = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(180 * 3);
+    const particleCount = isSmallViewport ? 64 : 110;
+    const particlePositions = new Float32Array(particleCount * 3);
     for (let i = 0; i < particlePositions.length; i += 3) {
       particlePositions[i] = (Math.random() - 0.5) * 6;
       particlePositions[i + 1] = (Math.random() - 0.5) * 4.2;
@@ -260,6 +268,8 @@ function ThreeWebsiteLab() {
     const pointer = new THREE.Vector2(0, 0);
     const raycaster = new THREE.Raycaster();
     let frameId = 0;
+    let isRunning = false;
+    let lastHoveredName = currentMode.blocks[0].name;
 
     const resize = () => {
       const rect = mount.getBoundingClientRect();
@@ -276,17 +286,20 @@ function ThreeWebsiteLab() {
 
     const handlePointerLeave = () => {
       pointer.set(0, 0);
+      lastHoveredName = currentMode.blocks[0].name;
       setHoveredPart(currentMode.blocks[0].name);
     };
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(mount);
-    mount.addEventListener("pointermove", handlePointerMove);
+    mount.addEventListener("pointermove", handlePointerMove, { passive: true });
     mount.addEventListener("pointerleave", handlePointerLeave);
     resize();
 
     const startedAt = performance.now();
     const animate = () => {
+      if (!isRunning) return;
+      frameId = window.requestAnimationFrame(animate);
       const elapsed = (performance.now() - startedAt) / 1000;
       group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, -0.28 + pointer.x * 0.34, 0.06);
       group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, -0.18 - pointer.y * 0.18, 0.06);
@@ -298,20 +311,47 @@ function ThreeWebsiteLab() {
       const hit = raycaster.intersectObjects(featureMeshes)[0];
       featureMeshes.forEach((mesh) => {
         const isHit = hit?.object === mesh;
-        mesh.scale.lerp(new THREE.Vector3(isHit ? 1.08 : 1, isHit ? 1.08 : 1, isHit ? 1.22 : 1), 0.1);
+        mesh.scale.lerp(isHit ? mesh.userData.hoverScale : mesh.userData.baseScale, 0.1);
         mesh.material.emissiveIntensity = isHit ? 0.36 : 0.1;
       });
-      if (hit?.object?.userData.name) {
-        setHoveredPart(hit.object.userData.name);
+      const nextHoveredName = hit?.object?.userData.name;
+      if (nextHoveredName && nextHoveredName !== lastHoveredName) {
+        lastHoveredName = nextHoveredName;
+        setHoveredPart(nextHoveredName);
       }
 
       renderer.render(scene, camera);
+    };
+
+    const startRenderLoop = () => {
+      if (isRunning) return;
+      isRunning = true;
       frameId = window.requestAnimationFrame(animate);
     };
-    animate();
+
+    const stopRenderLoop = () => {
+      isRunning = false;
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+        frameId = 0;
+      }
+    };
+
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          startRenderLoop();
+        } else {
+          stopRenderLoop();
+        }
+      },
+      { threshold: 0.08 }
+    );
+    visibilityObserver.observe(mount);
 
     return () => {
       window.cancelAnimationFrame(frameId);
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
       mount.removeEventListener("pointermove", handlePointerMove);
       mount.removeEventListener("pointerleave", handlePointerLeave);
@@ -376,7 +416,8 @@ function App() {
   const [clockNow, setClockNow] = useState(new Date());
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [showContactPrompt, setShowContactPrompt] = useState(false);
-  const [pointerGlow, setPointerGlow] = useState({ x: 50, y: 28 });
+  const mainRef = useRef(null);
+  const pointerFrameRef = useRef(0);
   const { scrollYProgress } = useScroll();
   const heroVisualY = useTransform(scrollYProgress, [0, 0.3], [0, -54]);
   const heroBackdropY = useTransform(scrollYProgress, [0, 0.35], [0, 90]);
@@ -388,7 +429,7 @@ function App() {
 
   const emailSubject = encodeURIComponent("Website project");
   const emailBody = encodeURIComponent(
-    `Hi Ali,\n\nI want help with a website.\nPages: ${pageCount}\nFast launch: ${fastLaunch ? "Yes" : "No"}\nService: ${services[activeService].title}\n\n`
+    `Hi Ali Arhan Canbaz,\n\nI want help with a website.\nPages: ${pageCount}\nFast launch: ${fastLaunch ? "Yes" : "No"}\nService: ${services[activeService].title}\n\n`
   );
 
   const scrollToContact = () => {
@@ -414,14 +455,23 @@ function App() {
 
   useEffect(() => {
     const handlePointerMove = (event) => {
-      setPointerGlow({
-        x: Number(((event.clientX / window.innerWidth) * 100).toFixed(2)),
-        y: Number(((event.clientY / window.innerHeight) * 100).toFixed(2)),
+      if (pointerFrameRef.current) return;
+      pointerFrameRef.current = window.requestAnimationFrame(() => {
+        pointerFrameRef.current = 0;
+        const root = mainRef.current;
+        if (!root) return;
+        root.style.setProperty("--pointer-x", `${((event.clientX / window.innerWidth) * 100).toFixed(2)}%`);
+        root.style.setProperty("--pointer-y", `${((event.clientY / window.innerHeight) * 100).toFixed(2)}%`);
       });
     };
 
-    window.addEventListener("pointermove", handlePointerMove);
-    return () => window.removeEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      if (pointerFrameRef.current) {
+        window.cancelAnimationFrame(pointerFrameRef.current);
+      }
+    };
   }, []);
 
   const showHourClock = clockNow.getMinutes() === 0 && clockNow.getSeconds() < 10;
@@ -439,10 +489,11 @@ function App() {
 
   return (
     <main
+      ref={mainRef}
       className={isBright ? "themeBright" : undefined}
       style={{
-        "--pointer-x": `${pointerGlow.x}%`,
-        "--pointer-y": `${pointerGlow.y}%`,
+        "--pointer-x": "50%",
+        "--pointer-y": "28%",
       }}
     >
       <div className="ambientStage" aria-hidden="true">
