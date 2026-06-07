@@ -896,77 +896,79 @@ function App() {
           <h2>Choose what you need first.</h2>
         </motion.div>
 
-        <motion.div
-          className="serviceGrid"
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewport}
-        >
-          {services.map((s, i) => (
-            <motion.button
-              key={s.title}
-              type="button"
-              className={`serviceCard ${activeService === i ? "activeService" : ""}`}
-              onClick={() => setActiveService(i)}
-              variants={i % 2 === 0 ? slideRight : slideLeft}
-              whileHover={{ y: -8, scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.22 }}
-            >
-              {activeService === i && <CheckCircle2 className="serviceCheck" size={19} />}
-              <h3>{s.title}</h3>
-              <p>{s.text}</p>
-            </motion.button>
-          ))}
-        </motion.div>
-
-        <motion.div
-          className="servicePreview"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewport}
-        >
-          <div className="previewHeader">
-            <span>Recommended path</span>
-            <Sparkles size={19} aria-hidden="true" />
-          </div>
-
-          <div className="previewBody">
-            <div>
-              <h3>{services[activeService].title}</h3>
-              <p>{services[activeService].preview}</p>
-            </div>
-
-            <div className="previewBestFor">
-              <span>Best for</span>
-              <strong>{services[activeService].bestFor}</strong>
-            </div>
-          </div>
-
-          <div className="previewSteps" aria-label="Included in this service">
-            {services[activeService].includes.map((item, index) => (
-              <motion.div
-                key={item}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.04, duration: 0.2 }}
-              >
-                <CheckCircle2 size={16} aria-hidden="true" />
-                <span>{item}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          <a
-            className="previewAction"
-            href="#contact"
+        <div className="serviceChoiceArea">
+          <motion.div
+            className="serviceGrid"
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
           >
-            Start with this
-            <ArrowRight size={17} aria-hidden="true" />
-          </a>
-        </motion.div>
+            {services.map((s, i) => (
+              <motion.button
+                key={s.title}
+                type="button"
+                className={`serviceCard ${activeService === i ? "activeService" : ""}`}
+                onClick={() => setActiveService(i)}
+                variants={i % 2 === 0 ? slideRight : slideLeft}
+                whileHover={{ y: -8, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.22 }}
+              >
+                {activeService === i && <CheckCircle2 className="serviceCheck" size={19} />}
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </motion.button>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="servicePreview"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+          >
+            <div className="previewHeader">
+              <span>Live recommendation</span>
+              <Sparkles size={19} aria-hidden="true" />
+            </div>
+
+            <div className="previewBody">
+              <div>
+                <h3>{services[activeService].title}</h3>
+                <p>{services[activeService].preview}</p>
+              </div>
+
+              <div className="previewBestFor">
+                <span>Best for</span>
+                <strong>{services[activeService].bestFor}</strong>
+              </div>
+            </div>
+
+            <div className="previewSteps" aria-label="Included in this service">
+              {services[activeService].includes.map((item, index) => (
+                <motion.div
+                  key={item}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.04, duration: 0.2 }}
+                >
+                  <CheckCircle2 size={16} aria-hidden="true" />
+                  <span>{item}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            <a
+              className="previewAction"
+              href="#contact"
+            >
+              Start with this
+              <ArrowRight size={17} aria-hidden="true" />
+            </a>
+          </motion.div>
+        </div>
       </section>
 
       {/* BUDGET */}
