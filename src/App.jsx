@@ -1,22 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
+import { ArrowRight, CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sparkles, Sun } from "lucide-react";
 
 const services = [
   {
     title: "Business Websites",
     text: "Clean, mobile-friendly pages for restaurants, shops, salons, and contractors.",
     preview: "A polished homepage, service details, and a clear way for customers to contact you.",
+    bestFor: "New businesses that need a trustworthy first website.",
+    includes: ["Homepage structure", "Service sections", "Contact path"],
   },
   {
     title: "Website Redesigns",
     text: "I turn outdated pages into modern websites that feel easier to trust and easier to use.",
     preview: "A cleaner layout, stronger colors, smoother sections, and better mobile spacing.",
+    bestFor: "Sites that already exist but feel old, confusing, or hard to use.",
+    includes: ["Cleaner layout", "Mobile polish", "Trust-building visuals"],
   },
   {
     title: "Launch Setup",
     text: "GitHub, hosting, domain names, and the final live link handled step by step.",
     preview: "Help with publishing, checking the live site, and making the final link easy to share.",
+    bestFor: "Finished sites that need the final live setup handled carefully.",
+    includes: ["Publishing help", "Domain guidance", "Live-link checks"],
   },
 ];
 
@@ -922,9 +928,44 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          <span>Selected service</span>
-          <h3>{services[activeService].title}</h3>
-          <p>{services[activeService].preview}</p>
+          <div className="previewHeader">
+            <span>Recommended path</span>
+            <Sparkles size={19} aria-hidden="true" />
+          </div>
+
+          <div className="previewBody">
+            <div>
+              <h3>{services[activeService].title}</h3>
+              <p>{services[activeService].preview}</p>
+            </div>
+
+            <div className="previewBestFor">
+              <span>Best for</span>
+              <strong>{services[activeService].bestFor}</strong>
+            </div>
+          </div>
+
+          <div className="previewSteps" aria-label="Included in this service">
+            {services[activeService].includes.map((item, index) => (
+              <motion.div
+                key={item}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.04, duration: 0.2 }}
+              >
+                <CheckCircle2 size={16} aria-hidden="true" />
+                <span>{item}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          <a
+            className="previewAction"
+            href="#contact"
+          >
+            Start with this
+            <ArrowRight size={17} aria-hidden="true" />
+          </a>
         </motion.div>
       </section>
 
