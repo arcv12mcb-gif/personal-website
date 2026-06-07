@@ -169,7 +169,6 @@ main.themeBright .heroVisual,
 main.themeBright .mockSite,
 main.themeBright .toolCard,
 main.themeBright .serviceCard,
-main.themeBright .servicePreview,
 main.themeBright .budgetCard,
 main.themeBright .budgetNote,
 main.themeBright .projectBuilder,
@@ -189,7 +188,6 @@ main.themeBright .heroText,
 main.themeBright .sectionIntro p:not(.eyebrow),
 main.themeBright .aboutSection p:not(.eyebrow),
 main.themeBright .serviceCard p,
-main.themeBright .servicePreview p,
 main.themeBright .budgetIntro p,
 main.themeBright .budgetCard p,
 main.themeBright .projectBuilder p,
@@ -207,7 +205,6 @@ main.themeBright .contact p {
 
 main.themeBright .eyebrow,
 main.themeBright .toolCard svg,
-main.themeBright .servicePreview span,
 main.themeBright .builderResult span,
 main.themeBright .budgetNumber,
 main.themeBright .processOutcome span,
@@ -254,7 +251,6 @@ main.themeBright .mockHero p,
 main.themeBright .toolCard,
 main.themeBright .toolCard strong,
 main.themeBright .serviceCard h3,
-main.themeBright .servicePreview h3,
 main.themeBright .budgetCard h3,
 main.themeBright .projectBuilder h2,
 main.themeBright .threeCopy h2,
@@ -289,54 +285,6 @@ main.themeBright .processList span {
 main.themeBright .mockHero button {
   color: #ffffff;
   background: #4f46e5;
-}
-
-main.themeBright .servicePreview {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(14, 165, 233, 0.16), transparent 34%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(224, 242, 254, 0.72)),
-    rgba(255, 255, 255, 0.84);
-}
-
-main.themeBright .servicePreview::before {
-  border-color: rgba(15, 23, 42, 0.09);
-}
-
-main.themeBright .servicePreview::after {
-  border-color: rgba(14, 116, 144, 0.12);
-  background: conic-gradient(from 120deg, rgba(14, 165, 233, 0.16), transparent, rgba(79, 70, 229, 0.1), transparent);
-}
-
-main.themeBright .previewHeader svg,
-main.themeBright .previewSteps svg {
-  color: #0e7490;
-}
-
-main.themeBright .previewBestFor {
-  border-color: rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.58);
-}
-
-main.themeBright .previewBestFor strong,
-main.themeBright .previewSteps div {
-  color: #102033;
-}
-
-main.themeBright .previewSteps div {
-  border-color: rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-main.themeBright .previewAction {
-  color: #ffffff;
-  background: #0e7490;
-  box-shadow: 0 18px 38px rgba(14, 116, 144, 0.18);
-}
-
-main.themeBright .previewAction:hover {
-  background: #155e75;
-  box-shadow: 0 22px 48px rgba(14, 116, 144, 0.24);
 }
 
 main.themeBright .blueprintHero,
@@ -2253,15 +2201,6 @@ a {
   gap: 14px;
 }
 
-.serviceChoiceArea {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.88fr) minmax(360px, 1.12fr);
-  gap: clamp(18px, 3vw, 32px);
-  align-items: stretch;
-}
-
 .interactiveIntro {
   margin-bottom: 24px;
 }
@@ -2334,157 +2273,12 @@ a {
   color: #5eead4;
 }
 
-.servicePreview {
-  position: relative;
-  overflow: hidden;
-  min-height: 100%;
-  padding: clamp(22px, 4vw, 34px);
-  border: 1px solid rgba(94, 234, 212, 0.22);
-  border-radius: 16px;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(94, 234, 212, 0.18), transparent 34%),
-    linear-gradient(135deg, rgba(94, 234, 212, 0.12), rgba(250, 204, 21, 0.05)),
-    rgba(2, 6, 23, 0.55);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
-}
-
-.servicePreview::before {
-  position: absolute;
-  inset: 14px;
-  content: "";
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
-  pointer-events: none;
-}
-
-.servicePreview::after {
-  position: absolute;
-  top: -80px;
-  right: -72px;
-  width: 220px;
-  aspect-ratio: 1;
-  content: "";
-  border: 1px solid rgba(94, 234, 212, 0.18);
-  border-radius: 999px;
-  background: conic-gradient(from 120deg, rgba(94, 234, 212, 0.28), transparent, rgba(250, 204, 21, 0.16), transparent);
-  animation: ambientMesh 14s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
-.servicePreview span,
 .builderResult span {
   color: #5eead4;
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-.previewHeader,
-.previewBody,
-.previewSteps,
-.previewAction {
-  position: relative;
-  z-index: 1;
-}
-
-.previewHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 22px;
-}
-
-.previewHeader svg {
-  color: #facc15;
-  filter: drop-shadow(0 0 18px rgba(250, 204, 21, 0.36));
-}
-
-.previewBody {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-.servicePreview h3 {
-  margin: 8px 0 8px;
-  font-size: clamp(1.55rem, 3vw, 2.35rem);
-}
-
-.servicePreview p {
-  max-width: 720px;
-  margin: 0;
-  color: #cbd5e1;
-}
-
-.previewBestFor {
-  padding: 16px;
-  border: 1px solid rgba(94, 234, 212, 0.2);
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.38);
-}
-
-.previewBestFor strong {
-  display: block;
-  margin-top: 8px;
-  color: #f8fafc;
-  font-size: 1.03rem;
-  line-height: 1.45;
-}
-
-.previewSteps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 24px;
-}
-
-.previewSteps div {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  gap: 8px;
-  border: 1px solid rgba(94, 234, 212, 0.18);
-  border-radius: 999px;
-  padding: 0 14px;
-  color: #e2e8f0;
-  background: rgba(15, 23, 42, 0.54);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.previewSteps svg {
-  flex: 0 0 auto;
-  color: #5eead4;
-}
-
-.previewAction {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 46px;
-  gap: 8px;
-  margin-top: 24px;
-  border-radius: 999px;
-  padding: 0 18px;
-  color: #07111f;
-  background: #5eead4;
-  box-shadow: 0 18px 38px rgba(94, 234, 212, 0.18);
-  font-weight: 900;
-  text-decoration: none;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    background 180ms ease;
-}
-
-.previewAction:hover {
-  background: #99f6e4;
-  box-shadow: 0 22px 48px rgba(94, 234, 212, 0.24);
-  transform: translateY(-2px);
 }
 
 .projectBuilder {
@@ -3297,15 +3091,6 @@ a {
 
   .stats {
     grid-template-columns: 1fr;
-  }
-
-  .serviceChoiceArea,
-  .previewBody {
-    grid-template-columns: 1fr;
-  }
-
-  .previewBestFor {
-    padding: 16px;
   }
 
   .projectBuilder {
