@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
-import * as THREE from "three";
 
 const services = [
   {
@@ -214,20 +213,27 @@ function ThreeWebsiteLab() {
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return undefined;
+    let disposed = false;
+    let cleanupScene = () => {};
+    let loadObserver = null;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(0, 0.35, 6.4);
+    const setupScene = async () => {
+      const THREE = await import("three");
+      if (disposed || !mountRef.current) return;
 
-    const isSmallViewport = window.matchMedia("(max-width: 700px)").matches;
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isSmallViewport,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isSmallViewport ? 1.15 : 1.5));
-    renderer.setClearColor(0x000000, 0);
-    mount.appendChild(renderer.domElement);
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+      camera.position.set(0, 0.35, 6.4);
+
+      const isSmallViewport = window.matchMedia("(max-width: 700px)").matches;
+      const renderer = new THREE.WebGLRenderer({
+        antialias: !isSmallViewport,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isSmallViewport ? 1.15 : 1.5));
+      renderer.setClearColor(0x000000, 0);
+      mount.appendChild(renderer.domElement);
 
     const group = new THREE.Group();
     group.rotation.set(-0.18, -0.28, 0.02);
@@ -414,7 +420,7 @@ function ThreeWebsiteLab() {
     );
     visibilityObserver.observe(mount);
 
-    return () => {
+    cleanupScene = () => {
       window.cancelAnimationFrame(frameId);
       visibilityObserver.disconnect();
       resizeObserver.disconnect();
@@ -432,6 +438,24 @@ function ThreeWebsiteLab() {
         }
       });
       renderer.domElement.remove();
+    };
+    };
+
+    loadObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        loadObserver?.disconnect();
+        loadObserver = null;
+        setupScene();
+      },
+      { rootMargin: "420px 0px", threshold: 0 }
+    );
+    loadObserver.observe(mount);
+
+    return () => {
+      disposed = true;
+      loadObserver?.disconnect();
+      cleanupScene();
     };
   }, [activeMode, currentMode]);
 
