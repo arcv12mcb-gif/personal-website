@@ -55,6 +55,29 @@ body::after {
   pointer-events: none;
 }
 
+body.themeBrightBody {
+  color: #102033;
+  background:
+    linear-gradient(118deg, rgba(14, 165, 233, 0.16), transparent 34%),
+    linear-gradient(242deg, rgba(20, 184, 166, 0.14), transparent 38%),
+    linear-gradient(135deg, #f8fbff 0%, #eef7f8 48%, #f7f3ff 100%);
+}
+
+body.themeBrightBody::before {
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgba(14, 116, 144, 0.1) 18% 18.4%, transparent 18.4% 100%),
+    linear-gradient(0deg, transparent 0 24%, rgba(79, 70, 229, 0.08) 24% 24.4%, transparent 24.4% 100%),
+    linear-gradient(135deg, transparent 0 42%, rgba(20, 184, 166, 0.1) 42% 42.4%, transparent 42.4% 100%);
+  opacity: 0.46;
+}
+
+body.themeBrightBody::after {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.055) 1px, transparent 1px);
+  opacity: 0.7;
+}
+
 main {
   position: relative;
   z-index: 1;
@@ -63,15 +86,87 @@ main {
 }
 
 main.themeBright {
-  color: #0f172a;
+  color: #102033;
 }
 
 main.themeBright::before,
 main.themeBright::after {
-  opacity: 0.38;
+  opacity: 0.5;
 }
 
-main.themeBright .nav,
+main.themeBright::before {
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(14, 165, 233, 0.13) 24%, transparent 42%),
+    linear-gradient(245deg, transparent 6%, rgba(20, 184, 166, 0.1) 34%, transparent 58%);
+  mix-blend-mode: multiply;
+}
+
+main.themeBright::after {
+  background:
+    conic-gradient(from 120deg at 50% 50%, transparent, rgba(14, 165, 233, 0.12), transparent, rgba(20, 184, 166, 0.1), transparent),
+    linear-gradient(145deg, transparent 10%, rgba(79, 70, 229, 0.08), transparent 46%, rgba(14, 165, 233, 0.1), transparent 78%);
+}
+
+main.themeBright .ambientStage::before {
+  background:
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(14, 165, 233, 0.2), transparent 22rem),
+    radial-gradient(circle at calc(100% - var(--pointer-x)) calc(100% - var(--pointer-y)), rgba(20, 184, 166, 0.16), transparent 20rem);
+}
+
+main.themeBright .ambientStage span {
+  border-color: rgba(14, 116, 144, 0.14);
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, 0.13), rgba(20, 184, 166, 0.1)),
+    rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72), 0 30px 80px rgba(15, 23, 42, 0.08);
+}
+
+main.themeBright .nav {
+  color: #102033;
+  border-bottom-color: rgba(15, 23, 42, 0.1);
+  background: rgba(248, 251, 255, 0.76);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+}
+
+main.themeBright .navLinks {
+  color: #334155;
+}
+
+main.themeBright .navLinks a:hover {
+  color: #0e7490;
+}
+
+main.themeBright .brandMark,
+main.themeBright .cursorOrbitTwo {
+  background: linear-gradient(135deg, #0e7490, #1d4ed8 58%, #312e81);
+}
+
+main.themeBright .themeToggle {
+  color: #102033;
+  border-color: rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+main.themeBright .heroTitle {
+  background: linear-gradient(110deg, #102033 0%, #102033 32%, #0e7490 45%, #4f46e5 56%, #102033 72%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+main.themeBright .heroBackdrop::before {
+  border-color: rgba(15, 23, 42, 0.1);
+  background:
+    linear-gradient(90deg, rgba(14, 116, 144, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 72% 18%, rgba(14, 165, 233, 0.17), transparent 32%),
+    radial-gradient(circle at 18% 72%, rgba(79, 70, 229, 0.11), transparent 30%);
+}
+
+main.themeBright .heroBackdrop::after,
+main.themeBright .webBlueprint,
+main.themeBright .codeWindow,
+main.themeBright .heroVisual,
+main.themeBright .mockSite,
 main.themeBright .toolCard,
 main.themeBright .serviceCard,
 main.themeBright .servicePreview,
@@ -80,12 +175,18 @@ main.themeBright .budgetNote,
 main.themeBright .projectBuilder,
 main.themeBright .processPageCard,
 main.themeBright .processList li,
-main.themeBright .stats div {
-  color: #f8fafc;
-  background: rgba(15, 23, 42, 0.9);
+main.themeBright .stats div,
+main.themeBright .sceneReadout {
+  color: #102033;
+  border-color: rgba(15, 23, 42, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(239, 246, 255, 0.72)),
+    rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.1);
 }
 
 main.themeBright .heroText,
+main.themeBright .sectionIntro p:not(.eyebrow),
 main.themeBright .serviceCard p,
 main.themeBright .servicePreview p,
 main.themeBright .budgetIntro p,
@@ -95,8 +196,87 @@ main.themeBright .processPagesIntro p,
 main.themeBright .processSubtitle,
 main.themeBright .processPageCard li,
 main.themeBright .processOutcome p,
-main.themeBright .stats span {
-  color: #e2e8f0;
+main.themeBright .stats span,
+main.themeBright .contact p {
+  color: #475569;
+}
+
+main.themeBright .eyebrow,
+main.themeBright .toolCard svg,
+main.themeBright .servicePreview span,
+main.themeBright .builderResult span,
+main.themeBright .budgetNumber,
+main.themeBright .processOutcome span,
+main.themeBright .sceneReadout span {
+  color: #0e7490;
+}
+
+main.themeBright .primaryButton,
+main.themeBright .contactButton,
+main.themeBright .modelControls .activeModel,
+main.themeBright .layerControls .activeLayer,
+main.themeBright .sliderHeader strong {
+  color: #ffffff;
+  background: #0e7490;
+  box-shadow: 0 18px 42px rgba(14, 116, 144, 0.2);
+}
+
+main.themeBright .secondaryButton,
+main.themeBright .launchToggle,
+main.themeBright .modelControls button {
+  color: #102033;
+  border-color: rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+main.themeBright .budgetTag,
+main.themeBright .processPageTop span,
+main.themeBright .activeLaunch,
+main.themeBright .sliderBubble {
+  color: #ffffff;
+  background: #4f46e5;
+  box-shadow: 0 16px 38px rgba(79, 70, 229, 0.2);
+}
+
+main.themeBright .mockHero {
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(79, 70, 229, 0.14)),
+    linear-gradient(135deg, #f8fbff, #e0f2fe);
+}
+
+main.themeBright .mockHero h2,
+main.themeBright .mockHero span,
+main.themeBright .mockHero p,
+main.themeBright .processPageTop strong,
+main.themeBright .budgetNote strong,
+main.themeBright .builderResult strong,
+main.themeBright .sceneReadout strong,
+main.themeBright .stats strong {
+  color: #102033;
+}
+
+main.themeBright .mockHero button {
+  color: #ffffff;
+  background: #4f46e5;
+}
+
+main.themeBright .blueprintHero,
+main.themeBright .blueprintSidebar,
+main.themeBright .blueprintCards span,
+main.themeBright .designGrid span,
+main.themeBright .mockCards div {
+  border-color: rgba(14, 116, 144, 0.16);
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(79, 70, 229, 0.08)),
+    rgba(255, 255, 255, 0.6);
+}
+
+main.themeBright .contact::before,
+main.themeBright .budgetSection::before,
+main.themeBright .processPagesSection::before,
+main.themeBright .servicesSection::before,
+main.themeBright .processShowcase::before {
+  opacity: 0.42;
 }
 
 main::before {

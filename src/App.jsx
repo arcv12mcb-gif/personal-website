@@ -535,6 +535,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    document.body.classList.toggle("themeBrightBody", isBright);
+    return () => document.body.classList.remove("themeBrightBody");
+  }, [isBright]);
+
+  useEffect(() => {
     const timer = window.setTimeout(() => {
       setShowContactPrompt(true);
       document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "center" });
