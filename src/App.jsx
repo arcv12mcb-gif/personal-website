@@ -92,6 +92,81 @@ const processPages = [
   },
 ];
 
+const aboutHighlights = [
+  {
+    title: "Local-business mindset",
+    text: "I focus on the pages customers actually need: clear services, quick trust, and an easy way to reach you.",
+  },
+  {
+    title: "Student builder energy",
+    text: "I move carefully but quickly, share progress early, and keep the project understandable from start to finish.",
+  },
+  {
+    title: "Design that feels useful",
+    text: "The goal is not just a pretty screen. It is a website people can scan, trust, and act on.",
+  },
+];
+
+const serviceHighlights = [
+  {
+    title: "Starter websites",
+    text: "A polished one-page site with your story, services, contact path, and mobile-friendly layout.",
+  },
+  {
+    title: "Page expansion",
+    text: "Add dedicated pages for services, pricing, work examples, FAQs, or booking details when you are ready.",
+  },
+  {
+    title: "Launch cleanup",
+    text: "Domain setup, final link checks, metadata, sitemap, and basic search setup before you share it.",
+  },
+];
+
+const portfolioProjects = [
+  {
+    title: "Neighborhood service site",
+    text: "A clean service-business layout with a strong hero, service cards, project process, and email CTA.",
+  },
+  {
+    title: "Creator portfolio",
+    text: "A sharper personal brand page with dedicated about, work, pricing, and contact paths.",
+  },
+  {
+    title: "Fast launch landing page",
+    text: "A focused launch page for a small business that needs to look credible quickly and collect messages.",
+  },
+];
+
+const pricingPlans = [
+  {
+    title: "Starter",
+    text: "A simple one-page website for getting online fast with the essential business information.",
+  },
+  {
+    title: "Growth",
+    text: "A multi-page website with services, process, contact, and stronger search-friendly structure.",
+  },
+  {
+    title: "Polish",
+    text: "A fuller build with custom sections, motion, launch support, and post-launch cleanup.",
+  },
+];
+
+const contactDetails = [
+  {
+    title: "Best first message",
+    text: "Tell me what business the site is for, the pages you want, and whether you already have a domain.",
+  },
+  {
+    title: "What happens next",
+    text: "I will help choose a simple scope first, then we can add more pages only when they make sense.",
+  },
+  {
+    title: "Project fit",
+    text: "This works best for small businesses, student projects, creators, and local services that need clarity.",
+  },
+];
+
 const modelModes = [
   {
     id: "business",
@@ -134,7 +209,9 @@ const pageRoutes = [
   { path: "/", label: "Home", title: "Home" },
   { path: "/about/", label: "About", title: "About Ali" },
   { path: "/services/", label: "Services", title: "Services" },
+  { path: "/work/", label: "Work", title: "Work" },
   { path: "/process/", label: "Process", title: "Process" },
+  { path: "/pricing/", label: "Pricing", title: "Pricing" },
   { path: "/contact/", label: "Contact", title: "Contact" },
 ];
 
@@ -165,9 +242,17 @@ const pageMeta = {
     title: "Website Services | Ali Arhan Canbaz",
     description: "Business websites, redesigns, launch setup, and budget-friendly web design options.",
   },
+  "/work/": {
+    title: "Website Work | Ali Arhan Canbaz",
+    description: "Website project examples and portfolio directions from Ali Arhan Canbaz.",
+  },
   "/process/": {
     title: "Website Process | Ali Arhan Canbaz",
     description: "A clear step-by-step website process from planning to launch.",
+  },
+  "/pricing/": {
+    title: "Website Pricing | Ali Arhan Canbaz",
+    description: "Simple website package options for small businesses and creators.",
   },
   "/contact/": {
     title: "Contact Ali Arhan Canbaz | Start a Website Project",
@@ -561,6 +646,45 @@ function PageHeader({ eyebrow, title, text }) {
   );
 }
 
+function PageFeatureGrid({ eyebrow, title, text, items }) {
+  return (
+    <section className="section pageFeatureSection">
+      <motion.div
+        className="sectionIntro pageFeatureIntro"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        <p className="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p>{text}</p>
+      </motion.div>
+
+      <motion.div
+        className="pageFeatureGrid"
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        {items.map((item, index) => (
+          <motion.article
+            className="pageFeatureCard"
+            key={item.title}
+            variants={scaleIn}
+            whileHover={{ y: -8 }}
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </motion.article>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
+
 function App() {
   const [isBright, setIsBright] = useState(false);
   const [activeService, setActiveService] = useState(0);
@@ -679,7 +803,9 @@ function App() {
   const isHome = currentRoute === "/";
   const isAboutPage = currentRoute === "/about/";
   const isServicesPage = currentRoute === "/services/";
+  const isWorkPage = currentRoute === "/work/";
   const isProcessPage = currentRoute === "/process/";
+  const isPricingPage = currentRoute === "/pricing/";
   const isContactPage = currentRoute === "/contact/";
 
   return (
@@ -722,17 +848,28 @@ function App() {
           Ali Arhan Canbaz Web Studio
         </a>
 
-        <div className="navLinks">
-          {pageRoutes.slice(1).map((route) => (
-            <a
-              key={route.path}
-              href={route.path}
-              className={currentRoute === route.path ? "activeNavLink" : ""}
-              onClick={(event) => navigateTo(route.path, event)}
-            >
-              {route.label}
-            </a>
-          ))}
+        <div className="navActions">
+          <div className="navLinks" aria-label="Main pages">
+            {pageRoutes
+              .filter((route) => route.path !== "/" && route.path !== "/contact/")
+              .map((route) => (
+                <a
+                  key={route.path}
+                  href={route.path}
+                  className={currentRoute === route.path ? "activeNavLink" : ""}
+                  onClick={(event) => navigateTo(route.path, event)}
+                >
+                  {route.label}
+                </a>
+              ))}
+          </div>
+          <a
+            className={`navContact ${currentRoute === "/contact/" ? "activeNavContact" : ""}`}
+            href="/contact/"
+            onClick={(event) => navigateTo("/contact/", event)}
+          >
+            Start
+          </a>
           <button
             className="themeToggle"
             type="button"
@@ -760,11 +897,27 @@ function App() {
         />
       )}
 
+      {isWorkPage && (
+        <PageHeader
+          eyebrow="Portfolio"
+          title="Examples of websites I can build."
+          text="A few project directions that show the kind of clean, practical sites this studio is built for."
+        />
+      )}
+
       {isProcessPage && (
         <PageHeader
           eyebrow="Process"
           title="A clear path from idea to live website."
           text="Each step is designed to keep the project understandable, budget-aware, and easy to review."
+        />
+      )}
+
+      {isPricingPage && (
+        <PageHeader
+          eyebrow="Pricing"
+          title="Start with the right size."
+          text="Pick the level that fits your current budget, then expand the website when the business is ready."
         />
       )}
 
@@ -1000,6 +1153,15 @@ function App() {
         </>
       )}
 
+      {isAboutPage && (
+        <PageFeatureGrid
+          eyebrow="What I care about"
+          title="Useful websites with a human process."
+          text="The best small-business websites make people feel oriented quickly. These are the ideas I keep coming back to."
+          items={aboutHighlights}
+        />
+      )}
+
       {/* ABOUT */}
       {(isHome || isAboutPage) && (
       <section className="section aboutSection" id="about">
@@ -1019,6 +1181,15 @@ function App() {
           </p>
         </motion.div>
       </section>
+      )}
+
+      {isServicesPage && (
+        <PageFeatureGrid
+          eyebrow="Service details"
+          title="More than just a homepage."
+          text="Each project can stay lean or grow into a fuller site depending on what customers need to know."
+          items={serviceHighlights}
+        />
       )}
 
       {/* SERVICES */}
@@ -1062,8 +1233,17 @@ function App() {
       </section>
       )}
 
+      {isWorkPage && (
+        <PageFeatureGrid
+          eyebrow="Portfolio directions"
+          title="Project types I can shape for you."
+          text="These are examples of the kinds of websites I can build and adapt for different businesses."
+          items={portfolioProjects}
+        />
+      )}
+
       {/* BUDGET */}
-      {(isHome || isServicesPage) && (
+      {(isHome || isServicesPage || isPricingPage) && (
       <section className="section budgetSection" id="budget">
         <motion.div
           className="sectionIntro budgetIntro"
@@ -1117,6 +1297,15 @@ function App() {
           </a>
         </motion.div>
       </section>
+      )}
+
+      {isPricingPage && (
+        <PageFeatureGrid
+          eyebrow="Package options"
+          title="Simple levels, flexible scope."
+          text="These are starting points. The final project should match the business, not force you into the biggest option."
+          items={pricingPlans}
+        />
       )}
 
       {/* PROCESS */}
@@ -1283,8 +1472,17 @@ function App() {
       </section>
       )}
 
+      {isContactPage && (
+        <PageFeatureGrid
+          eyebrow="Before you email"
+          title="A better first message gets a better first plan."
+          text="If you include a few details up front, I can help you choose the right website size faster."
+          items={contactDetails}
+        />
+      )}
+
       {/* CONTACT */}
-      {(isHome || isContactPage) && (
+      {(isHome || isWorkPage || isPricingPage || isContactPage) && (
       <section className="section contact" id="contact">
         <motion.div
           variants={slideRight}

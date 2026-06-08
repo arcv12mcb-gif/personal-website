@@ -132,6 +132,11 @@ main.themeBright .navLinks {
   color: #334155;
 }
 
+main.themeBright .navActions {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
 main.themeBright .navLinks a:hover {
   color: #0e7490;
 }
@@ -141,7 +146,17 @@ main.themeBright .navLinks .activeNavLink {
 }
 
 main.themeBright .navLinks a::after {
+  display: none;
+}
+
+main.themeBright .navLinks .activeNavLink {
+  background: rgba(14, 116, 144, 0.12);
+}
+
+main.themeBright .navContact {
+  color: #ffffff;
   background: #0e7490;
+  box-shadow: 0 16px 34px rgba(14, 116, 144, 0.18);
 }
 
 main.themeBright .pageHeader h1 {
@@ -157,6 +172,23 @@ main.themeBright .pageHeader::before {
   background:
     radial-gradient(circle, rgba(14, 165, 233, 0.14), transparent 68%),
     rgba(255, 255, 255, 0.18);
+}
+
+main.themeBright .pageFeatureCard {
+  color: #102033;
+  border-color: rgba(15, 23, 42, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 255, 0.72)),
+    rgba(255, 255, 255, 0.82);
+}
+
+main.themeBright .pageFeatureCard p,
+main.themeBright .pageFeatureIntro p:not(.eyebrow) {
+  color: #334155;
+}
+
+main.themeBright .pageFeatureCard h3 {
+  color: #102033;
 }
 
 main.themeBright .brandMark,
@@ -580,13 +612,24 @@ a {
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 4px;
   color: #cbd5e1;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .navLinks a:hover {
   color: #ffffff;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 14px;
+  padding: 5px;
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 44px rgba(2, 6, 23, 0.18);
 }
 
 .navLinks a {
@@ -594,32 +637,48 @@ a {
   min-height: 38px;
   display: inline-flex;
   align-items: center;
-}
-
-.navLinks a::after {
-  position: absolute;
-  right: 0;
-  bottom: 3px;
-  left: 0;
-  height: 2px;
-  content: "";
-  border-radius: 999px;
-  background: #5eead4;
-  opacity: 0;
-  transform: scaleX(0.6);
+  border-radius: 10px;
+  padding: 0 12px;
   transition:
-    opacity 180ms ease,
+    color 180ms ease,
+    background 180ms ease,
     transform 180ms ease;
 }
 
-.navLinks a:hover::after,
-.navLinks .activeNavLink::after {
-  opacity: 1;
-  transform: scaleX(1);
+.navLinks a::after {
+  display: none;
+}
+
+.navLinks a:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-1px);
 }
 
 .navLinks .activeNavLink {
   color: #ffffff;
+  background: rgba(94, 234, 212, 0.14);
+}
+
+.navContact {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 10px;
+  padding: 0 14px;
+  color: #07111c;
+  background: #5eead4;
+  font-size: 0.9rem;
+  font-weight: 850;
+  box-shadow: 0 16px 34px rgba(94, 234, 212, 0.16);
+  transition:
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.navContact:hover,
+.activeNavContact {
+  background: #facc15;
+  transform: translateY(-1px);
 }
 
 .themeToggle {
@@ -685,6 +744,77 @@ a {
   margin: 22px 0 0;
   color: #cbd5e1;
   font-size: clamp(1rem, 1.8vw, 1.2rem);
+}
+
+.pageFeatureSection {
+  padding-top: clamp(42px, 7vw, 76px);
+}
+
+.pageFeatureIntro {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+
+.pageFeatureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pageFeatureCard {
+  position: relative;
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 10px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.74), rgba(15, 23, 42, 0.46)),
+    rgba(255, 255, 255, 0.055);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.22);
+}
+
+.pageFeatureCard::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.16), transparent 36%),
+    linear-gradient(315deg, rgba(250, 204, 21, 0.12), transparent 48%);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+
+.pageFeatureCard:hover::before {
+  opacity: 1;
+}
+
+.pageFeatureCard span {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  margin-bottom: 42px;
+  color: #5eead4;
+  font-weight: 900;
+}
+
+.pageFeatureCard h3,
+.pageFeatureCard p {
+  position: relative;
+  z-index: 1;
+}
+
+.pageFeatureCard h3 {
+  margin: 0 0 12px;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  line-height: 1.08;
+}
+
+.pageFeatureCard p {
+  margin: 0;
+  color: #cbd5e1;
 }
 
 .hero {
@@ -3091,11 +3221,18 @@ a {
 @media (max-width: 860px) {
   .nav {
     align-items: flex-start;
+    gap: 14px;
+    flex-direction: column;
+  }
+
+  .navActions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .navLinks {
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 14px;
     font-size: 0.88rem;
   }
@@ -3197,6 +3334,10 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .pageFeatureGrid {
+    grid-template-columns: 1fr;
+  }
+
   .budgetCard {
     min-height: 220px;
   }
@@ -3231,10 +3372,21 @@ a {
 
   .navLinks {
     flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .navActions {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .navContact {
+    min-height: 36px;
   }
 
   .navLinks a {
     min-height: 32px;
+    padding: 0 9px;
   }
 
   .pageHeader {
