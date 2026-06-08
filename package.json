@@ -1,7 +1,7 @@
 {
   "name": "personal-website",
   "version": "1.0.0",
-  "homepage": "https://arcv12mcb-gif.github.io/personal-website",
+  "homepage": "https://aliarhancanbaz.com",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

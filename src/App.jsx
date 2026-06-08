@@ -709,7 +709,7 @@ function App() {
           viewport={viewport}
         >
           <motion.p className="eyebrow" variants={fadeUp}>
-            Websites for small businesses
+            Ali Arhan Canbaz Web Studio
           </motion.p>
 
           <motion.h1 className="heroTitle" variants={fadeUp}>
