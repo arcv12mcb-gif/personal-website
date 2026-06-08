@@ -130,6 +130,51 @@ const modelModes = [
 
 const ENGAGEMENT_PROMPT_DELAY_MS = 20 * 60 * 1000;
 
+const pageRoutes = [
+  { path: "/", label: "Home", title: "Home" },
+  { path: "/about/", label: "About", title: "About Ali" },
+  { path: "/services/", label: "Services", title: "Services" },
+  { path: "/process/", label: "Process", title: "Process" },
+  { path: "/contact/", label: "Contact", title: "Contact" },
+];
+
+const routeLookup = new Set(pageRoutes.map((route) => route.path));
+
+const getRouteFromPath = () => {
+  if (typeof window === "undefined") {
+    return "/";
+  }
+
+  const path = window.location.pathname.endsWith("/")
+    ? window.location.pathname
+    : `${window.location.pathname}/`;
+
+  return routeLookup.has(path) ? path : "/";
+};
+
+const pageMeta = {
+  "/": {
+    title: "Ali Arhan Canbaz | Websites for Local Businesses",
+    description: "Clean, modern websites for local shops, service businesses, and creators.",
+  },
+  "/about/": {
+    title: "About Ali Arhan Canbaz | Web Designer",
+    description: "Meet Ali Arhan Canbaz, a Lincoln-based web designer building modern small business websites.",
+  },
+  "/services/": {
+    title: "Website Services | Ali Arhan Canbaz",
+    description: "Business websites, redesigns, launch setup, and budget-friendly web design options.",
+  },
+  "/process/": {
+    title: "Website Process | Ali Arhan Canbaz",
+    description: "A clear step-by-step website process from planning to launch.",
+  },
+  "/contact/": {
+    title: "Contact Ali Arhan Canbaz | Start a Website Project",
+    description: "Contact Ali Arhan Canbaz to start a clean modern website for your business.",
+  },
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: 36 },
   visible: {
@@ -497,6 +542,25 @@ function ThreeWebsiteLab() {
   );
 }
 
+function PageHeader({ eyebrow, title, text }) {
+  return (
+    <section className="pageHeader">
+      <motion.div
+        className="pageHeaderInner"
+        variants={stagger}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.p className="eyebrow" variants={fadeUp}>
+          {eyebrow}
+        </motion.p>
+        <motion.h1 variants={fadeUp}>{title}</motion.h1>
+        <motion.p variants={fadeUp}>{text}</motion.p>
+      </motion.div>
+    </section>
+  );
+}
+
 function App() {
   const [isBright, setIsBright] = useState(false);
   const [activeService, setActiveService] = useState(0);
@@ -505,6 +569,7 @@ function App() {
   const [clockNow, setClockNow] = useState(new Date());
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [showContactPrompt, setShowContactPrompt] = useState(false);
+  const [currentRoute, setCurrentRoute] = useState(getRouteFromPath);
   const mainRef = useRef(null);
   const pointerFrameRef = useRef(0);
   const { scrollYProgress } = useScroll();
@@ -522,7 +587,24 @@ function App() {
     `Hi Ali Arhan Canbaz,\n\nI want help with a website.\nPages: ${pageCount}\nFast launch: ${fastLaunch ? "Yes" : "No"}\nService: ${services[activeService].title}\n\n`
   );
 
+  const navigateTo = (path, event) => {
+    event?.preventDefault();
+    if (path === currentRoute) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    window.history.pushState({}, "", path);
+    setCurrentRoute(path);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const scrollToContact = () => {
+    if (currentRoute !== "/contact/") {
+      navigateTo("/contact/");
+      return;
+    }
+
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -538,6 +620,18 @@ function App() {
     document.body.classList.toggle("themeBrightBody", isBright);
     return () => document.body.classList.remove("themeBrightBody");
   }, [isBright]);
+
+  useEffect(() => {
+    const handlePopState = () => setCurrentRoute(getRouteFromPath());
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    const meta = pageMeta[currentRoute] ?? pageMeta["/"];
+    document.title = meta.title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+  }, [currentRoute]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -582,6 +676,12 @@ function App() {
     setTilt({ x: Number(x.toFixed(2)), y: Number(y.toFixed(2)) });
   };
 
+  const isHome = currentRoute === "/";
+  const isAboutPage = currentRoute === "/about/";
+  const isServicesPage = currentRoute === "/services/";
+  const isProcessPage = currentRoute === "/process/";
+  const isContactPage = currentRoute === "/contact/";
+
   return (
     <main
       ref={mainRef}
@@ -615,7 +715,7 @@ function App() {
 
       {/* NAVBAR */}
       <nav className="nav">
-        <a className="brand" href="#home">
+        <a className="brand" href="/" onClick={(event) => navigateTo("/", event)}>
           <span className="brandMark">
             <LogoMark />
           </span>
@@ -623,10 +723,16 @@ function App() {
         </a>
 
         <div className="navLinks">
-          <a href="#about">About</a>
-          <a href="#services">Services</a>
-          <a href="#process-details">Process</a>
-          <a href="#contact">Contact</a>
+          {pageRoutes.slice(1).map((route) => (
+            <a
+              key={route.path}
+              href={route.path}
+              className={currentRoute === route.path ? "activeNavLink" : ""}
+              onClick={(event) => navigateTo(route.path, event)}
+            >
+              {route.label}
+            </a>
+          ))}
           <button
             className="themeToggle"
             type="button"
@@ -638,7 +744,41 @@ function App() {
         </div>
       </nav>
 
+      {isAboutPage && (
+        <PageHeader
+          eyebrow="About"
+          title="Meet Ali Arhan Canbaz."
+          text="A focused web designer helping small businesses get a clean, trustworthy online presence."
+        />
+      )}
+
+      {isServicesPage && (
+        <PageHeader
+          eyebrow="Services"
+          title="Website help for every starting point."
+          text="Start small, redesign what you have, or get help launching the final site with a custom domain."
+        />
+      )}
+
+      {isProcessPage && (
+        <PageHeader
+          eyebrow="Process"
+          title="A clear path from idea to live website."
+          text="Each step is designed to keep the project understandable, budget-aware, and easy to review."
+        />
+      )}
+
+      {isContactPage && (
+        <PageHeader
+          eyebrow="Contact"
+          title="Start your website project."
+          text="Send a quick message with what you need, and I will help you choose the right first step."
+        />
+      )}
+
       {/* HERO */}
+      {isHome && (
+        <>
       <section className="hero" id="home">
         <motion.div className="heroBackdrop" style={{ y: heroBackdropY }} aria-hidden="true">
           <div className="webBlueprint">
@@ -723,11 +863,11 @@ function App() {
           </motion.p>
 
           <motion.div className="heroActions" variants={fadeUp}>
-            <a className="primaryButton" href="#about">
+            <a className="primaryButton" href="/about/" onClick={(event) => navigateTo("/about/", event)}>
               About me
             </a>
 
-            <a className="secondaryButton" href="#contact">
+            <a className="secondaryButton" href="/contact/" onClick={(event) => navigateTo("/contact/", event)}>
               Start a project
             </a>
           </motion.div>
@@ -857,8 +997,11 @@ function App() {
           <span>Simple pages customers understand</span>
         </motion.div>
       </motion.section>
+        </>
+      )}
 
       {/* ABOUT */}
+      {(isHome || isAboutPage) && (
       <section className="section aboutSection" id="about">
         <motion.div
           variants={slideRight}
@@ -876,8 +1019,10 @@ function App() {
           </p>
         </motion.div>
       </section>
+      )}
 
       {/* SERVICES */}
+      {(isHome || isServicesPage) && (
       <section className="section servicesSection" id="services">
         <motion.div
           className="sectionIntro interactiveIntro"
@@ -915,8 +1060,10 @@ function App() {
           ))}
         </motion.div>
       </section>
+      )}
 
       {/* BUDGET */}
+      {(isHome || isServicesPage) && (
       <section className="section budgetSection" id="budget">
         <motion.div
           className="sectionIntro budgetIntro"
@@ -965,11 +1112,15 @@ function App() {
             <span>Budget-friendly plan</span>
             <strong>Start with a clear scope, then upgrade only when it helps.</strong>
           </div>
-          <a href="#contact">Talk about options</a>
+          <a href="/contact/" onClick={(event) => navigateTo("/contact/", event)}>
+            Talk about options
+          </a>
         </motion.div>
       </section>
+      )}
 
       {/* PROCESS */}
+      {(isHome || isProcessPage) && (
       <section className="section processShowcase" id="process">
         <ThreeWebsiteLab />
 
@@ -1079,8 +1230,10 @@ function App() {
           ))}
         </motion.ol>
       </section>
+      )}
 
       {/* PROCESS DETAILS */}
+      {(isHome || isProcessPage) && (
       <section className="section processPagesSection" id="process-details">
         <motion.div
           className="sectionIntro processPagesIntro"
@@ -1128,8 +1281,10 @@ function App() {
           ))}
         </motion.div>
       </section>
+      )}
 
       {/* CONTACT */}
+      {(isHome || isContactPage) && (
       <section className="section contact" id="contact">
         <motion.div
           variants={slideRight}
@@ -1167,6 +1322,7 @@ function App() {
           </a>
         </motion.div>
       </section>
+      )}
     </main>
   );
 }
