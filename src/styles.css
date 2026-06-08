@@ -123,9 +123,13 @@ main.themeBright .ambientStage span {
 
 main.themeBright .nav {
   color: #102033;
-  border-bottom-color: rgba(15, 23, 42, 0.1);
-  background: rgba(248, 251, 255, 0.76);
-  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+  border-color: rgba(15, 23, 42, 0.09);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(238, 247, 248, 0.66)),
+    rgba(248, 251, 255, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 22px 58px rgba(15, 23, 42, 0.09);
 }
 
 main.themeBright .navLinks {
@@ -133,8 +137,11 @@ main.themeBright .navLinks {
 }
 
 main.themeBright .navActions {
-  background: rgba(255, 255, 255, 0.7);
   border-color: rgba(15, 23, 42, 0.1);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(248, 251, 255, 0.58)),
+    rgba(255, 255, 255, 0.64);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 main.themeBright .navLinks a:hover {
@@ -150,7 +157,8 @@ main.themeBright .navLinks a::after {
 }
 
 main.themeBright .navLinks .activeNavLink {
-  background: rgba(14, 116, 144, 0.12);
+  background: rgba(14, 116, 144, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(14, 116, 144, 0.1);
 }
 
 main.themeBright .navContact {
@@ -547,37 +555,54 @@ a {
 
 .nav {
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: min(1120px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 18px 0;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.08);
-  background: rgba(8, 13, 29, 0.42);
-  backdrop-filter: blur(18px);
+  margin: 0 auto 6px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 24px;
+  padding: 8px;
+  background: rgba(8, 13, 29, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 70px rgba(2, 6, 23, 0.22);
+  backdrop-filter: blur(22px) saturate(1.15);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  min-height: 46px;
+  gap: 12px;
+  border-radius: 18px;
+  padding: 0 12px 0 8px;
   font-weight: 800;
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.brand:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
 }
 
 .brandMark {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(94, 234, 212, 0.28);
-  border-radius: 8px;
+  border-radius: 14px;
   color: #f8fafc;
   background: linear-gradient(135deg, #020617, #0f172a 58%, #172554);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 28px rgba(2, 6, 23, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 14px 30px rgba(2, 6, 23, 0.24);
 }
 
 .logoMark {
@@ -624,24 +649,27 @@ a {
 .navActions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  border: 1px solid rgba(226, 232, 240, 0.12);
-  border-radius: 14px;
-  padding: 5px;
-  background: rgba(15, 23, 42, 0.72);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 44px rgba(2, 6, 23, 0.18);
+  gap: 6px;
+  border: 1px solid rgba(226, 232, 240, 0.11);
+  border-radius: 20px;
+  padding: 6px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.035)),
+    rgba(15, 23, 42, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .navLinks a {
   position: relative;
-  min-height: 38px;
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
-  border-radius: 10px;
-  padding: 0 12px;
+  border-radius: 15px;
+  padding: 0 14px;
   transition:
     color 180ms ease,
     background 180ms ease,
+    box-shadow 180ms ease,
     transform 180ms ease;
 }
 
@@ -650,29 +678,33 @@ a {
 }
 
 .navLinks a:hover {
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
 }
 
 .navLinks .activeNavLink {
   color: #ffffff;
   background: rgba(94, 234, 212, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.12);
 }
 
 .navContact {
-  min-height: 38px;
+  min-height: 42px;
   display: inline-flex;
   align-items: center;
-  border-radius: 10px;
-  padding: 0 14px;
+  border-radius: 15px;
+  padding: 0 18px;
   color: #07111c;
   background: #5eead4;
   font-size: 0.9rem;
   font-weight: 850;
-  box-shadow: 0 16px 34px rgba(94, 234, 212, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 16px 34px rgba(94, 234, 212, 0.18);
   transition:
     transform 180ms ease,
-    background 180ms ease;
+    background 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .navContact:hover,
@@ -683,11 +715,11 @@ a {
 
 .themeToggle {
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   place-items: center;
   border: 1px solid rgba(226, 232, 240, 0.16);
-  border-radius: 10px;
+  border-radius: 15px;
   color: #f8fafc;
   background: rgba(15, 23, 42, 0.78);
   cursor: pointer;
@@ -3220,9 +3252,11 @@ a {
 
 @media (max-width: 860px) {
   .nav {
+    top: 10px;
     align-items: flex-start;
     gap: 14px;
     flex-direction: column;
+    border-radius: 22px;
   }
 
   .navActions {
@@ -3366,8 +3400,10 @@ a {
 
 @media (max-width: 560px) {
   .nav {
+    width: min(100% - 24px, 1120px);
     gap: 16px;
     flex-direction: column;
+    padding: 7px;
   }
 
   .navLinks {
@@ -3378,14 +3414,17 @@ a {
   .navActions {
     align-items: flex-start;
     flex-wrap: wrap;
+    border-radius: 18px;
   }
 
   .navContact {
     min-height: 36px;
+    border-radius: 13px;
   }
 
   .navLinks a {
-    min-height: 32px;
+    min-height: 34px;
+    border-radius: 13px;
     padding: 0 9px;
   }
 
