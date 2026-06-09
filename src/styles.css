@@ -352,6 +352,114 @@ main.themeBright .timelinePulse span {
   box-shadow: 0 10px 24px rgba(14, 116, 144, 0.08);
 }
 
+main.themeBright .deadlineSlider input[type="range"] {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(224, 242, 254, 0.68)),
+    rgba(255, 255, 255, 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(14, 116, 144, 0.16),
+    inset 0 8px 18px rgba(14, 116, 144, 0.08),
+    0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+main.themeBright .deadlineSlider::before {
+  background: linear-gradient(90deg, #5eead4, #facc15);
+  box-shadow:
+    0 0 0 1px rgba(14, 116, 144, 0.08),
+    0 0 22px rgba(94, 234, 212, 0.28),
+    0 0 28px rgba(250, 204, 21, 0.16);
+}
+
+main.themeBright .deadlineSlider::after {
+  background: rgba(250, 204, 21, 0.34);
+  filter: blur(9px);
+}
+
+main.themeBright .deadlineSlider input[type="range"]::-webkit-slider-thumb {
+  border-color: #102033;
+  background:
+    radial-gradient(circle at 50% 50%, #ffffff 0 42%, #e0f2fe 43% 100%);
+  box-shadow:
+    0 0 0 4px rgba(14, 116, 144, 0.2),
+    0 12px 28px rgba(15, 23, 42, 0.2);
+}
+
+main.themeBright .deadlineSlider input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow:
+    0 0 0 6px rgba(14, 116, 144, 0.26),
+    0 16px 34px rgba(15, 23, 42, 0.24);
+}
+
+main.themeBright .deadlineSlider input[type="range"]::-moz-range-thumb {
+  border-color: #102033;
+  background: #f8fbff;
+  box-shadow:
+    0 0 0 4px rgba(14, 116, 144, 0.2),
+    0 12px 28px rgba(15, 23, 42, 0.2);
+}
+
+main.themeBright .sliderBubble {
+  color: #ffffff;
+  border-color: rgba(79, 70, 229, 0.18);
+  background: #4f46e5;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 14px 32px rgba(79, 70, 229, 0.18);
+}
+
+main.themeBright .sliderTicks span {
+  color: #475569;
+}
+
+main.themeBright .sliderTicks span::before {
+  background: rgba(14, 116, 144, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(14, 116, 144, 0.08);
+}
+
+main.themeBright .sliderTicks .activeTick {
+  color: #0e7490;
+}
+
+main.themeBright .sliderTicks .activeTick::before {
+  background: #5eead4;
+  box-shadow: 0 0 16px rgba(94, 234, 212, 0.46);
+}
+
+main.themeBright .builderResult {
+  background:
+    radial-gradient(circle at 74% 18%, rgba(250, 204, 21, 0.24), transparent 42%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(207, 250, 254, 0.62)),
+    rgba(248, 251, 255, 0.84);
+}
+
+main.themeBright .aboutSection::after {
+  color: #0e7490;
+  background:
+    linear-gradient(90deg, rgba(94, 234, 212, 0.78) 0 42%, transparent 42% 100%) 18px 58px / 190px 8px no-repeat,
+    linear-gradient(90deg, rgba(14, 116, 144, 0.26) 0 68%, transparent 68% 100%) 18px 80px / 210px 8px no-repeat,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(207, 250, 254, 0.56)),
+    rgba(248, 251, 255, 0.82);
+}
+
+main.themeBright .contact::after {
+  background:
+    linear-gradient(90deg, rgba(14, 116, 144, 0.24) 0 58%, transparent 58% 100%) 24px 32px / 210px 10px no-repeat,
+    linear-gradient(90deg, rgba(94, 234, 212, 0.72) 0 72%, transparent 72% 100%) 24px 66px / 240px 10px no-repeat,
+    linear-gradient(90deg, rgba(250, 204, 21, 0.62) 0 44%, transparent 44% 100%) 24px 100px / 180px 10px no-repeat,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(207, 250, 254, 0.56)),
+    rgba(248, 251, 255, 0.82);
+}
+
+main.themeBright .processShowcase::before {
+  background:
+    linear-gradient(90deg, rgba(250, 204, 21, 0.72), rgba(250, 204, 21, 0.12)) 28px 42px / 190px 10px no-repeat,
+    linear-gradient(90deg, rgba(94, 234, 212, 0.72), rgba(94, 234, 212, 0.12)) 28px 82px / 250px 10px no-repeat,
+    linear-gradient(90deg, rgba(14, 116, 144, 0.22), rgba(14, 116, 144, 0.04)) 28px 122px / 210px 10px no-repeat,
+    linear-gradient(90deg, rgba(251, 113, 133, 0.56), rgba(251, 113, 133, 0.1)) 28px 162px / 280px 10px no-repeat,
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(207, 250, 254, 0.56)),
+    rgba(248, 251, 255, 0.82);
+}
+
 main.themeBright .mockHero {
   background:
     linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(79, 70, 229, 0.14)),
