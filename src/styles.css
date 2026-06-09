@@ -371,15 +371,15 @@ main.themeBright .deadlineSlider input[type="range"] {
 }
 
 main.themeBright .deadlineSlider::before {
-  background: linear-gradient(90deg, #99f6e4, #fde68a);
+  background: linear-gradient(90deg, #ccfbf1, #fef3c7);
   box-shadow:
     0 0 0 1px rgba(14, 116, 144, 0.06),
-    0 0 18px rgba(94, 234, 212, 0.2),
-    0 0 22px rgba(250, 204, 21, 0.12);
+    0 0 14px rgba(94, 234, 212, 0.16),
+    0 0 18px rgba(250, 204, 21, 0.1);
 }
 
 main.themeBright .deadlineSlider::after {
-  background: rgba(253, 230, 138, 0.34);
+  background: rgba(254, 243, 199, 0.42);
   filter: blur(9px);
 }
 
@@ -407,12 +407,13 @@ main.themeBright .deadlineSlider input[type="range"]::-moz-range-thumb {
 }
 
 main.themeBright .sliderBubble {
-  color: #ffffff;
-  border-color: rgba(14, 116, 144, 0.12);
-  background: #0e7490;
+  color: #0f172a;
+  border-color: rgba(14, 116, 144, 0.14);
+  background:
+    linear-gradient(135deg, #f8fbff, #bae6fd);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 14px 32px rgba(14, 116, 144, 0.16);
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 12px 28px rgba(14, 116, 144, 0.14);
 }
 
 main.themeBright .sliderTicks span {
@@ -429,8 +430,8 @@ main.themeBright .sliderTicks .activeTick {
 }
 
 main.themeBright .sliderTicks .activeTick::before {
-  background: #99f6e4;
-  box-shadow: 0 0 14px rgba(94, 234, 212, 0.34);
+  background: #ccfbf1;
+  box-shadow: 0 0 12px rgba(94, 234, 212, 0.24);
 }
 
 main.themeBright .builderResult {
@@ -709,6 +710,32 @@ main::after {
   }
 }
 
+@keyframes navGlowOrbit {
+  0% {
+    transform: translate3d(-6%, -2%, 0) rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: translate3d(5%, 4%, 0) rotate(9deg) scale(1.08);
+  }
+
+  100% {
+    transform: translate3d(7%, -3%, 0) rotate(-6deg) scale(1.04);
+  }
+}
+
+@keyframes cardAuraDrift {
+  0% {
+    opacity: 0.45;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  100% {
+    opacity: 0.9;
+    transform: translate3d(-12px, -10px, 0) scale(1.12);
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -723,6 +750,7 @@ a {
   position: sticky;
   top: 14px;
   z-index: 10;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -736,6 +764,24 @@ a {
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     0 24px 70px rgba(2, 6, 23, 0.22);
   backdrop-filter: blur(22px) saturate(1.15);
+}
+
+.nav::before {
+  position: absolute;
+  inset: -70% -12%;
+  content: "";
+  background:
+    radial-gradient(circle at 20% 50%, rgba(94, 234, 212, 0.18), transparent 24%),
+    radial-gradient(circle at 78% 44%, rgba(250, 204, 21, 0.14), transparent 24%),
+    radial-gradient(circle at 50% 86%, rgba(251, 113, 133, 0.1), transparent 26%);
+  opacity: 0.72;
+  animation: navGlowOrbit 9s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.nav > * {
+  position: relative;
+  z-index: 1;
 }
 
 .brand {
@@ -970,6 +1016,10 @@ a {
     linear-gradient(135deg, rgba(15, 23, 42, 0.74), rgba(15, 23, 42, 0.46)),
     rgba(255, 255, 255, 0.055);
   box-shadow: 0 24px 70px rgba(2, 6, 23, 0.22);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
 .pageFeatureCard::before {
@@ -981,11 +1031,17 @@ a {
     linear-gradient(315deg, rgba(250, 204, 21, 0.12), transparent 48%);
   opacity: 0;
   transition: opacity 180ms ease;
+  animation: cardAuraDrift 7s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
 .pageFeatureCard:hover::before {
   opacity: 1;
+}
+
+.pageFeatureCard:hover {
+  border-color: rgba(94, 234, 212, 0.32);
+  box-shadow: 0 30px 86px rgba(2, 6, 23, 0.28);
 }
 
 .pageFeatureCard span {
@@ -1592,7 +1648,7 @@ a {
   opacity: 0.9;
   transform: rotate(-1deg);
   pointer-events: none;
-  animation: lineFloat 5.5s ease-in-out infinite alternate;
+  animation: lineFloat 5.5s ease-in-out infinite alternate, lineGlow 3.4s ease-in-out infinite;
 }
 
 @keyframes frameGlow {
@@ -1614,6 +1670,19 @@ a {
 
   to {
     transform: rotate(-1deg) translateY(7px);
+  }
+}
+
+@keyframes lineGlow {
+  0%,
+  100% {
+    opacity: 0.72;
+    filter: drop-shadow(0 10px 22px rgba(94, 234, 212, 0.12));
+  }
+
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 14px 30px rgba(94, 234, 212, 0.26));
   }
 }
 
@@ -2115,6 +2184,7 @@ a {
   border-radius: 999px;
   content: "";
   background: radial-gradient(circle, rgba(94, 234, 212, 0.18), transparent 62%);
+  animation: cardAuraDrift 6.5s ease-in-out infinite alternate;
   transition:
     opacity 180ms ease,
     transform 180ms ease;
@@ -2348,6 +2418,7 @@ a {
   border-radius: 999px;
   content: "";
   background: radial-gradient(circle, rgba(94, 234, 212, 0.12), transparent 66%);
+  animation: cardAuraDrift 7.2s ease-in-out infinite alternate;
   transition: transform 180ms ease;
 }
 
