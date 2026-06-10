@@ -199,6 +199,35 @@ main.themeBright .pageFeatureCard h3 {
   color: #102033;
 }
 
+main.themeBright .planCard {
+  color: #102033;
+  border-color: rgba(14, 116, 144, 0.14);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(224, 242, 254, 0.66)),
+    rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 24px 70px rgba(15, 23, 42, 0.1);
+}
+
+main.themeBright .planCard p,
+main.themeBright .planCard li,
+main.themeBright .plansIntro p:not(.eyebrow) {
+  color: #334155;
+}
+
+main.themeBright .planTopline strong,
+main.themeBright .plansIntro h2 {
+  color: #102033;
+}
+
+main.themeBright .featuredPlan {
+  border-color: rgba(14, 116, 144, 0.26);
+  background:
+    linear-gradient(135deg, rgba(240, 253, 250, 0.96), rgba(219, 234, 254, 0.72)),
+    rgba(255, 255, 255, 0.9);
+}
+
 main.themeBright .brandMark,
 main.themeBright .cursorOrbitTwo {
   background: linear-gradient(135deg, #0e7490, #1d4ed8 58%, #312e81);
@@ -2312,6 +2341,139 @@ a {
   box-shadow: 0 20px 54px rgba(94, 234, 212, 0.26);
 }
 
+.plansSection {
+  padding-top: 88px;
+}
+
+.plansIntro {
+  max-width: 820px;
+}
+
+.plansIntro h2 {
+  margin: 0;
+  font-size: clamp(2.4rem, 5.4vw, 5rem);
+  line-height: 0.98;
+}
+
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.planCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+  border: 1px solid rgba(226, 232, 240, 0.13);
+  border-radius: 14px;
+  padding: 26px;
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.12), rgba(250, 204, 21, 0.04)),
+    rgba(15, 23, 42, 0.72);
+  box-shadow: 0 24px 74px rgba(0, 0, 0, 0.18);
+}
+
+.planCard::before {
+  position: absolute;
+  inset: auto -20% -28% auto;
+  width: 240px;
+  height: 240px;
+  border-radius: 999px;
+  content: "";
+  background:
+    radial-gradient(circle, rgba(94, 234, 212, 0.2), transparent 62%),
+    radial-gradient(circle at 30% 30%, rgba(250, 204, 21, 0.14), transparent 52%);
+  animation: cardAuraDrift 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.featuredPlan {
+  border-color: rgba(94, 234, 212, 0.42);
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.18), rgba(79, 70, 229, 0.08)),
+    rgba(15, 23, 42, 0.86);
+  box-shadow: 0 30px 90px rgba(94, 234, 212, 0.12);
+}
+
+.planBadge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 11px;
+  color: #07111c;
+  background: #5eead4;
+  box-shadow: 0 14px 34px rgba(94, 234, 212, 0.18);
+  font-size: 0.72rem;
+  font-weight: 950;
+}
+
+.planTopline,
+.planCard p,
+.planCard ul {
+  position: relative;
+  z-index: 1;
+}
+
+.planTopline {
+  display: grid;
+  gap: 8px;
+}
+
+.planTopline span {
+  color: #5eead4;
+  font-size: 0.8rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.planTopline strong {
+  color: #f8fafc;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  line-height: 0.95;
+}
+
+.planTopline small {
+  color: #cbd5e1;
+  font-weight: 850;
+}
+
+.planCard p {
+  min-height: 78px;
+  margin: 24px 0;
+  color: #cbd5e1;
+  font-weight: 650;
+}
+
+.planCard ul {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.planCard li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #e2e8f0;
+}
+
+.planCard li svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: #5eead4;
+  filter: drop-shadow(0 0 10px rgba(94, 234, 212, 0.22));
+}
+
 .processShowcase::before {
   top: 44px;
   left: -8%;
@@ -3619,6 +3781,14 @@ a {
 
   .budgetGrid {
     grid-template-columns: 1fr;
+  }
+
+  .plansGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .planCard {
+    min-height: auto;
   }
 
   .pageFeatureGrid {

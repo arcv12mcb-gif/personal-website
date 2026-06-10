@@ -152,6 +152,52 @@ const pricingPlans = [
   },
 ];
 
+const subscriptionPlans = [
+  {
+    name: "Go",
+    price: "$599",
+    period: "per year",
+    note: "A clean starter plan for getting online with the essentials.",
+    features: [
+      "Up to 3 pages",
+      "Mobile responsive",
+      "Contact form",
+      "Basic SEO",
+      "1 revision round",
+    ],
+  },
+  {
+    name: "Plus",
+    price: "$899",
+    period: "per year",
+    note: "A stronger site with more pages, better visuals, and tracking.",
+    featured: true,
+    features: [
+      "Up to 7 pages",
+      "Better design customization",
+      "Google Maps integration",
+      "Gallery",
+      "Basic analytics",
+      "3 revision rounds",
+    ],
+  },
+  {
+    name: "Pro",
+    price: "$1,399",
+    period: "per year",
+    note: "A fuller website system for businesses that want more polish and support.",
+    features: [
+      "10+ pages",
+      "Custom animations",
+      "Advanced SEO",
+      "Blog/news section",
+      "Booking forms",
+      "Priority support",
+      "Unlimited reasonable revisions",
+    ],
+  },
+];
+
 const contactDetails = [
   {
     title: "Best first message",
@@ -678,6 +724,59 @@ function PageFeatureGrid({ eyebrow, title, text, items }) {
             <span>{String(index + 1).padStart(2, "0")}</span>
             <h3>{item.title}</h3>
             <p>{item.text}</p>
+          </motion.article>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
+
+function PlansSection() {
+  return (
+    <section className="section plansSection" id="plans">
+      <motion.div
+        className="sectionIntro plansIntro"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        <p className="eyebrow">Plans</p>
+        <h2>Choose the yearly plan that fits your site.</h2>
+        <p>
+          Start with the essentials, add more pages when the business needs them, or go all-in with support and advanced features.
+        </p>
+      </motion.div>
+
+      <motion.div
+        className="plansGrid"
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        {subscriptionPlans.map((plan) => (
+          <motion.article
+            className={`planCard ${plan.featured ? "featuredPlan" : ""}`}
+            key={plan.name}
+            variants={scaleIn}
+            whileHover={{ y: -10 }}
+          >
+            {plan.featured && <span className="planBadge">Most popular</span>}
+            <div className="planTopline">
+              <span>{plan.name}</span>
+              <strong>{plan.price}</strong>
+              <small>{plan.period}</small>
+            </div>
+            <p>{plan.note}</p>
+            <ul>
+              {plan.features.map((feature) => (
+                <li key={feature}>
+                  <CheckCircle2 size={17} />
+                  {feature}
+                </li>
+              ))}
+            </ul>
           </motion.article>
         ))}
       </motion.div>
@@ -1298,6 +1397,8 @@ function App() {
         </motion.div>
       </section>
       )}
+
+      {(isHome || isPricingPage) && <PlansSection />}
 
       {isPricingPage && (
         <PageFeatureGrid
