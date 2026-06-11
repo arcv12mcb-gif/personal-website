@@ -176,6 +176,7 @@ const subscriptionPlans = [
       "Up to 7 pages",
       "Better design customization",
       "Gallery",
+      "Basic SEO",
       "Basic traffic insights",
       "3 revision rounds",
     ],
@@ -835,6 +836,16 @@ function PlansSection() {
           </motion.article>
         ))}
       </motion.div>
+
+      <motion.p
+        className="plansFootnote"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        Yearly subscriptions include the standard hosting and domain costs needed to keep your website online.
+      </motion.p>
     </section>
   );
 }
