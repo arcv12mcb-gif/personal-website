@@ -301,6 +301,7 @@ const modelModes = [
 ];
 
 const ENGAGEMENT_PROMPT_DELAY_MS = 20 * 60 * 1000;
+const SHOW_PRICING = false;
 
 const pageRoutes = [
   { path: "/", label: "Home", title: "Home" },
@@ -308,12 +309,12 @@ const pageRoutes = [
   { path: "/services/", label: "Services", title: "Services" },
   { path: "/work/", label: "Work", title: "Work" },
   { path: "/process/", label: "Process", title: "Process" },
-  { path: "/pricing/", label: "Pricing", title: "Pricing" },
+  { path: "/pricing/", label: "Pricing", title: "Pricing", hidden: !SHOW_PRICING },
   { path: "/contact/", label: "Contact", title: "Contact" },
   { path: "/privacy/", label: "Privacy", title: "Privacy Policy" },
 ];
 
-const routeLookup = new Set(pageRoutes.map((route) => route.path));
+const routeLookup = new Set(pageRoutes.filter((route) => !route.hidden).map((route) => route.path));
 
 const getRouteFromPath = () => {
   if (typeof window === "undefined") {
@@ -1068,7 +1069,7 @@ function App() {
         <div className="navActions">
           <div className="navLinks" aria-label="Main pages">
             {pageRoutes
-              .filter((route) => route.path !== "/" && route.path !== "/contact/" && route.path !== "/privacy/")
+              .filter((route) => !route.hidden && route.path !== "/" && route.path !== "/contact/" && route.path !== "/privacy/")
               .map((route) => (
                 <a
                   key={route.path}
@@ -1130,7 +1131,7 @@ function App() {
         />
       )}
 
-      {isPricingPage && (
+      {SHOW_PRICING && isPricingPage && (
         <PageHeader
           eyebrow="Pricing"
           title="Start with the right size."
@@ -1468,7 +1469,7 @@ function App() {
       )}
 
       {/* BUDGET */}
-      {(isHome || isServicesPage || isPricingPage) && (
+      {(isHome || isServicesPage || (SHOW_PRICING && isPricingPage)) && (
       <section className="section budgetSection" id="budget">
         <motion.div
           className="sectionIntro budgetIntro"
@@ -1524,9 +1525,9 @@ function App() {
       </section>
       )}
 
-      {(isHome || isPricingPage) && <PlansSection />}
+      {SHOW_PRICING && (isHome || isPricingPage) && <PlansSection />}
 
-      {isPricingPage && (
+      {SHOW_PRICING && isPricingPage && (
         <PageFeatureGrid
           eyebrow="Package options"
           title="Simple levels, flexible scope."
@@ -1711,7 +1712,7 @@ function App() {
       {isPrivacyPage && <PrivacyPolicy />}
 
       {/* CONTACT */}
-      {(isHome || isWorkPage || isPricingPage || isContactPage) && (
+      {(isHome || isWorkPage || (SHOW_PRICING && isPricingPage) || isContactPage) && (
       <section className="section contact" id="contact">
         <motion.div
           variants={slideRight}
