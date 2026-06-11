@@ -238,6 +238,10 @@ const privacySections = [
     text: "We do not sell, rent, or trade your personal information to third parties. We may share information with trusted service providers when necessary to operate our business, such as hosting providers, payment processors, or email services.",
   },
   {
+    title: "Client business names",
+    text: "If we work together, we may use your business name on our website to describe the project or show examples of our work.",
+  },
+  {
     title: "Data security",
     text: "We take reasonable measures to protect your information from unauthorized access, disclosure, or misuse.",
   },
