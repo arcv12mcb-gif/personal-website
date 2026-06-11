@@ -176,7 +176,7 @@ const subscriptionPlans = [
       "Up to 7 pages",
       "Better design customization",
       "Gallery",
-      "Basic analytics",
+      "Basic traffic insights",
       "3 revision rounds",
     ],
   },
@@ -189,11 +189,11 @@ const subscriptionPlans = [
       "Everything from Plus",
       "10+ pages",
       "Custom animations",
-      "Advanced analytics",
+      "Advanced traffic insights",
       "Blog/news section",
-      "Booking forms",
-      "Priority support",
-      "Unlimited reasonable revisions",
+      "Booking request forms",
+      "Priority project communication",
+      "Ongoing reasonable revisions during the project",
     ],
   },
 ];
@@ -1213,7 +1213,7 @@ function App() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Start Today
+                Start a Project
               </motion.button>
             </div>
 
