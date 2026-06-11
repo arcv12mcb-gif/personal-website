@@ -189,7 +189,6 @@ const subscriptionPlans = [
     features: [
       "10+ pages",
       "Custom animations",
-      "Advanced SEO",
       "Blog/news section",
       "Booking forms",
       "Priority support",
