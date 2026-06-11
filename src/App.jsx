@@ -213,6 +213,52 @@ const contactDetails = [
   },
 ];
 
+const privacySections = [
+  {
+    title: "Information we collect",
+    items: [
+      "Name",
+      "Email address",
+      "Phone number",
+      "Business information",
+      "Any information you voluntarily provide in a message",
+    ],
+  },
+  {
+    title: "How we use your information",
+    items: [
+      "Respond to inquiries",
+      "Provide website design services",
+      "Communicate about projects and support",
+      "Improve our services",
+    ],
+  },
+  {
+    title: "Information sharing",
+    text: "We do not sell, rent, or trade your personal information to third parties. We may share information with trusted service providers when necessary to operate our business, such as hosting providers, payment processors, or email services.",
+  },
+  {
+    title: "Data security",
+    text: "We take reasonable measures to protect your information from unauthorized access, disclosure, or misuse.",
+  },
+  {
+    title: "Third-party services",
+    text: "Our website may contain links to third-party websites. We are not responsible for the privacy practices of those websites.",
+  },
+  {
+    title: "Cookies",
+    text: "Our website may use cookies or similar technologies to improve user experience and analyze website traffic. You can disable cookies through your browser settings.",
+  },
+  {
+    title: "Your rights",
+    text: "You may request access to, correction of, or deletion of your personal information by contacting us.",
+  },
+  {
+    title: "Changes to this policy",
+    text: "We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated revision date.",
+  },
+];
+
 const modelModes = [
   {
     id: "business",
@@ -259,6 +305,7 @@ const pageRoutes = [
   { path: "/process/", label: "Process", title: "Process" },
   { path: "/pricing/", label: "Pricing", title: "Pricing" },
   { path: "/contact/", label: "Contact", title: "Contact" },
+  { path: "/privacy/", label: "Privacy", title: "Privacy Policy" },
 ];
 
 const routeLookup = new Set(pageRoutes.map((route) => route.path));
@@ -303,6 +350,10 @@ const pageMeta = {
   "/contact/": {
     title: "Contact Ali Arhan Canbaz | Start a Website Project",
     description: "Contact Ali Arhan Canbaz to start a clean modern website for your business.",
+  },
+  "/privacy/": {
+    title: "Privacy Policy | Ali Arhan Canbaz Web Studio",
+    description: "Privacy policy for Ali Arhan Canbaz Web Studio and website project inquiries.",
   },
 };
 
@@ -784,6 +835,57 @@ function PlansSection() {
   );
 }
 
+function PrivacyPolicy() {
+  return (
+    <section className="section privacySection">
+      <motion.div
+        className="privacyShell"
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        <div className="privacySummary">
+          <p className="eyebrow">Privacy Policy</p>
+          <h2>Simple, clear privacy information.</h2>
+          <p>
+            At Ali Arhan Canbaz Web Studio, we respect your privacy and are committed to protecting any information you provide through our website.
+          </p>
+          <div className="privacyMeta">
+            <span>Last updated</span>
+            <strong>June 2026</strong>
+          </div>
+        </div>
+
+        <div className="privacyGrid">
+          {privacySections.map((section) => (
+            <article className="privacyCard" key={section.title}>
+              <h3>{section.title}</h3>
+              {section.text && <p>{section.text}</p>}
+              {section.items && (
+                <ul>
+                  {section.items.map((item) => (
+                    <li key={item}>
+                      <CheckCircle2 size={16} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <div className="privacyContact">
+          <span>Contact us</span>
+          <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+          <a href="mailto:aliarhancanbaz@gmail.com">aliarhancanbaz@gmail.com</a>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
 function App() {
   const [isBright, setIsBright] = useState(false);
   const [activeService, setActiveService] = useState(0);
@@ -906,6 +1008,7 @@ function App() {
   const isProcessPage = currentRoute === "/process/";
   const isPricingPage = currentRoute === "/pricing/";
   const isContactPage = currentRoute === "/contact/";
+  const isPrivacyPage = currentRoute === "/privacy/";
 
   return (
     <main
@@ -950,7 +1053,7 @@ function App() {
         <div className="navActions">
           <div className="navLinks" aria-label="Main pages">
             {pageRoutes
-              .filter((route) => route.path !== "/" && route.path !== "/contact/")
+              .filter((route) => route.path !== "/" && route.path !== "/contact/" && route.path !== "/privacy/")
               .map((route) => (
                 <a
                   key={route.path}
@@ -1025,6 +1128,14 @@ function App() {
           eyebrow="Contact"
           title="Start your website project."
           text="Send a quick message with what you need, and I will help you choose the right first step."
+        />
+      )}
+
+      {isPrivacyPage && (
+        <PageHeader
+          eyebrow="Privacy"
+          title="Privacy Policy."
+          text="A simple explanation of what information may be collected, how it is used, and how to contact us."
         />
       )}
 
@@ -1582,6 +1693,8 @@ function App() {
         />
       )}
 
+      {isPrivacyPage && <PrivacyPolicy />}
+
       {/* CONTACT */}
       {(isHome || isWorkPage || isPricingPage || isContactPage) && (
       <section className="section contact" id="contact">
@@ -1619,6 +1732,11 @@ function App() {
           >
             Email Me
           </a>
+          <div className="legalLinks" aria-label="Legal links">
+            <a href="/privacy/" onClick={(event) => navigateTo("/privacy/", event)}>
+              Privacy Policy
+            </a>
+          </div>
         </motion.div>
       </section>
       )}
