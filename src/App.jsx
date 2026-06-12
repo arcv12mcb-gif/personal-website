@@ -301,7 +301,7 @@ const modelModes = [
 ];
 
 const ENGAGEMENT_PROMPT_DELAY_MS = 20 * 60 * 1000;
-const SHOW_PRICING = false;
+const SHOW_PRICING = true;
 
 const pageRoutes = [
   { path: "/", label: "Home", title: "Home" },
