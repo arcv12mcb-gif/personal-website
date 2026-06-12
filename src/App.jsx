@@ -437,6 +437,16 @@ const languageCopy = {
       noteText: "Start with a clear scope, then upgrade only when it helps.",
       noteLink: "Talk about options",
     },
+    pricing: {
+      plansEyebrow: "Plans",
+      plansTitle: "Choose the yearly plan that fits your site.",
+      plansText: "Start with the essentials, add more pages when the business needs them, or go all-in with support and advanced features.",
+      featuredBadge: "Most popular",
+      footnote: "Yearly subscriptions include the standard hosting and domain costs needed to keep your website online.",
+      packageEyebrow: "Package options",
+      packageTitle: "Simple levels, flexible scope.",
+      packageText: "These are starting points. The final project should match the business, not force you into the biggest option.",
+    },
     process: {
       builderEyebrow: "Quick builder",
       builderTitle: "Shape your first website idea.",
@@ -553,6 +563,16 @@ const languageCopy = {
       noteLabel: "Butce dostu plan",
       noteText: "Net bir kapsamla baslayin, sadece faydali oldugunda yukseltilir.",
       noteLink: "Secenekleri konusalim",
+    },
+    pricing: {
+      plansEyebrow: "Planlar",
+      plansTitle: "Sitenize uygun yillik plani secin.",
+      plansText: "Temel ihtiyaclarla baslayin, isletme ihtiyac duydukca daha fazla sayfa ekleyin veya destek ve gelismis ozelliklerle daha kapsamli ilerleyin.",
+      featuredBadge: "En populer",
+      footnote: "Yillik abonelikler, web sitenizi yayinda tutmak icin gereken standart hosting ve alan adi maliyetlerini kapsar.",
+      packageEyebrow: "Paket secenekleri",
+      packageTitle: "Sade seviyeler, esnek kapsam.",
+      packageText: "Bunlar baslangic noktalari. Son proje isletmeye uymali, sizi en buyuk secenege zorlamamali.",
     },
     process: {
       builderEyebrow: "Hizli olusturucu",
@@ -727,6 +747,66 @@ const turkishContent = {
     {
       title: "Hizli yayin landing page",
       text: "Hizli sekilde guvenilir gorunmesi ve mesaj toplaması gereken kucuk isletmeler icin odakli sayfa.",
+    },
+  ],
+  pricingPlans: [
+    {
+      title: "Baslangic",
+      text: "Temel isletme bilgileriyle hizli sekilde online olmak icin sade tek sayfalik web sitesi.",
+    },
+    {
+      title: "Buyume",
+      text: "Hizmetler, surec, iletisim ve daha arama dostu yapiya sahip cok sayfali web sitesi.",
+    },
+    {
+      title: "Parlatma",
+      text: "Ozel bolumler, hareket, yayin destegi ve yayin sonrasi temizlik iceren daha kapsamli kurulum.",
+    },
+  ],
+  subscriptionPlans: [
+    {
+      name: "Go",
+      price: "$599",
+      period: "yillik",
+      note: "Temel ihtiyaclarla online olmak icin temiz bir baslangic plani.",
+      features: [
+        "3 sayfaya kadar",
+        "Mobil uyumlu",
+        "Iletisim formu",
+        "1 revizyon turu",
+      ],
+    },
+    {
+      name: "Plus",
+      price: "$899",
+      period: "yillik",
+      note: "Daha fazla sayfa, daha iyi gorseller ve takip icin daha guclu bir site.",
+      featured: true,
+      features: [
+        "Go planindaki her sey",
+        "7 sayfaya kadar",
+        "Daha iyi tasarim ozellestirme",
+        "Galeri",
+        "Temel SEO",
+        "Temel trafik bilgileri",
+        "3 revizyon turu",
+      ],
+    },
+    {
+      name: "Pro",
+      price: "$1,399",
+      period: "yillik",
+      note: "Daha fazla polish ve destek isteyen isletmeler icin daha kapsamli web sitesi sistemi.",
+      features: [
+        "Plus planindaki her sey",
+        "10+ sayfa",
+        "Ozel animasyonlar",
+        "Gelismis trafik bilgileri",
+        "Blog/haber bolumu",
+        "Rezervasyon talep formlari",
+        "Oncelikli proje iletisimi",
+        "Proje boyunca makul devam eden revizyonlar",
+      ],
     },
   ],
   contactDetails: [
@@ -1208,7 +1288,7 @@ function PageFeatureGrid({ eyebrow, title, text, items }) {
   );
 }
 
-function PlansSection() {
+function PlansSection({ copy, plans }) {
   return (
     <section className="section plansSection" id="plans">
       <motion.div
@@ -1218,11 +1298,9 @@ function PlansSection() {
         whileInView="visible"
         viewport={viewport}
       >
-        <p className="eyebrow">Plans</p>
-        <h2>Choose the yearly plan that fits your site.</h2>
-        <p>
-          Start with the essentials, add more pages when the business needs them, or go all-in with support and advanced features.
-        </p>
+        <p className="eyebrow">{copy.plansEyebrow}</p>
+        <h2>{copy.plansTitle}</h2>
+        <p>{copy.plansText}</p>
       </motion.div>
 
       <motion.div
@@ -1232,14 +1310,14 @@ function PlansSection() {
         whileInView="visible"
         viewport={viewport}
       >
-        {subscriptionPlans.map((plan) => (
+        {plans.map((plan) => (
           <motion.article
             className={`planCard ${plan.featured ? "featuredPlan" : ""}`}
             key={plan.name}
             variants={scaleIn}
             whileHover={{ y: -10 }}
           >
-            {plan.featured && <span className="planBadge">Most popular</span>}
+            {plan.featured && <span className="planBadge">{copy.featuredBadge}</span>}
             <div className="planTopline">
               <span>{plan.name}</span>
               <strong>{plan.price}</strong>
@@ -1265,7 +1343,7 @@ function PlansSection() {
         whileInView="visible"
         viewport={viewport}
       >
-        Yearly subscriptions include the standard hosting and domain costs needed to keep your website online.
+        {copy.footnote}
       </motion.p>
     </section>
   );
@@ -1351,6 +1429,8 @@ function App() {
   const localizedAboutHighlights = isTurkish ? turkishContent.aboutHighlights : aboutHighlights;
   const localizedServiceHighlights = isTurkish ? turkishContent.serviceHighlights : serviceHighlights;
   const localizedPortfolioProjects = isTurkish ? turkishContent.portfolioProjects : portfolioProjects;
+  const localizedPricingPlans = isTurkish ? turkishContent.pricingPlans : pricingPlans;
+  const localizedSubscriptionPlans = isTurkish ? turkishContent.subscriptionPlans : subscriptionPlans;
   const localizedContactDetails = isTurkish ? turkishContent.contactDetails : contactDetails;
   const localizedPrivacySections = isTurkish ? turkishContent.privacySections : privacySections;
 
@@ -2008,14 +2088,16 @@ function App() {
       </section>
       )}
 
-      {SHOW_PRICING && (isHome || isPricingPage) && <PlansSection />}
+      {SHOW_PRICING && (isHome || isPricingPage) && (
+        <PlansSection copy={copy.pricing} plans={localizedSubscriptionPlans} />
+      )}
 
       {SHOW_PRICING && isPricingPage && (
         <PageFeatureGrid
-          eyebrow="Package options"
-          title="Simple levels, flexible scope."
-          text="These are starting points. The final project should match the business, not force you into the biggest option."
-          items={pricingPlans}
+          eyebrow={copy.pricing.packageEyebrow}
+          title={copy.pricing.packageTitle}
+          text={copy.pricing.packageText}
+          items={localizedPricingPlans}
         />
       )}
 
