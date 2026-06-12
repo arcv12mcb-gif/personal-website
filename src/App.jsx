@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
 import ShaderBackground from "./components/ui/ShaderBackground";
+import MotionShaderPanel from "./components/ui/MotionShaderPanel";
 
 const services = [
   {
@@ -441,6 +442,17 @@ const languageCopy = {
       noteText: "Start with a clear scope, then upgrade only when it helps.",
       noteLink: "Talk about options",
     },
+    motionLab: {
+      eyebrow: "Motion lab",
+      title: "A little movement where it earns attention.",
+      text: "Interactive shader details, soft glass buttons, and responsive hover states can make a website feel more premium without slowing down the message.",
+      cards: [
+        ["Shader hero", "Pointer-reactive color rings"],
+        ["Line field", "Animated web-grid texture"],
+      ],
+      chips: ["WebGL", "Liquid glass", "Responsive motion"],
+      cta: "See pricing",
+    },
     pricing: {
       plansEyebrow: "Plans",
       plansTitle: "Choose the yearly plan that fits your site.",
@@ -512,8 +524,8 @@ const languageCopy = {
       "/pricing/": "Fiyatlar",
     },
     headers: {
-      about: ["Hakkimda", "Ali Arhan Canbaz ile tanisin.", "Kucuk isletmelerin temiz ve guvenilir bir online gorunume sahip olmasina yardim eden odakli bir web tasarimci."],
-      services: ["Hizmetler", "Her baslangic icin web sitesi yardimi.", "Kucuk baslayin, mevcut sitenizi yenileyin veya ozel alan adiyla yayina alma konusunda destek alin."],
+      about: ["Hakkimda", "Ali Arhan Canbaz ile tanisin.", "Isletmelerin temiz ve guvenilir bir online gorunume sahip olmasina yardim eden odakli bir web tasarimci."],
+      services: ["Hizmetler", "Her baslangic icin web sitesi yardimi.", "Sade baslayin, mevcut sitenizi yenileyin veya ozel alan adiyla yayina alma konusunda destek alin."],
       work: ["Portfolyo", "Yapabilecegim web sitesi ornekleri.", "Bu studyo icin hazirlanan temiz ve pratik site tarzlarini gosteren bazi proje yonleri."],
       process: ["Surec", "Fikirden yayindaki siteye net bir yol.", "Her adim projeyi anlasilir, butceye uygun ve kolay incelenebilir tutmak icin tasarlanir."],
       pricing: ["Fiyatlar", "Dogru boyutla baslayin.", "Mevcut butcenize uygun seviyeyi secin, is hazir oldugunda web sitesini genisletin."],
@@ -525,7 +537,7 @@ const languageCopy = {
       loaderKicker: "Studio yukleniyor",
       loaderText: "Lutfen bekleyin",
       ribbon: ["Tasarim", "Kurulum", "Yayin", "Guven", "Mobil", "Hizli"],
-      titleTop: "Kucuk Isletmeleri Daha",
+      titleTop: "Isletmeleri Daha",
       titleBottom: "Guvenilir Gosteren Modern Siteler.",
       text: "Dukkanlarin, hizmet isletmelerinin ve ureticilerin musterilerine rahatca gonderebilecegi temiz web siteleri hazirliyorum.",
       about: "Hakkimda",
@@ -546,10 +558,10 @@ const languageCopy = {
     about: {
       featureEyebrow: "Neye onem veriyorum",
       featureTitle: "Insani bir surecle kullanisli web siteleri.",
-      featureText: "En iyi kucuk isletme siteleri insanlari hizli sekilde yonlendirir. Benim tekrar tekrar onem verdigim fikirler bunlar.",
+      featureText: "En iyi isletme siteleri insanlari hizli sekilde yonlendirir. Benim tekrar tekrar onem verdigim fikirler bunlar.",
       eyebrow: "Hakkimda",
       titlePrefix: "Merhaba, ben",
-      text: "Lincoln, Nebraska'da yasayan bir ogrenci ve web tasarimciyim. Temiz bir online gorunum isteyen kucuk isletmeler icin modern web siteleri hazirliyorum.",
+      text: "Lincoln, Nebraska'da yasayan bir ogrenci ve web tasarimciyim. Temiz bir online gorunum isteyen isletmeler icin modern web siteleri hazirliyorum.",
     },
     services: {
       featureEyebrow: "Hizmet detaylari",
@@ -570,6 +582,17 @@ const languageCopy = {
       noteLabel: "Butce dostu plan",
       noteText: "Net bir kapsamla baslayin, sadece faydali oldugunda yukseltilir.",
       noteLink: "Secenekleri konusalim",
+    },
+    motionLab: {
+      eyebrow: "Hareket laboratuvari",
+      title: "Dikkati hak eden yerlerde biraz hareket.",
+      text: "Interaktif shader detaylari, yumusak cam hissi veren butonlar ve responsive hover durumlari siteyi agirlastirmadan daha premium hissettirebilir.",
+      cards: [
+        ["Shader hero", "Imlece tepki veren renk halkalari"],
+        ["Cizgi alani", "Hareketli web-grid dokusu"],
+      ],
+      chips: ["WebGL", "Liquid glass", "Responsive hareket"],
+      cta: "Fiyatlara bak",
     },
     pricing: {
       plansEyebrow: "Planlar",
@@ -753,7 +776,7 @@ const turkishContent = {
     },
     {
       title: "Hizli yayin landing page",
-      text: "Hizli sekilde guvenilir gorunmesi ve mesaj toplaması gereken kucuk isletmeler icin odakli sayfa.",
+      text: "Hizli sekilde guvenilir gorunmesi ve mesaj toplama ihtiyaci olan isletmeler icin odakli sayfa.",
     },
   ],
   pricingPlans: [
@@ -827,7 +850,7 @@ const turkishContent = {
     },
     {
       title: "Proje uyumu",
-      text: "Bu surec kucuk isletmeler, ogrenci projeleri, ureticiler ve netlik isteyen yerel hizmetler icin uygundur.",
+      text: "Bu surec isletmeler, ogrenci projeleri, ureticiler ve netlik isteyen yerel hizmetler icin uygundur.",
     },
   ],
   privacySections: [
@@ -1974,6 +1997,49 @@ function App() {
           ))}
         </motion.div>
       </section>
+
+      <motion.section
+        className="section motionLabSection"
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        <motion.div className="motionLabCopy" variants={fadeUp}>
+          <p className="eyebrow">{copy.motionLab.eyebrow}</p>
+          <h2>{copy.motionLab.title}</h2>
+          <p>{copy.motionLab.text}</p>
+          <div className="motionLabChips" aria-label="Animation styles">
+            {copy.motionLab.chips.map((chip) => (
+              <span key={chip}>{chip}</span>
+            ))}
+          </div>
+          <a
+            className="primaryButton liquidButton"
+            href={SHOW_PRICING ? "/pricing/" : "/contact/"}
+            onClick={(event) => navigateTo(SHOW_PRICING ? "/pricing/" : "/contact/", event)}
+          >
+            {copy.motionLab.cta}
+          </a>
+        </motion.div>
+
+        <motion.div className="motionLabDeck" variants={stagger}>
+          <motion.div variants={scaleIn} whileHover={{ y: -8, rotate: -1 }}>
+            <MotionShaderPanel
+              variant="rings"
+              label={copy.motionLab.cards[0][0]}
+              title={copy.motionLab.cards[0][1]}
+            />
+          </motion.div>
+          <motion.div variants={scaleIn} whileHover={{ y: -8, rotate: 1 }}>
+            <MotionShaderPanel
+              variant="waves"
+              label={copy.motionLab.cards[1][0]}
+              title={copy.motionLab.cards[1][1]}
+            />
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
       {/* STATS */}
       <motion.section
