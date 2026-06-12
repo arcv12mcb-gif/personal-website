@@ -1730,7 +1730,7 @@ function App() {
   return (
     <main
       ref={mainRef}
-      className={isBright ? "themeBright" : undefined}
+      className={`${isBright ? "themeBright" : ""} ${isTurkish ? "langTr" : "langEn"}`.trim()}
       style={{
         "--pointer-x": "50%",
         "--pointer-y": "28%",
