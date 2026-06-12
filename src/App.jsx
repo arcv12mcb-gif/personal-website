@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
+import ShaderBackground from "./components/ui/ShaderBackground";
 
 const services = [
   {
@@ -391,6 +392,9 @@ const languageCopy = {
     },
     hero: {
       eyebrow: "Ali Arhan Canbaz Web Studio",
+      loaderKicker: "Loading the studio",
+      loaderText: "Please wait",
+      ribbon: ["Design", "Build", "Launch", "Trust", "Mobile", "Fast"],
       titleTop: "Modern Websites That Make",
       titleBottom: "Small Businesses Look Legit.",
       text: "I help shops, service businesses, and creators get a clean website they can proudly send to customers.",
@@ -518,6 +522,9 @@ const languageCopy = {
     },
     hero: {
       eyebrow: "Ali Arhan Canbaz Web Studio",
+      loaderKicker: "Studio yukleniyor",
+      loaderText: "Lutfen bekleyin",
+      ribbon: ["Tasarim", "Kurulum", "Yayin", "Guven", "Mobil", "Hizli"],
       titleTop: "Kucuk Isletmeleri Daha",
       titleBottom: "Guvenilir Gosteren Modern Siteler.",
       text: "Dukkanlarin, hizmet isletmelerinin ve ureticilerin musterilerine rahatca gonderebilecegi temiz web siteleri hazirliyorum.",
@@ -1400,6 +1407,10 @@ function PrivacyPolicy({ copy, sections }) {
 
 function App() {
   const [isBright, setIsBright] = useState(false);
+  const [isLoadingIntro, setIsLoadingIntro] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return window.sessionStorage.getItem("intro-seen") !== "true";
+  });
   const [language, setLanguage] = useState(() => {
     if (typeof window === "undefined") return "en";
     return window.localStorage.getItem("site-language") === "tr" ? "tr" : "en";
@@ -1487,6 +1498,17 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!isLoadingIntro) return undefined;
+
+    const timer = window.setTimeout(() => {
+      window.sessionStorage.setItem("intro-seen", "true");
+      setIsLoadingIntro(false);
+    }, 1450);
+
+    return () => window.clearTimeout(timer);
+  }, [isLoadingIntro]);
+
+  useEffect(() => {
     document.body.classList.toggle("themeBrightBody", isBright);
     return () => document.body.classList.remove("themeBrightBody");
   }, [isBright]);
@@ -1568,6 +1590,26 @@ function App() {
         "--pointer-y": "28%",
       }}
     >
+      <ShaderBackground />
+
+      <motion.div
+        className="introLoader"
+        aria-live="polite"
+        initial={false}
+        animate={{
+          opacity: isLoadingIntro ? 1 : 0,
+          y: isLoadingIntro ? 0 : -18,
+        }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        style={{ pointerEvents: isLoadingIntro ? "auto" : "none" }}
+      >
+        <span>{copy.hero.loaderKicker}</span>
+        <strong>{copy.hero.loaderText}</strong>
+        <div className="introLoaderTrack" aria-hidden="true">
+          <i></i>
+        </div>
+      </motion.div>
+
       <div className="ambientStage" aria-hidden="true">
         <span></span>
         <span></span>
@@ -1918,6 +1960,18 @@ function App() {
               <div></div>
             </div>
           </div>
+        </motion.div>
+      </section>
+
+      <section className="cinematicRibbon" aria-label="Studio motion highlights">
+        <motion.div
+          className="cinematicRibbonTrack"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 24, repeat: Infinity, ease: "linear" }}
+        >
+          {[...copy.hero.ribbon, ...copy.hero.ribbon].map((word, index) => (
+            <span key={`${word}-${index}`}>{word}</span>
+          ))}
         </motion.div>
       </section>
 
