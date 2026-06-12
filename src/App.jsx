@@ -363,6 +363,426 @@ const pageMeta = {
   },
 };
 
+const languageCopy = {
+  en: {
+    languageName: "English",
+    switchLabel: "TR",
+    switchAria: "Switch language to Turkish",
+    promptTitle: "Want to view this site in Turkish?",
+    promptText: "You can switch the website language now and change it again from the navbar anytime.",
+    promptAccept: "Use Turkish",
+    promptDismiss: "Keep English",
+    navStart: "Start",
+    navLabels: {
+      "/about/": "About",
+      "/services/": "Services",
+      "/work/": "Work",
+      "/process/": "Process",
+      "/pricing/": "Pricing",
+    },
+    headers: {
+      about: ["About", "Meet Ali Arhan Canbaz.", "A focused web designer helping small businesses get a clean, trustworthy online presence."],
+      services: ["Services", "Website help for every starting point.", "Start small, redesign what you have, or get help launching the final site with a custom domain."],
+      work: ["Portfolio", "Examples of websites I can build.", "A few project directions that show the kind of clean, practical sites this studio is built for."],
+      process: ["Process", "A clear path from idea to live website.", "Each step is designed to keep the project understandable, budget-aware, and easy to review."],
+      pricing: ["Pricing", "Start with the right size.", "Pick the level that fits your current budget, then expand the website when the business is ready."],
+      contact: ["Contact", "Start your website project.", "Send a quick message with what you need, and I will help you choose the right first step."],
+      privacy: ["Privacy", "Privacy Policy.", "A simple explanation of what information may be collected, how it is used, and how to contact us."],
+    },
+    hero: {
+      eyebrow: "Ali Arhan Canbaz Web Studio",
+      titleTop: "Modern Websites That Make",
+      titleBottom: "Small Businesses Look Legit.",
+      text: "I help shops, service businesses, and creators get a clean website they can proudly send to customers.",
+      about: "About me",
+      start: "Start a project",
+      tools: ["Layouts", "Brand color", "Clean code"],
+      chips: ["Fast", "Clean", "Mobile"],
+      labels: ["UI layout", "CSS motion", "Responsive"],
+      mockEyebrow: "GROWING BRAND",
+      mockTitle: "A clean website that wins trust fast",
+      mockMeta: "Modern design | Mobile ready | Easy contact",
+      mockButton: "Start a Project",
+      stats: [
+        ["Updates", "Regular progress updates while I build"],
+        ["Responsive", "Looks good on phones and computers"],
+        ["Clear", "Simple pages customers understand"],
+      ],
+    },
+    about: {
+      featureEyebrow: "What I care about",
+      featureTitle: "Useful websites with a human process.",
+      featureText: "The best small-business websites make people feel oriented quickly. These are the ideas I keep coming back to.",
+      eyebrow: "About me",
+      titlePrefix: "Hi, I'm",
+      text: "I'm a web designer based in Lincoln, Nebraska and a student. I build modern websites for small businesses that want a clean online presence.",
+    },
+    services: {
+      featureEyebrow: "Service details",
+      featureTitle: "More than just a homepage.",
+      featureText: "Each project can stay lean or grow into a fuller site depending on what customers need to know.",
+      eyebrow: "Pick a focus",
+      title: "Choose what you need first.",
+    },
+    work: {
+      eyebrow: "Portfolio directions",
+      title: "Project types I can shape for you.",
+      text: "These are examples of the kinds of websites I can build and adapt for different businesses.",
+    },
+    budget: {
+      eyebrow: "Flexible budgets",
+      title: "There is something for every budget.",
+      text: "You do not need to start with the biggest website. We can begin with what matters most, then add more when it makes sense.",
+      noteLabel: "Budget-friendly plan",
+      noteText: "Start with a clear scope, then upgrade only when it helps.",
+      noteLink: "Talk about options",
+    },
+    process: {
+      builderEyebrow: "Quick builder",
+      builderTitle: "Shape your first website idea.",
+      builderText: "Adjust the options and the contact button will include your choices.",
+      pagesLabel: "Pages",
+      pageSingular: "page",
+      pagePlural: "pages",
+      fastOn: "Fast launch on",
+      fastOff: "Fast launch off",
+      timeline: "Estimated timeline",
+      days: "days",
+      detailsEyebrow: "Process pages",
+      detailsTitle: "What happens at each step.",
+      detailsText: "Each part of the project has a purpose, so you always know what we are doing and what comes next.",
+      outcome: "Outcome",
+    },
+    contact: {
+      featureEyebrow: "Before you email",
+      featureTitle: "A better first message gets a better first plan.",
+      featureText: "If you include a few details up front, I can help you choose the right website size faster.",
+      promptTitle: "Are you interested in us?",
+      promptDismiss: "Not yet",
+      promptDismissAria: "Dismiss contact prompt",
+      title: "Let's build your website",
+      text: "Send me a message and I'll help you get started.",
+      button: "Email Me",
+      privacy: "Privacy Policy",
+      emailIntro: "I want help with a website.",
+      emailPages: "Pages",
+      emailFast: "Fast launch",
+      yes: "Yes",
+      no: "No",
+      emailService: "Service",
+    },
+    privacy: {
+      eyebrow: "Privacy Policy",
+      title: "Simple, clear privacy information.",
+      text: "At Ali Arhan Canbaz Web Studio, we respect your privacy and are committed to protecting any information you provide through our website.",
+      updated: "Last updated",
+      date: "June 2026",
+      contact: "Contact us",
+      contactText: "If you have any questions about this Privacy Policy, please contact us at:",
+    },
+  },
+  tr: {
+    languageName: "Turkish",
+    switchLabel: "EN",
+    switchAria: "Dili Ingilizceye cevir",
+    promptTitle: "Siteyi Turkce gormek ister misiniz?",
+    promptText: "Dili simdi Turkce yapabilir ve daha sonra navbar uzerinden tekrar degistirebilirsiniz.",
+    promptAccept: "Turkce kullan",
+    promptDismiss: "Ingilizce kalsin",
+    navStart: "Basla",
+    navLabels: {
+      "/about/": "Hakkimda",
+      "/services/": "Hizmetler",
+      "/work/": "Isler",
+      "/process/": "Surec",
+      "/pricing/": "Fiyatlar",
+    },
+    headers: {
+      about: ["Hakkimda", "Ali Arhan Canbaz ile tanisin.", "Kucuk isletmelerin temiz ve guvenilir bir online gorunume sahip olmasina yardim eden odakli bir web tasarimci."],
+      services: ["Hizmetler", "Her baslangic icin web sitesi yardimi.", "Kucuk baslayin, mevcut sitenizi yenileyin veya ozel alan adiyla yayina alma konusunda destek alin."],
+      work: ["Portfolyo", "Yapabilecegim web sitesi ornekleri.", "Bu studyo icin hazirlanan temiz ve pratik site tarzlarini gosteren bazi proje yonleri."],
+      process: ["Surec", "Fikirden yayindaki siteye net bir yol.", "Her adim projeyi anlasilir, butceye uygun ve kolay incelenebilir tutmak icin tasarlanir."],
+      pricing: ["Fiyatlar", "Dogru boyutla baslayin.", "Mevcut butcenize uygun seviyeyi secin, is hazir oldugunda web sitesini genisletin."],
+      contact: ["Iletisim", "Web sitesi projenizi baslatin.", "Ne istediginizi kisa bir mesajla gonderin, size en dogru ilk adimi secmede yardim edeyim."],
+      privacy: ["Gizlilik", "Gizlilik Politikasi.", "Hangi bilgilerin toplanabilecegini, nasil kullanildigini ve bize nasil ulasabileceginizi aciklayan basit bir sayfa."],
+    },
+    hero: {
+      eyebrow: "Ali Arhan Canbaz Web Studio",
+      titleTop: "Kucuk Isletmeleri Daha",
+      titleBottom: "Guvenilir Gosteren Modern Siteler.",
+      text: "Dukkanlarin, hizmet isletmelerinin ve ureticilerin musterilerine rahatca gonderebilecegi temiz web siteleri hazirliyorum.",
+      about: "Hakkimda",
+      start: "Proje baslat",
+      tools: ["Yerlesimler", "Marka rengi", "Temiz kod"],
+      chips: ["Hizli", "Temiz", "Mobil"],
+      labels: ["UI duzeni", "CSS hareket", "Responsive"],
+      mockEyebrow: "BUYUYEN MARKA",
+      mockTitle: "Guveni hizli kazanan temiz bir web sitesi",
+      mockMeta: "Modern tasarim | Mobil uyumlu | Kolay iletisim",
+      mockButton: "Proje Baslat",
+      stats: [
+        ["Guncellemeler", "Ben siteyi yaparken duzenli ilerleme bilgisi"],
+        ["Responsive", "Telefonlarda ve bilgisayarlarda iyi gorunur"],
+        ["Net", "Musterilerin kolay anladigi sade sayfalar"],
+      ],
+    },
+    about: {
+      featureEyebrow: "Neye onem veriyorum",
+      featureTitle: "Insani bir surecle kullanisli web siteleri.",
+      featureText: "En iyi kucuk isletme siteleri insanlari hizli sekilde yonlendirir. Benim tekrar tekrar onem verdigim fikirler bunlar.",
+      eyebrow: "Hakkimda",
+      titlePrefix: "Merhaba, ben",
+      text: "Lincoln, Nebraska'da yasayan bir ogrenci ve web tasarimciyim. Temiz bir online gorunum isteyen kucuk isletmeler icin modern web siteleri hazirliyorum.",
+    },
+    services: {
+      featureEyebrow: "Hizmet detaylari",
+      featureTitle: "Sadece ana sayfadan fazlasi.",
+      featureText: "Her proje sade kalabilir veya musterilerin bilmesi gerekenlere gore daha kapsamli bir siteye donusebilir.",
+      eyebrow: "Odak sec",
+      title: "Once neye ihtiyaciniz oldugunu secin.",
+    },
+    work: {
+      eyebrow: "Portfolyo yonleri",
+      title: "Sizin icin sekillendirebilecegim proje turleri.",
+      text: "Bunlar farkli isletmelere uyarlanabilecek web sitesi turlerinden orneklerdir.",
+    },
+    budget: {
+      eyebrow: "Esnek butceler",
+      title: "Her butce icin bir baslangic var.",
+      text: "En buyuk web sitesiyle baslamak zorunda degilsiniz. Once en onemli kisimlarla baslayip, mantikli oldugunda daha fazlasini ekleyebiliriz.",
+      noteLabel: "Butce dostu plan",
+      noteText: "Net bir kapsamla baslayin, sadece faydali oldugunda yukseltilir.",
+      noteLink: "Secenekleri konusalim",
+    },
+    process: {
+      builderEyebrow: "Hizli olusturucu",
+      builderTitle: "Ilk web sitesi fikrinizi sekillendirin.",
+      builderText: "Secenekleri ayarlayin; iletisim butonu tercihlerinizi mesaja ekler.",
+      pagesLabel: "Sayfalar",
+      pageSingular: "sayfa",
+      pagePlural: "sayfa",
+      fastOn: "Hizli yayin acik",
+      fastOff: "Hizli yayin kapali",
+      timeline: "Tahmini sure",
+      days: "gun",
+      detailsEyebrow: "Surec sayfalari",
+      detailsTitle: "Her adimda ne olur.",
+      detailsText: "Projenin her parcasinin bir amaci vardir; boylece ne yaptigimizi ve sirada ne oldugunu bilirsiniz.",
+      outcome: "Sonuc",
+    },
+    contact: {
+      featureEyebrow: "E-posta oncesi",
+      featureTitle: "Daha iyi ilk mesaj, daha iyi ilk plan getirir.",
+      featureText: "Bastan birkac detay eklerseniz, dogru web sitesi boyutunu daha hizli secmenize yardim edebilirim.",
+      promptTitle: "Bizimle ilgileniyor musunuz?",
+      promptDismiss: "Simdi degil",
+      promptDismissAria: "Iletisim bildirimini kapat",
+      title: "Web sitenizi birlikte yapalim",
+      text: "Bana mesaj gonderin, baslamaniza yardim edeyim.",
+      button: "E-posta Gonder",
+      privacy: "Gizlilik Politikasi",
+      emailIntro: "Web sitesi konusunda yardim istiyorum.",
+      emailPages: "Sayfalar",
+      emailFast: "Hizli yayin",
+      yes: "Evet",
+      no: "Hayir",
+      emailService: "Hizmet",
+    },
+    privacy: {
+      eyebrow: "Gizlilik Politikasi",
+      title: "Basit ve net gizlilik bilgileri.",
+      text: "Ali Arhan Canbaz Web Studio olarak gizliliginize saygi duyar ve web sitemiz uzerinden sagladiginiz bilgileri korumaya onem veririz.",
+      updated: "Son guncelleme",
+      date: "Haziran 2026",
+      contact: "Bize ulasin",
+      contactText: "Bu Gizlilik Politikasi hakkinda sorulariniz varsa bize su adresten ulasabilirsiniz:",
+    },
+  },
+};
+
+const turkishContent = {
+  services: [
+    {
+      title: "Isletme Web Siteleri",
+      text: "Restoranlar, dukkanlar, salonlar ve hizmet isletmeleri icin temiz, mobil uyumlu sayfalar.",
+      preview: "Parlak bir ana sayfa, hizmet detaylari ve musterilerin size ulasmasi icin net bir yol.",
+    },
+    {
+      title: "Web Sitesi Yenileme",
+      text: "Eski sayfalari daha guvenilir ve kullanimi kolay hissettiren modern sitelere donustururum.",
+      preview: "Daha temiz duzen, daha guclu renkler, daha akici bolumler ve daha iyi mobil bosluklar.",
+    },
+    {
+      title: "Yayin Kurulumu",
+      text: "GitHub, hosting, alan adi ve son canli link adim adim halledilir.",
+      preview: "Yayinlama, canli siteyi kontrol etme ve son linki paylasmayi kolaylastirma destegi.",
+    },
+  ],
+  process: [
+    "Isletmenin neye ihtiyaci oldugunu konusuruz.",
+    "Ilk versiyonu yapar ve canli olarak gosteririm.",
+    "Tasarimi, metni ve iletisim detaylarini duzenleriz.",
+    "Alan adini baglamaya ve siteyi yayina almaya yardim ederim.",
+  ],
+  budgetOptions: [
+    {
+      title: "Basit basla",
+      text: "Ne yaptiginizi, neden guvenilir oldugunuzu ve size nasil ulasilacagini anlatan temel bir tek sayfalik site.",
+      tag: "En iyi ilk adim",
+    },
+    {
+      title: "Siteyi buyut",
+      text: "Is hazir oldugunda ekstra sayfalar, hizmet detaylari, daha guclu gorseller ve daha temiz bolumler ekleyin.",
+      tag: "En esnek",
+    },
+    {
+      title: "Her seyi parlat",
+      text: "Hareket, ozel bolumler, responsive detaylar, yayin destegi ve paylasmadan once son kontroller.",
+      tag: "En kapsamli",
+    },
+  ],
+  processPages: [
+    {
+      step: "01",
+      title: "Dogru boyutu planla",
+      subtitle: "Once web sitesinin gercekten neye ihtiyaci oldugunu belirleriz.",
+      points: [
+        "Ana hedefi seceriz: aramalar, mesajlar, rezervasyonlar veya daha guclu ilk izlenim.",
+        "Simdiki butceye uygun sayfalari belirleriz.",
+        "Isletme detaylari, fotograflar, renkler ve iletisim bilgileri toplanir.",
+      ],
+      outcome: "Her sey yapilmadan once net bir web sitesi kapsami.",
+    },
+    {
+      step: "02",
+      title: "Ilk versiyonu yap",
+      subtitle: "Gizemli bir proje degil, erken gosterilen calisan bir taslak alirsiniz.",
+      points: [
+        "Duzeni, bolumleri ve tasarimin ilk halini olustururum.",
+        "Site yapilirken telefon ve masaustu gorunumleri kontrol edilir.",
+        "Detaylari parlatmadan once yonu inceleyebilirsiniz.",
+      ],
+      outcome: "Gorup yorum yapabileceginiz canli bir ilk versiyon.",
+    },
+    {
+      step: "03",
+      title: "Detaylari parlat",
+      subtitle: "Site bu asamada guvenilir hissettirmeye baslar.",
+      points: [
+        "Bosluklari, metinleri, renkleri ve bolum siralamasini netlestiririz.",
+        "Musterilerin iletisim yolunu daha kolay takip etmesini saglarim.",
+        "Animasyonlar ve gorseller akici ama dikkat dagitmayacak sekilde ayarlanir.",
+      ],
+      outcome: "Paylasmaya hazir hissettiren daha temiz ve keskin bir web sitesi.",
+    },
+    {
+      step: "04",
+      title: "Yayin ve teslim",
+      subtitle: "Son adim siteyi dogru sekilde yayina almaktir.",
+      points: [
+        "Web sitesini yayinlamaya ve canli linki kontrol etmeye yardim ederim.",
+        "Butonlarin, iletisim bilgilerinin ve mobil duzenin calistigindan emin oluruz.",
+        "Musterilere kolayca gonderebileceginiz son linki alirsiniz.",
+      ],
+      outcome: "Yayinda olan bir web sitesi ve basit bir sonraki adim plani.",
+    },
+  ],
+  aboutHighlights: [
+    {
+      title: "Yerel isletme bakisi",
+      text: "Musterilerin gercekten ihtiyac duydugu sayfalara odaklanirim: net hizmetler, hizli guven ve kolay ulasim.",
+    },
+    {
+      title: "Ogrenci uretici enerjisi",
+      text: "Dikkatli ama hizli ilerler, sureci erken paylasir ve projeyi bastan sona anlasilir tutarim.",
+    },
+    {
+      title: "Kullanisli tasarim",
+      text: "Hedef sadece guzel bir ekran degil. Insanlarin tarayabilecegi, guvenebilecegi ve aksiyon alabilecegi bir site.",
+    },
+  ],
+  serviceHighlights: [
+    {
+      title: "Baslangic siteleri",
+      text: "Hikayeniz, hizmetleriniz, iletisim yolu ve mobil uyumlu duzenle parlatilmis tek sayfalik site.",
+    },
+    {
+      title: "Sayfa genisletme",
+      text: "Hazir oldugunuzda hizmetler, isler, SSS veya rezervasyon detaylari icin ayri sayfalar ekleyin.",
+    },
+    {
+      title: "Yayin temizligi",
+      text: "Paylasmadan once alan adi kurulumu, son link kontrolleri, metadata, sitemap ve temel arama kurulumu.",
+    },
+  ],
+  portfolioProjects: [
+    {
+      title: "Mahalle hizmet sitesi",
+      text: "Guclu hero, hizmet kartlari, proje sureci ve e-posta cagrisi olan temiz bir hizmet isletmesi duzeni.",
+    },
+    {
+      title: "Uretici portfolyosu",
+      text: "Hakkinda, isler ve iletisim yollarini iceren daha net bir kisisel marka sayfasi.",
+    },
+    {
+      title: "Hizli yayin landing page",
+      text: "Hizli sekilde guvenilir gorunmesi ve mesaj toplaması gereken kucuk isletmeler icin odakli sayfa.",
+    },
+  ],
+  contactDetails: [
+    {
+      title: "En iyi ilk mesaj",
+      text: "Sitenin hangi is icin oldugunu, istediginiz sayfalari ve alan adiniz olup olmadigini yazin.",
+    },
+    {
+      title: "Sonra ne olur",
+      text: "Once basit bir kapsam secmeye yardim ederim, sonra sadece mantikli oldugunda daha fazla sayfa ekleriz.",
+    },
+    {
+      title: "Proje uyumu",
+      text: "Bu surec kucuk isletmeler, ogrenci projeleri, ureticiler ve netlik isteyen yerel hizmetler icin uygundur.",
+    },
+  ],
+  privacySections: [
+    {
+      title: "Topladigimiz bilgiler",
+      items: ["Ad", "E-posta adresi", "Telefon numarasi", "Isletme bilgileri", "Mesajda kendi isteginizle verdiginiz bilgiler"],
+    },
+    {
+      title: "Bilgilerinizi nasil kullaniriz",
+      items: ["Sorulara cevap vermek", "Web tasarim hizmetleri sunmak", "Projeler ve destek hakkinda iletisim kurmak", "Hizmetlerimizi iyilestirmek"],
+    },
+    {
+      title: "Bilgi paylasimi",
+      text: "Kisisel bilgilerinizi ucuncu taraflara satmayiz, kiralamayiz veya takas etmeyiz. Isimizi yurutmek icin gerekli oldugunda hosting, odeme veya e-posta hizmetleri gibi guvenilir servis saglayicilarla bilgi paylasabiliriz.",
+    },
+    {
+      title: "Musteri isletme adlari",
+      text: "Birlikte calisirsak, projeyi anlatmak veya is orneklerimizi gostermek icin isletme adinizi web sitemizde kullanabiliriz.",
+    },
+    {
+      title: "Veri guvenligi",
+      text: "Bilgilerinizi yetkisiz erisim, aciklama veya kotuye kullanimdan korumak icin makul onlemler aliriz.",
+    },
+    {
+      title: "Ucuncu taraf hizmetler",
+      text: "Web sitemiz ucuncu taraf web sitelerine baglantilar icerebilir. Bu sitelerin gizlilik uygulamalarindan sorumlu degiliz.",
+    },
+    {
+      title: "Cerezler",
+      text: "Web sitemiz kullanici deneyimini iyilestirmek ve trafik analiz etmek icin cerezler veya benzer teknolojiler kullanabilir. Cerezleri tarayici ayarlarinizdan kapatabilirsiniz.",
+    },
+    {
+      title: "Haklariniz",
+      text: "Kisisel bilgileriniz icin erisim, duzeltme veya silme talep etmek uzere bizimle iletisime gecebilirsiniz.",
+    },
+    {
+      title: "Politika degisiklikleri",
+      text: "Bu Gizlilik Politikasini zaman zaman guncelleyebiliriz. Degisiklikler bu sayfada yeni tarih ile yayinlanir.",
+    },
+  ],
+};
+
 const fadeUp = {
   hidden: { opacity: 0, y: 36 },
   visible: {
@@ -851,7 +1271,7 @@ function PlansSection() {
   );
 }
 
-function PrivacyPolicy() {
+function PrivacyPolicy({ copy, sections }) {
   return (
     <section className="section privacySection">
       <motion.div
@@ -862,19 +1282,17 @@ function PrivacyPolicy() {
         viewport={viewport}
       >
         <div className="privacySummary">
-          <p className="eyebrow">Privacy Policy</p>
-          <h2>Simple, clear privacy information.</h2>
-          <p>
-            At Ali Arhan Canbaz Web Studio, we respect your privacy and are committed to protecting any information you provide through our website.
-          </p>
+          <p className="eyebrow">{copy.eyebrow}</p>
+          <h2>{copy.title}</h2>
+          <p>{copy.text}</p>
           <div className="privacyMeta">
-            <span>Last updated</span>
-            <strong>June 2026</strong>
+            <span>{copy.updated}</span>
+            <strong>{copy.date}</strong>
           </div>
         </div>
 
         <div className="privacyGrid">
-          {privacySections.map((section) => (
+          {sections.map((section) => (
             <article className="privacyCard" key={section.title}>
               <h3>{section.title}</h3>
               {section.text && <p>{section.text}</p>}
@@ -893,8 +1311,8 @@ function PrivacyPolicy() {
         </div>
 
         <div className="privacyContact">
-          <span>Contact us</span>
-          <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+          <span>{copy.contact}</span>
+          <p>{copy.contactText}</p>
           <a href="mailto:aliarhancanbaz@gmail.com">aliarhancanbaz@gmail.com</a>
         </div>
       </motion.div>
@@ -904,6 +1322,14 @@ function PrivacyPolicy() {
 
 function App() {
   const [isBright, setIsBright] = useState(false);
+  const [language, setLanguage] = useState(() => {
+    if (typeof window === "undefined") return "en";
+    return window.localStorage.getItem("site-language") === "tr" ? "tr" : "en";
+  });
+  const [showLanguagePrompt, setShowLanguagePrompt] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !window.localStorage.getItem("site-language") && window.localStorage.getItem("language-prompt-seen") !== "true";
+  });
   const [activeService, setActiveService] = useState(0);
   const [pageCount, setPageCount] = useState(3);
   const [fastLaunch, setFastLaunch] = useState(false);
@@ -916,6 +1342,17 @@ function App() {
   const { scrollYProgress } = useScroll();
   const heroVisualY = useTransform(scrollYProgress, [0, 0.3], [0, -54]);
   const heroBackdropY = useTransform(scrollYProgress, [0, 0.35], [0, 90]);
+  const isTurkish = language === "tr";
+  const copy = languageCopy[language];
+  const localizedServices = isTurkish ? turkishContent.services : services;
+  const localizedProcess = isTurkish ? turkishContent.process : process;
+  const localizedBudgetOptions = isTurkish ? turkishContent.budgetOptions : budgetOptions;
+  const localizedProcessPages = isTurkish ? turkishContent.processPages : processPages;
+  const localizedAboutHighlights = isTurkish ? turkishContent.aboutHighlights : aboutHighlights;
+  const localizedServiceHighlights = isTurkish ? turkishContent.serviceHighlights : serviceHighlights;
+  const localizedPortfolioProjects = isTurkish ? turkishContent.portfolioProjects : portfolioProjects;
+  const localizedContactDetails = isTurkish ? turkishContent.contactDetails : contactDetails;
+  const localizedPrivacySections = isTurkish ? turkishContent.privacySections : privacySections;
 
   const projectTimeline = useMemo(() => {
     const baseDays = pageCount <= 2 ? 4 : pageCount <= 4 ? 7 : 10;
@@ -925,8 +1362,20 @@ function App() {
 
   const emailSubject = encodeURIComponent("Website project");
   const emailBody = encodeURIComponent(
-    `Hi Ali Arhan Canbaz,\n\nI want help with a website.\nPages: ${pageCount}\nFast launch: ${fastLaunch ? "Yes" : "No"}\nService: ${services[activeService].title}\n\n`
+    `Hi Ali Arhan Canbaz,\n\n${copy.contact.emailIntro}\n${copy.contact.emailPages}: ${pageCount}\n${copy.contact.emailFast}: ${fastLaunch ? copy.contact.yes : copy.contact.no}\n${copy.contact.emailService}: ${localizedServices[activeService].title}\n\n`
   );
+
+  const switchLanguage = (nextLanguage) => {
+    setLanguage(nextLanguage);
+    window.localStorage.setItem("site-language", nextLanguage);
+    window.localStorage.setItem("language-prompt-seen", "true");
+    setShowLanguagePrompt(false);
+  };
+
+  const dismissLanguagePrompt = () => {
+    window.localStorage.setItem("language-prompt-seen", "true");
+    setShowLanguagePrompt(false);
+  };
 
   const navigateTo = (path, event) => {
     event?.preventDefault();
@@ -961,6 +1410,10 @@ function App() {
     document.body.classList.toggle("themeBrightBody", isBright);
     return () => document.body.classList.remove("themeBrightBody");
   }, [isBright]);
+
+  useEffect(() => {
+    document.documentElement.lang = language === "tr" ? "tr" : "en";
+  }, [language]);
 
   useEffect(() => {
     const handlePopState = () => setCurrentRoute(getRouteFromPath());
@@ -1057,6 +1510,34 @@ function App() {
 
       <motion.div className="scrollProgress" style={{ scaleX: scrollYProgress }} />
 
+      <motion.div
+        className="languagePrompt"
+        role="dialog"
+        aria-modal="false"
+        aria-label={copy.promptTitle}
+        initial={false}
+        animate={{
+          opacity: showLanguagePrompt ? 1 : 0,
+          y: showLanguagePrompt ? 0 : -12,
+          scale: showLanguagePrompt ? 1 : 0.96,
+        }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
+        style={{ pointerEvents: showLanguagePrompt ? "auto" : "none" }}
+      >
+        <div>
+          <strong>{copy.promptTitle}</strong>
+          <p>{copy.promptText}</p>
+        </div>
+        <div className="languagePromptActions">
+          <button type="button" onClick={() => switchLanguage("tr")}>
+            {copy.promptAccept}
+          </button>
+          <button type="button" onClick={dismissLanguagePrompt}>
+            {copy.promptDismiss}
+          </button>
+        </div>
+      </motion.div>
+
       {/* NAVBAR */}
       <nav className="nav">
         <a className="brand" href="/" onClick={(event) => navigateTo("/", event)}>
@@ -1077,7 +1558,7 @@ function App() {
                   className={currentRoute === route.path ? "activeNavLink" : ""}
                   onClick={(event) => navigateTo(route.path, event)}
                 >
-                  {route.label}
+                  {copy.navLabels[route.path] ?? route.label}
                 </a>
               ))}
           </div>
@@ -1086,8 +1567,16 @@ function App() {
             href="/contact/"
             onClick={(event) => navigateTo("/contact/", event)}
           >
-            Start
+            {copy.navStart}
           </a>
+          <button
+            className="languageToggle"
+            type="button"
+            onClick={() => switchLanguage(isTurkish ? "en" : "tr")}
+            aria-label={copy.switchAria}
+          >
+            {copy.switchLabel}
+          </button>
           <button
             className="themeToggle"
             type="button"
@@ -1101,57 +1590,57 @@ function App() {
 
       {isAboutPage && (
         <PageHeader
-          eyebrow="About"
-          title="Meet Ali Arhan Canbaz."
-          text="A focused web designer helping small businesses get a clean, trustworthy online presence."
+          eyebrow={copy.headers.about[0]}
+          title={copy.headers.about[1]}
+          text={copy.headers.about[2]}
         />
       )}
 
       {isServicesPage && (
         <PageHeader
-          eyebrow="Services"
-          title="Website help for every starting point."
-          text="Start small, redesign what you have, or get help launching the final site with a custom domain."
+          eyebrow={copy.headers.services[0]}
+          title={copy.headers.services[1]}
+          text={copy.headers.services[2]}
         />
       )}
 
       {isWorkPage && (
         <PageHeader
-          eyebrow="Portfolio"
-          title="Examples of websites I can build."
-          text="A few project directions that show the kind of clean, practical sites this studio is built for."
+          eyebrow={copy.headers.work[0]}
+          title={copy.headers.work[1]}
+          text={copy.headers.work[2]}
         />
       )}
 
       {isProcessPage && (
         <PageHeader
-          eyebrow="Process"
-          title="A clear path from idea to live website."
-          text="Each step is designed to keep the project understandable, budget-aware, and easy to review."
+          eyebrow={copy.headers.process[0]}
+          title={copy.headers.process[1]}
+          text={copy.headers.process[2]}
         />
       )}
 
       {SHOW_PRICING && isPricingPage && (
         <PageHeader
-          eyebrow="Pricing"
-          title="Start with the right size."
-          text="Pick the level that fits your current budget, then expand the website when the business is ready."
+          eyebrow={copy.headers.pricing[0]}
+          title={copy.headers.pricing[1]}
+          text={copy.headers.pricing[2]}
         />
       )}
 
       {isContactPage && (
         <PageHeader
-          eyebrow="Contact"
-          title="Start your website project."
-          text="Send a quick message with what you need, and I will help you choose the right first step."
+          eyebrow={copy.headers.contact[0]}
+          title={copy.headers.contact[1]}
+          text={copy.headers.contact[2]}
         />
       )}
 
       {isPrivacyPage && (
         <PageHeader
-          eyebrow="Privacy"
-          title="Privacy Policy."
-          text="A simple explanation of what information may be collected, how it is used, and how to contact us."
+          eyebrow={copy.headers.privacy[0]}
+          title={copy.headers.privacy[1]}
+          text={copy.headers.privacy[2]}
         />
       )}
 
@@ -1191,9 +1680,9 @@ function App() {
           </div>
 
           <div className="designLabels">
-            <span>UI layout</span>
-            <span>CSS motion</span>
-            <span>Responsive</span>
+            {copy.hero.labels.map((label) => (
+              <span key={label}>{label}</span>
+            ))}
           </div>
 
           <div className="designGrid">
@@ -1228,41 +1717,40 @@ function App() {
           viewport={viewport}
         >
           <motion.p className="eyebrow" variants={fadeUp}>
-            Ali Arhan Canbaz Web Studio
+            {copy.hero.eyebrow}
           </motion.p>
 
           <motion.h1 className="heroTitle" variants={fadeUp}>
-            Modern Websites That Make<br />
-            Small Businesses Look Legit.
+            {copy.hero.titleTop}<br />
+            {copy.hero.titleBottom}
           </motion.h1>
 
           <motion.p className="heroText" variants={fadeUp}>
-            I help shops, service businesses, and creators get a clean website
-            they can proudly send to customers.
+            {copy.hero.text}
           </motion.p>
 
           <motion.div className="heroActions" variants={fadeUp}>
             <a className="primaryButton" href="/about/" onClick={(event) => navigateTo("/about/", event)}>
-              About me
+              {copy.hero.about}
             </a>
 
             <a className="secondaryButton" href="/contact/" onClick={(event) => navigateTo("/contact/", event)}>
-              Start a project
+              {copy.hero.start}
             </a>
           </motion.div>
 
           <motion.div className="designToolkit" variants={stagger} aria-label="Web design highlights">
             <motion.div className="toolCard" variants={scaleIn} whileHover={{ y: -8 }}>
               <Layers3 size={20} />
-              <span>Layouts</span>
+              <span>{copy.hero.tools[0]}</span>
             </motion.div>
             <motion.div className="toolCard" variants={scaleIn} whileHover={{ y: -8 }}>
               <Palette size={20} />
-              <span>Brand color</span>
+              <span>{copy.hero.tools[1]}</span>
             </motion.div>
             <motion.div className="toolCard" variants={scaleIn} whileHover={{ y: -8 }}>
               <Code2 size={20} />
-              <span>Clean code</span>
+              <span>{copy.hero.tools[2]}</span>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -1281,21 +1769,21 @@ function App() {
             animate={{ y: [0, -12, 0], rotate: [0, 2, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
           >
-            Fast
+            {copy.hero.chips[0]}
           </motion.div>
           <motion.div
             className="floatingChip chipTwo"
             animate={{ y: [0, 14, 0], rotate: [0, -2, 0] }}
             transition={{ duration: 5.2, repeat: Infinity, ease: "easeInOut" }}
           >
-            Clean
+            {copy.hero.chips[1]}
           </motion.div>
           <motion.div
             className="floatingChip chipThree"
             animate={{ y: [0, -10, 0], rotate: [0, -3, 0] }}
             transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
           >
-            Mobile
+            {copy.hero.chips[2]}
           </motion.div>
 
           <motion.div
@@ -1331,16 +1819,16 @@ function App() {
             </div>
 
             <div className="mockHero">
-              <p>GROWING BRAND</p>
-              <h2>A clean website that wins trust fast</h2>
-              <span>Modern design | Mobile ready | Easy contact</span>
+              <p>{copy.hero.mockEyebrow}</p>
+              <h2>{copy.hero.mockTitle}</h2>
+              <span>{copy.hero.mockMeta}</span>
 
               <motion.button
                 onClick={scrollToContact}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Start a Project
+                {copy.hero.mockButton}
               </motion.button>
             </div>
 
@@ -1362,18 +1850,18 @@ function App() {
         viewport={viewport}
       >
         <motion.div variants={scaleIn} whileHover={{ y: -6 }}>
-          <strong>Updates</strong>
-          <span>Regular progress updates while I build</span>
+          <strong>{copy.hero.stats[0][0]}</strong>
+          <span>{copy.hero.stats[0][1]}</span>
         </motion.div>
 
         <motion.div variants={scaleIn} whileHover={{ y: -6 }}>
-          <strong>Responsive</strong>
-          <span>Looks good on phones and computers</span>
+          <strong>{copy.hero.stats[1][0]}</strong>
+          <span>{copy.hero.stats[1][1]}</span>
         </motion.div>
 
         <motion.div variants={scaleIn} whileHover={{ y: -6 }}>
-          <strong>Clear</strong>
-          <span>Simple pages customers understand</span>
+          <strong>{copy.hero.stats[2][0]}</strong>
+          <span>{copy.hero.stats[2][1]}</span>
         </motion.div>
       </motion.section>
         </>
@@ -1381,10 +1869,10 @@ function App() {
 
       {isAboutPage && (
         <PageFeatureGrid
-          eyebrow="What I care about"
-          title="Useful websites with a human process."
-          text="The best small-business websites make people feel oriented quickly. These are the ideas I keep coming back to."
-          items={aboutHighlights}
+          eyebrow={copy.about.featureEyebrow}
+          title={copy.about.featureTitle}
+          text={copy.about.featureText}
+          items={localizedAboutHighlights}
         />
       )}
 
@@ -1397,24 +1885,21 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          <p className="eyebrow">About me</p>
+          <p className="eyebrow">{copy.about.eyebrow}</p>
           <h2>
-            Hi, I'm <span className="goldName">Ali Arhan Canbaz</span>.
+            {copy.about.titlePrefix} <span className="goldName">Ali Arhan Canbaz</span>.
           </h2>
-          <p>
-            I'm a web designer based in Lincoln, Nebraska and a student.
-            I build modern websites for small businesses that want a clean online presence.
-          </p>
+          <p>{copy.about.text}</p>
         </motion.div>
       </section>
       )}
 
       {isServicesPage && (
         <PageFeatureGrid
-          eyebrow="Service details"
-          title="More than just a homepage."
-          text="Each project can stay lean or grow into a fuller site depending on what customers need to know."
-          items={serviceHighlights}
+          eyebrow={copy.services.featureEyebrow}
+          title={copy.services.featureTitle}
+          text={copy.services.featureText}
+          items={localizedServiceHighlights}
         />
       )}
 
@@ -1428,8 +1913,8 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          <p className="eyebrow">Pick a focus</p>
-          <h2>Choose what you need first.</h2>
+          <p className="eyebrow">{copy.services.eyebrow}</p>
+          <h2>{copy.services.title}</h2>
         </motion.div>
 
         <motion.div
@@ -1439,7 +1924,7 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          {services.map((s, i) => (
+          {localizedServices.map((s, i) => (
             <motion.button
               key={s.title}
               type="button"
@@ -1461,10 +1946,10 @@ function App() {
 
       {isWorkPage && (
         <PageFeatureGrid
-          eyebrow="Portfolio directions"
-          title="Project types I can shape for you."
-          text="These are examples of the kinds of websites I can build and adapt for different businesses."
-          items={portfolioProjects}
+          eyebrow={copy.work.eyebrow}
+          title={copy.work.title}
+          text={copy.work.text}
+          items={localizedPortfolioProjects}
         />
       )}
 
@@ -1478,11 +1963,9 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          <p className="eyebrow">Flexible budgets</p>
-          <h2>There is something for every budget.</h2>
-          <p>
-            You do not need to start with the biggest website. We can begin with what matters most, then add more when it makes sense.
-          </p>
+          <p className="eyebrow">{copy.budget.eyebrow}</p>
+          <h2>{copy.budget.title}</h2>
+          <p>{copy.budget.text}</p>
         </motion.div>
 
         <motion.div
@@ -1492,7 +1975,7 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          {budgetOptions.map((option, index) => (
+          {localizedBudgetOptions.map((option, index) => (
             <motion.article
               className="budgetCard"
               key={option.title}
@@ -1515,11 +1998,11 @@ function App() {
           viewport={viewport}
         >
           <div>
-            <span>Budget-friendly plan</span>
-            <strong>Start with a clear scope, then upgrade only when it helps.</strong>
+            <span>{copy.budget.noteLabel}</span>
+            <strong>{copy.budget.noteText}</strong>
           </div>
           <a href="/contact/" onClick={(event) => navigateTo("/contact/", event)}>
-            Talk about options
+            {copy.budget.noteLink}
           </a>
         </motion.div>
       </section>
@@ -1549,23 +2032,21 @@ function App() {
           viewport={viewport}
         >
           <div>
-            <p className="eyebrow">Quick builder</p>
-            <h2>Shape your first website idea.</h2>
-            <p>
-              Adjust the options and the contact button will include your choices.
-            </p>
+            <p className="eyebrow">{copy.process.builderEyebrow}</p>
+            <h2>{copy.process.builderTitle}</h2>
+            <p>{copy.process.builderText}</p>
           </div>
 
           <div className="builderControls">
             <div className="sliderHeader">
-              <label htmlFor="pageCount">Pages</label>
+              <label htmlFor="pageCount">{copy.process.pagesLabel}</label>
               <motion.strong
                 key={pageCount}
                 initial={{ y: 8, opacity: 0, scale: 0.92 }}
                 animate={{ y: 0, opacity: 1, scale: 1 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
               >
-                {pageCount} page{pageCount === 1 ? "" : "s"}
+                {pageCount} {pageCount === 1 ? copy.process.pageSingular : copy.process.pagePlural}
               </motion.strong>
             </div>
 
@@ -1609,12 +2090,12 @@ function App() {
               type="button"
               onClick={() => setFastLaunch((value) => !value)}
             >
-              {fastLaunch ? "Fast launch on" : "Fast launch off"}
+              {fastLaunch ? copy.process.fastOn : copy.process.fastOff}
             </button>
           </div>
 
           <div className="builderResult">
-            <span>Estimated timeline</span>
+            <span>{copy.process.timeline}</span>
             <motion.strong
               id="timelineEstimate"
               key={projectTimeline}
@@ -1622,7 +2103,7 @@ function App() {
               animate={{ y: 0, opacity: 1, scale: 1 }}
               transition={{ type: "spring", stiffness: 250, damping: 20 }}
             >
-              {projectTimeline} days
+              {projectTimeline} {copy.process.days}
             </motion.strong>
             <div className="timelinePulse" aria-hidden="true">
               <span></span>
@@ -1639,7 +2120,7 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          {process.map((step, i) => (
+          {localizedProcess.map((step, i) => (
             <motion.li key={step} variants={fadeLeft}>
               <span>{String(i + 1).padStart(2, "0")}</span>
               {step}
@@ -1659,11 +2140,9 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          <p className="eyebrow">Process pages</p>
-          <h2>What happens at each step.</h2>
-          <p>
-            Each part of the project has a purpose, so you always know what we are doing and what comes next.
-          </p>
+          <p className="eyebrow">{copy.process.detailsEyebrow}</p>
+          <h2>{copy.process.detailsTitle}</h2>
+          <p>{copy.process.detailsText}</p>
         </motion.div>
 
         <motion.div
@@ -1673,7 +2152,7 @@ function App() {
           whileInView="visible"
           viewport={viewport}
         >
-          {processPages.map((page) => (
+          {localizedProcessPages.map((page) => (
             <motion.article
               className="processPageCard"
               key={page.title}
@@ -1691,7 +2170,7 @@ function App() {
                 ))}
               </ul>
               <div className="processOutcome">
-                <span>Outcome</span>
+                <span>{copy.process.outcome}</span>
                 <p>{page.outcome}</p>
               </div>
             </motion.article>
@@ -1702,14 +2181,14 @@ function App() {
 
       {isContactPage && (
         <PageFeatureGrid
-          eyebrow="Before you email"
-          title="A better first message gets a better first plan."
-          text="If you include a few details up front, I can help you choose the right website size faster."
-          items={contactDetails}
+          eyebrow={copy.contact.featureEyebrow}
+          title={copy.contact.featureTitle}
+          text={copy.contact.featureText}
+          items={localizedContactDetails}
         />
       )}
 
-      {isPrivacyPage && <PrivacyPolicy />}
+      {isPrivacyPage && <PrivacyPolicy copy={copy.privacy} sections={localizedPrivacySections} />}
 
       {/* CONTACT */}
       {(isHome || isWorkPage || (SHOW_PRICING && isPricingPage) || isContactPage) && (
@@ -1733,24 +2212,24 @@ function App() {
             }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
-            <strong>Are you interested in us?</strong>
-            <button type="button" onClick={() => setShowContactPrompt(false)} aria-label="Dismiss contact prompt">
-              Not yet
+            <strong>{copy.contact.promptTitle}</strong>
+            <button type="button" onClick={() => setShowContactPrompt(false)} aria-label={copy.contact.promptDismissAria}>
+              {copy.contact.promptDismiss}
             </button>
           </motion.div>
 
-          <h2>Let's build your website</h2>
-          <p>Send me a message and I'll help you get started.</p>
+          <h2>{copy.contact.title}</h2>
+          <p>{copy.contact.text}</p>
 
           <a
             className="contactButton"
             href={`mailto:aliarhancanbaz@gmail.com?subject=${emailSubject}&body=${emailBody}`}
           >
-            Email Me
+            {copy.contact.button}
           </a>
           <div className="legalLinks" aria-label="Legal links">
             <a href="/privacy/" onClick={(event) => navigateTo("/privacy/", event)}>
-              Privacy Policy
+              {copy.contact.privacy}
             </a>
           </div>
         </motion.div>

@@ -267,10 +267,32 @@ main.themeBright .cursorOrbitTwo {
   background: linear-gradient(135deg, #0e7490, #1d4ed8 58%, #312e81);
 }
 
-main.themeBright .themeToggle {
+main.themeBright .themeToggle,
+main.themeBright .languageToggle {
   color: #102033;
   border-color: rgba(15, 23, 42, 0.14);
   background: rgba(255, 255, 255, 0.78);
+}
+
+main.themeBright .languagePrompt {
+  color: #102033;
+  border-color: rgba(14, 116, 144, 0.14);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(224, 242, 254, 0.74)),
+    rgba(255, 255, 255, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 24px 70px rgba(15, 23, 42, 0.12);
+}
+
+main.themeBright .languagePrompt p {
+  color: #334155;
+}
+
+main.themeBright .languagePromptActions button:last-child {
+  color: #334155;
+  border-color: rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 main.themeBright .heroTitle {
@@ -987,7 +1009,8 @@ a {
   transform: translateY(-1px);
 }
 
-.themeToggle {
+.themeToggle,
+.languageToggle {
   display: grid;
   width: 42px;
   height: 42px;
@@ -1007,6 +1030,68 @@ a {
   border-color: rgba(94, 234, 212, 0.42);
   background: rgba(15, 23, 42, 0.96);
   transform: translateY(-2px);
+}
+
+.languageToggle {
+  color: #5eead4;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+}
+
+.languagePrompt {
+  position: fixed;
+  top: 92px;
+  right: max(16px, calc((100vw - 1120px) / 2));
+  z-index: 30;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  width: min(520px, calc(100vw - 32px));
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 18px;
+  padding: 16px;
+  color: #f8fafc;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.72)),
+    rgba(2, 6, 23, 0.78);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(20px);
+}
+
+.languagePrompt strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.languagePrompt p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+}
+
+.languagePromptActions {
+  display: flex;
+  gap: 8px;
+}
+
+.languagePromptActions button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 12px;
+  padding: 0 12px;
+  color: #07111c;
+  background: #5eead4;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.languagePromptActions button:last-child {
+  color: #e2e8f0;
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .pageHeader {
@@ -3907,6 +3992,18 @@ a {
   .navActions {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .languagePrompt {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  .languagePromptActions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .navLinks {
