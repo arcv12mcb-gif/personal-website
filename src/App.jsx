@@ -971,11 +971,13 @@ function ThreeWebsiteLab() {
   const mountRef = useRef(null);
   const [activeMode, setActiveMode] = useState(modelModes[0].id);
   const [hoveredPart, setHoveredPart] = useState("Hero");
+  const [isSceneReady, setIsSceneReady] = useState(false);
   const currentMode = modelModes.find((mode) => mode.id === activeMode) ?? modelModes[0];
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return undefined;
+    setIsSceneReady(false);
     let disposed = false;
     let cleanupScene = () => {};
     let loadObserver = null;
@@ -986,7 +988,7 @@ function ThreeWebsiteLab() {
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-      camera.position.set(0, 0.35, 6.4);
+      camera.position.set(0, 0.42, 6.7);
 
       const isSmallViewport = window.matchMedia("(max-width: 700px)").matches;
       const renderer = new THREE.WebGLRenderer({
@@ -1021,6 +1023,25 @@ function ThreeWebsiteLab() {
       emissiveIntensity: 0.18,
       roughness: 0.35,
     });
+    const softPanelMaterial = new THREE.MeshPhysicalMaterial({
+      color: currentMode.color,
+      transparent: true,
+      opacity: 0.12,
+      roughness: 0.12,
+      metalness: 0.03,
+      transmission: 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const ringMaterial = new THREE.MeshStandardMaterial({
+      color: currentMode.color,
+      emissive: currentMode.color,
+      emissiveIntensity: 0.22,
+      roughness: 0.5,
+      metalness: 0.22,
+      transparent: true,
+      opacity: 0.56,
+    });
 
     const shell = new THREE.Mesh(new THREE.BoxGeometry(3.35, 2.35, 0.16), baseMaterial);
     shell.position.z = -0.16;
@@ -1033,6 +1054,27 @@ function ThreeWebsiteLab() {
     const topBar = new THREE.Mesh(new THREE.BoxGeometry(2.86, 0.12, 0.08), accentMaterial);
     topBar.position.set(0, 0.92, 0.16);
     group.add(topBar);
+
+    const backPanel = new THREE.Mesh(new THREE.BoxGeometry(3.85, 2.82, 0.04), softPanelMaterial);
+    backPanel.position.set(0.18, -0.06, -0.46);
+    backPanel.rotation.z = -0.06;
+    group.add(backPanel);
+
+    const sidePanel = new THREE.Mesh(new THREE.BoxGeometry(1.05, 1.72, 0.05), softPanelMaterial.clone());
+    sidePanel.position.set(1.7, -0.26, 0.34);
+    sidePanel.rotation.set(0.02, -0.32, 0.08);
+    group.add(sidePanel);
+
+    const orbitRing = new THREE.Mesh(new THREE.TorusGeometry(1.96, 0.012, 10, 96), ringMaterial);
+    orbitRing.position.set(0.1, -0.03, 0.02);
+    orbitRing.rotation.set(0.86, 0.24, -0.16);
+    group.add(orbitRing);
+
+    const orbitRingSmall = new THREE.Mesh(new THREE.TorusGeometry(1.16, 0.01, 10, 80), ringMaterial.clone());
+    orbitRingSmall.material.opacity = 0.42;
+    orbitRingSmall.position.set(-0.82, 0.28, 0.72);
+    orbitRingSmall.rotation.set(1.1, -0.42, 0.28);
+    group.add(orbitRingSmall);
 
     const featureMeshes = [];
     currentMode.blocks.forEach((block) => {
@@ -1071,6 +1113,16 @@ function ThreeWebsiteLab() {
     const flowLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), lineMaterial);
     group.add(flowLine);
 
+    const floorGrid = new THREE.GridHelper(7, 18, currentMode.color, 0x334155);
+    floorGrid.position.set(0, -1.78, -0.54);
+    floorGrid.rotation.x = Math.PI * 0.5;
+    const gridMaterials = Array.isArray(floorGrid.material) ? floorGrid.material : [floorGrid.material];
+    gridMaterials.forEach((material) => {
+      material.transparent = true;
+      material.opacity = 0.18;
+    });
+    scene.add(floorGrid);
+
     const particleGeometry = new THREE.BufferGeometry();
     const particleCount = isSmallViewport ? 64 : 110;
     const particlePositions = new Float32Array(particleCount * 3);
@@ -1091,19 +1143,25 @@ function ThreeWebsiteLab() {
     );
     scene.add(particles);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.78));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
     const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
     keyLight.position.set(2.6, 3.2, 4.5);
     scene.add(keyLight);
     const rimLight = new THREE.PointLight(currentMode.color, 2.2, 8);
     rimLight.position.set(-2.4, -1.4, 2.4);
     scene.add(rimLight);
+    const spotlight = new THREE.SpotLight(0xffffff, 1.8, 9, Math.PI / 5, 0.56, 1.2);
+    spotlight.position.set(-2.6, 3.4, 4.2);
+    spotlight.target.position.set(0.4, 0.0, 0.2);
+    scene.add(spotlight);
+    scene.add(spotlight.target);
 
     const pointer = new THREE.Vector2(0, 0);
     const raycaster = new THREE.Raycaster();
     let frameId = 0;
     let isRunning = false;
     let lastHoveredName = currentMode.blocks[0].name;
+    let sceneReadyReported = false;
 
     const resize = () => {
       const rect = mount.getBoundingClientRect();
@@ -1140,6 +1198,10 @@ function ThreeWebsiteLab() {
       group.position.y = Math.sin(elapsed * 0.75) * 0.05;
       particles.rotation.y += 0.0018;
       flowLine.rotation.z = Math.sin(elapsed * 0.9) * 0.02;
+      orbitRing.rotation.z += 0.0024;
+      orbitRingSmall.rotation.y -= 0.002;
+      backPanel.position.y = -0.06 + Math.sin(elapsed * 0.6) * 0.035;
+      floorGrid.position.x = Math.sin(elapsed * 0.35) * 0.08;
 
       raycaster.setFromCamera(pointer, camera);
       const hit = raycaster.intersectObjects(featureMeshes)[0];
@@ -1155,6 +1217,10 @@ function ThreeWebsiteLab() {
       }
 
       renderer.render(scene, camera);
+      if (!sceneReadyReported && !disposed) {
+        sceneReadyReported = true;
+        setIsSceneReady(true);
+      }
     };
 
     const startRenderLoop = () => {
@@ -1200,6 +1266,7 @@ function ThreeWebsiteLab() {
           }
         }
       });
+      setIsSceneReady(false);
       renderer.domElement.remove();
     };
     };
@@ -1248,8 +1315,15 @@ function ThreeWebsiteLab() {
         </div>
       </div>
 
-      <div className="threeSceneWrap">
+      <div className={`threeSceneWrap ${isSceneReady ? "sceneReady" : ""}`}>
+        <div className="splineSpotlight" aria-hidden="true" />
         <div className="threeCanvasMount" ref={mountRef} />
+        {!isSceneReady && (
+          <div className="threeSceneLoader" aria-live="polite">
+            <span></span>
+            <strong>Loading 3D</strong>
+          </div>
+        )}
         <div className="sceneReadout">
           <span>Selected part</span>
           <strong>{hoveredPart}</strong>

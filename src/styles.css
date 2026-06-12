@@ -531,6 +531,34 @@ main.themeBright .motionShaderOverlay strong {
   color: #102033;
 }
 
+main.themeBright .threeSceneWrap {
+  border-color: rgba(14, 116, 144, 0.16);
+  background:
+    radial-gradient(circle at 32% 12%, rgba(255, 255, 255, 0.9), transparent 26%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(224, 242, 254, 0.58)),
+    rgba(255, 255, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 30px 90px rgba(15, 23, 42, 0.12);
+}
+
+main.themeBright .threeSceneWrap::before {
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+}
+
+main.themeBright .threeSceneLoader {
+  color: #102033;
+  border-color: rgba(14, 116, 144, 0.14);
+  background: rgba(255, 255, 255, 0.76);
+}
+
+main.themeBright .splineSpotlight {
+  opacity: 0.62;
+  background: radial-gradient(ellipse at 28% 14%, rgba(14, 116, 144, 0.28), transparent 48%);
+}
+
 main.themeBright .budgetTag,
 main.themeBright .processPageTop span,
 main.themeBright .activeLaunch,
@@ -915,6 +943,24 @@ main::after {
 
   to {
     background-position: 112px 56px;
+  }
+}
+
+@keyframes spotlightSweep {
+  0% {
+    opacity: 0.38;
+    transform: translate3d(-4%, -2%, 0) rotate(-18deg) scale(0.96);
+  }
+
+  100% {
+    opacity: 0.7;
+    transform: translate3d(12%, 8%, 0) rotate(-10deg) scale(1.08);
+  }
+}
+
+@keyframes loaderSpin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -3687,13 +3733,59 @@ a {
 
 .threeSceneWrap {
   min-height: clamp(430px, 62vh, 650px);
-  overflow: visible;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.13);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.12), transparent 22%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.88), rgba(15, 23, 42, 0.64)),
+    rgba(2, 6, 23, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 34px 100px rgba(2, 6, 23, 0.32);
+  isolation: isolate;
+}
+
+.threeSceneWrap::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 62% 48%, #000 0 38%, transparent 72%);
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.splineSpotlight {
+  position: absolute;
+  top: -38%;
+  left: -18%;
+  z-index: 1;
+  width: 92%;
+  height: 78%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.28), transparent 58%);
+  filter: blur(34px);
+  opacity: 0.52;
+  transform: rotate(-18deg);
+  pointer-events: none;
+  animation: spotlightSweep 8s ease-in-out infinite alternate;
 }
 
 .threeCanvasMount {
   position: absolute;
-  inset: -8% -7% -7%;
+  inset: -4% -4% -5%;
+  z-index: 2;
   cursor: grab;
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+
+.sceneReady .threeCanvasMount {
+  opacity: 1;
 }
 
 .threeCanvasMount canvas {
@@ -3702,8 +3794,49 @@ a {
   height: 100%;
 }
 
+.threeSceneLoader {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 4;
+  display: grid;
+  min-width: 152px;
+  place-items: center;
+  gap: 10px;
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: #f8fafc;
+  background: rgba(2, 6, 23, 0.72);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(16px);
+  transform: translate(-50%, -50%);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.sceneReady .threeSceneLoader {
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(0.96);
+  pointer-events: none;
+}
+
+.threeSceneLoader span {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(94, 234, 212, 0.22);
+  border-top-color: #5eead4;
+  border-radius: 999px;
+  animation: loaderSpin 0.9s linear infinite;
+}
+
+.threeSceneLoader strong {
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .sceneReadout {
   position: absolute;
+  z-index: 3;
   right: clamp(8px, 4vw, 44px);
   bottom: clamp(18px, 5vw, 56px);
   min-width: 180px;
