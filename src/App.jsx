@@ -134,7 +134,7 @@ const portfolioProjects = [
   },
   {
     title: "Fast launch landing page",
-    text: "A focused launch page for a small business that needs to look credible quickly and collect messages.",
+    text: "A focused launch page for a business that needs to look credible quickly and collect messages.",
   },
 ];
 
@@ -211,7 +211,7 @@ const contactDetails = [
   },
   {
     title: "Project fit",
-    text: "This works best for small businesses, student projects, creators, and local services that need clarity.",
+    text: "This works best for businesses, student projects, creators, and local services that need clarity.",
   },
 ];
 
@@ -336,7 +336,7 @@ const pageMeta = {
   },
   "/about/": {
     title: "About Ali Arhan Canbaz | Web Designer",
-    description: "Meet Ali Arhan Canbaz, a Lincoln-based web designer building modern small business websites.",
+    description: "Meet Ali Arhan Canbaz, a Lincoln-based web designer building modern business websites.",
   },
   "/services/": {
     title: "Website Services | Ali Arhan Canbaz",
@@ -352,7 +352,7 @@ const pageMeta = {
   },
   "/pricing/": {
     title: "Website Pricing | Ali Arhan Canbaz",
-    description: "Simple website package options for small businesses and creators.",
+    description: "Simple website package options for businesses and creators.",
   },
   "/contact/": {
     title: "Contact Ali Arhan Canbaz | Start a Website Project",
@@ -382,7 +382,7 @@ const languageCopy = {
       "/pricing/": "Pricing",
     },
     headers: {
-      about: ["About", "Meet Ali Arhan Canbaz.", "A focused web designer helping small businesses get a clean, trustworthy online presence."],
+      about: ["About", "Meet Ali Arhan Canbaz.", "A focused web designer helping businesses get a clean, trustworthy online presence."],
       services: ["Services", "Website help for every starting point.", "Start small, redesign what you have, or get help launching the final site with a custom domain."],
       work: ["Portfolio", "Examples of websites I can build.", "A few project directions that show the kind of clean, practical sites this studio is built for."],
       process: ["Process", "A clear path from idea to live website.", "Each step is designed to keep the project understandable, budget-aware, and easy to review."],
@@ -396,7 +396,7 @@ const languageCopy = {
       loaderText: "Please wait",
       ribbon: ["Design", "Build", "Launch", "Trust", "Mobile", "Fast"],
       titleTop: "Modern Websites That Make",
-      titleBottom: "Small Businesses Look Legit.",
+      titleBottom: "Businesses Look Legit.",
       text: "I help shops, service businesses, and creators get a clean website they can proudly send to customers.",
       about: "About me",
       start: "Start a project",
@@ -416,10 +416,10 @@ const languageCopy = {
     about: {
       featureEyebrow: "What I care about",
       featureTitle: "Useful websites with a human process.",
-      featureText: "The best small-business websites make people feel oriented quickly. These are the ideas I keep coming back to.",
+      featureText: "The best business websites make people feel oriented quickly. These are the ideas I keep coming back to.",
       eyebrow: "About me",
       titlePrefix: "Hi, I'm",
-      text: "I'm a web designer based in Lincoln, Nebraska and a student. I build modern websites for small businesses that want a clean online presence.",
+      text: "I'm a web designer based in Lincoln, Nebraska and a student. I build modern websites for businesses that want a clean online presence.",
     },
     services: {
       featureEyebrow: "Service details",
