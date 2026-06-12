@@ -270,34 +270,37 @@ const modelModes = [
   {
     id: "business",
     label: "Business site",
+    labelTr: "Isletme sitesi",
     color: 0x5eead4,
     accent: 0xfacc15,
     blocks: [
-      { name: "Hero", position: [-1.05, 0.72, 0.22], scale: [1.28, 0.34, 0.1] },
-      { name: "Services", position: [0.82, 0.28, 0.42], scale: [0.72, 0.46, 0.12] },
-      { name: "Contact", position: [-0.08, -0.62, 0.64], scale: [1.68, 0.28, 0.14] },
+      { name: "Hero", nameTr: "Hero alani", position: [-1.05, 0.72, 0.22], scale: [1.28, 0.34, 0.1] },
+      { name: "Services", nameTr: "Hizmetler", position: [0.82, 0.28, 0.42], scale: [0.72, 0.46, 0.12] },
+      { name: "Contact", nameTr: "Iletisim", position: [-0.08, -0.62, 0.64], scale: [1.68, 0.28, 0.14] },
     ],
   },
   {
     id: "mobile",
     label: "Mobile flow",
+    labelTr: "Mobil akis",
     color: 0x38bdf8,
     accent: 0xfb7185,
     blocks: [
-      { name: "Home", position: [-0.82, 0.44, 0.28], scale: [0.58, 1.28, 0.12] },
-      { name: "Service", position: [0.08, 0.12, 0.56], scale: [0.58, 1.28, 0.12] },
-      { name: "Email", position: [0.98, -0.22, 0.84], scale: [0.58, 1.28, 0.12] },
+      { name: "Home", nameTr: "Ana sayfa", position: [-0.82, 0.44, 0.28], scale: [0.58, 1.28, 0.12] },
+      { name: "Service", nameTr: "Hizmet", position: [0.08, 0.12, 0.56], scale: [0.58, 1.28, 0.12] },
+      { name: "Email", nameTr: "E-posta", position: [0.98, -0.22, 0.84], scale: [0.58, 1.28, 0.12] },
     ],
   },
   {
     id: "launch",
     label: "Launch system",
+    labelTr: "Yayin sistemi",
     color: 0xfacc15,
     accent: 0x5eead4,
     blocks: [
-      { name: "Design", position: [-1.08, 0.42, 0.26], scale: [0.72, 0.72, 0.12] },
-      { name: "Build", position: [0.05, 0.05, 0.58], scale: [0.82, 0.82, 0.14] },
-      { name: "Publish", position: [1.16, -0.36, 0.92], scale: [0.72, 0.72, 0.12] },
+      { name: "Design", nameTr: "Tasarim", position: [-1.08, 0.42, 0.26], scale: [0.72, 0.72, 0.12] },
+      { name: "Build", nameTr: "Kurulum", position: [0.05, 0.05, 0.58], scale: [0.82, 0.82, 0.14] },
+      { name: "Publish", nameTr: "Yayin", position: [1.16, -0.36, 0.92], scale: [0.72, 0.72, 0.12] },
     ],
   },
 ];
@@ -479,6 +482,15 @@ const languageCopy = {
       detailsText: "Each part of the project has a purpose, so you always know what we are doing and what comes next.",
       outcome: "Outcome",
     },
+    three: {
+      eyebrow: "3D experience",
+      title: "Interactive website models with real depth.",
+      text: "Rotate the scene with your cursor, hover the glowing parts, and switch the model to preview different website systems.",
+      controlsLabel: "3D model options",
+      selectedPart: "Selected part",
+      loading: "Loading 3D",
+      sceneLabel: "Interactive 3D website model",
+    },
     contact: {
       featureEyebrow: "Before you email",
       featureTitle: "A better first message gets a better first plan.",
@@ -619,6 +631,15 @@ const languageCopy = {
       detailsTitle: "Her adimda ne olur.",
       detailsText: "Projenin her parcasinin bir amaci vardir; boylece ne yaptigimizi ve sirada ne oldugunu bilirsiniz.",
       outcome: "Sonuc",
+    },
+    three: {
+      eyebrow: "3D deneyim",
+      title: "Gercek derinlik hissi olan interaktif web sitesi modelleri.",
+      text: "Sahneyi imlecinizle cevirin, parlayan parcalarin uzerine gelin ve farkli web sitesi sistemlerini onizleyin.",
+      controlsLabel: "3D model secenekleri",
+      selectedPart: "Secili parca",
+      loading: "3D yukleniyor",
+      sceneLabel: "Interaktif 3D web sitesi modeli",
     },
     contact: {
       featureEyebrow: "E-posta oncesi",
@@ -967,12 +988,17 @@ function LogoMark() {
   );
 }
 
-function ThreeWebsiteLab() {
+function ThreeWebsiteLab({ copy, isTurkish }) {
   const mountRef = useRef(null);
   const [activeMode, setActiveMode] = useState(modelModes[0].id);
-  const [hoveredPart, setHoveredPart] = useState("Hero");
+  const [hoveredPart, setHoveredPart] = useState(modelModes[0].blocks[0].name);
   const [isSceneReady, setIsSceneReady] = useState(false);
   const currentMode = modelModes.find((mode) => mode.id === activeMode) ?? modelModes[0];
+  const nameKey = isTurkish ? "nameTr" : "name";
+  const modeLabelKey = isTurkish ? "labelTr" : "label";
+  const hoveredBlock = currentMode.blocks.find((block) => block.name === hoveredPart) ?? currentMode.blocks[0];
+  const hoveredPartLabel = hoveredBlock[nameKey] ?? hoveredBlock.name;
+  const currentModeLabel = currentMode[modeLabelKey] ?? currentMode.label;
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -1290,15 +1316,13 @@ function ThreeWebsiteLab() {
   }, [activeMode, currentMode]);
 
   return (
-    <section className="threeShowcase" aria-label="Interactive 3D website model">
+    <section className="threeShowcase" aria-label={copy.sceneLabel}>
       <div className="threeCopy">
-        <p className="eyebrow">3D experience</p>
-        <h2>Interactive website models with real depth.</h2>
-        <p>
-          Rotate the scene with your cursor, hover the glowing parts, and switch the model to preview different website systems.
-        </p>
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h2>{copy.title}</h2>
+        <p>{copy.text}</p>
 
-        <div className="modelControls" aria-label="3D model options">
+        <div className="modelControls" aria-label={copy.controlsLabel}>
           {modelModes.map((mode) => (
             <button
               key={mode.id}
@@ -1309,7 +1333,7 @@ function ThreeWebsiteLab() {
                 setHoveredPart(mode.blocks[0].name);
               }}
             >
-              {mode.label}
+              {mode[modeLabelKey] ?? mode.label}
             </button>
           ))}
         </div>
@@ -1321,13 +1345,13 @@ function ThreeWebsiteLab() {
         {!isSceneReady && (
           <div className="threeSceneLoader" aria-live="polite">
             <span></span>
-            <strong>Loading 3D</strong>
+            <strong>{copy.loading}</strong>
           </div>
         )}
         <div className="sceneReadout">
-          <span>Selected part</span>
-          <strong>{hoveredPart}</strong>
-          <small>{currentMode.label}</small>
+          <span>{copy.selectedPart}</span>
+          <strong>{hoveredPartLabel}</strong>
+          <small>{currentModeLabel}</small>
         </div>
       </div>
     </section>
@@ -2298,7 +2322,7 @@ function App() {
       {/* PROCESS */}
       {(isHome || isProcessPage) && (
       <section className="section processShowcase" id="process">
-        <ThreeWebsiteLab />
+        <ThreeWebsiteLab copy={copy.three} isTurkish={isTurkish} />
 
         <motion.div
           className="projectBuilder"
