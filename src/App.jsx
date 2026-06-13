@@ -3,7 +3,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
 import ShaderBackground from "./components/ui/ShaderBackground";
 import MotionShaderPanel from "./components/ui/MotionShaderPanel";
-import FallingPattern from "./components/ui/FallingPattern";
 
 const services = [
   {
@@ -446,18 +445,6 @@ const languageCopy = {
       noteText: "Start with a clear scope, then upgrade only when it helps.",
       noteLink: "Talk about options",
     },
-    editorial: {
-      eyebrow: "Prologue",
-      titleTop: "A website can feel",
-      titleBottom: "like a place to trust.",
-      quote: "When the first screen feels calm, clear, and intentional, people understand the business faster and feel safer taking the next step.",
-      signature: "Modern studio rhythm",
-      details: [
-        ["01", "Atmosphere", "Subtle motion and texture make the page feel alive."],
-        ["02", "Clarity", "Large sections, clean hierarchy, and simple actions keep the story easy to follow."],
-        ["03", "Trust", "Every detail supports the same goal: helping customers believe the business is real."],
-      ],
-    },
     motionLab: {
       eyebrow: "Motion lab",
       title: "A little movement where it earns attention.",
@@ -607,18 +594,6 @@ const languageCopy = {
       noteLabel: "Butce dostu plan",
       noteText: "Net bir kapsamla baslayin, sadece faydali oldugunda yukseltilir.",
       noteLink: "Secenekleri konusalim",
-    },
-    editorial: {
-      eyebrow: "Prolog",
-      titleTop: "Bir web sitesi",
-      titleBottom: "guven veren bir yer gibi hissedebilir.",
-      quote: "Ilk ekran sakin, net ve ozenli hissettiginde insanlar isletmeyi daha hizli anlar ve sonraki adimi atarken daha rahat olur.",
-      signature: "Modern studio ritmi",
-      details: [
-        ["01", "Atmosfer", "Hafif hareket ve doku sayfayi daha canli hissettirir."],
-        ["02", "Netlik", "Buyuk bolumler, temiz hiyerarsi ve sade aksiyonlar hikayeyi kolay takip ettirir."],
-        ["03", "Guven", "Her detay ayni hedefe calisir: musterinin isletmenin gercek olduguna inanmasi."],
-      ],
     },
     motionLab: {
       eyebrow: "Hareket laboratuvari",
@@ -1916,7 +1891,6 @@ function App() {
       {isHome && (
         <>
       <section className="hero" id="home">
-        <FallingPattern className="heroFallingPattern" duration={130} density={1.2} />
         <motion.div className="heroBackdrop" style={{ y: heroBackdropY }} aria-hidden="true">
           <div className="webBlueprint">
             <div className="blueprintTop">
@@ -2121,42 +2095,6 @@ function App() {
           ))}
         </motion.div>
       </section>
-
-      <motion.section
-        className="section editorialDreamSection"
-        variants={stagger}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewport}
-      >
-        <FallingPattern
-          className="editorialFallingPattern"
-          color="rgba(250, 204, 21, 0.34)"
-          backgroundColor="rgba(2, 6, 23, 0.12)"
-          duration={150}
-          density={0.9}
-        />
-        <motion.div className="editorialDreamKicker" variants={fadeUp}>
-          <span>{copy.editorial.eyebrow}</span>
-          <strong>{copy.editorial.signature}</strong>
-        </motion.div>
-        <motion.div className="editorialDreamMain" variants={fadeUp}>
-          <h2>
-            {copy.editorial.titleTop}
-            <span>{copy.editorial.titleBottom}</span>
-          </h2>
-          <p>{copy.editorial.quote}</p>
-        </motion.div>
-        <motion.div className="editorialDreamDetails" variants={stagger}>
-          {copy.editorial.details.map((detail) => (
-            <motion.article key={detail[0]} variants={scaleIn} whileHover={{ y: -6 }}>
-              <span>{detail[0]}</span>
-              <strong>{detail[1]}</strong>
-              <p>{detail[2]}</p>
-            </motion.article>
-          ))}
-        </motion.div>
-      </motion.section>
 
       <motion.section
         className="section motionLabSection"

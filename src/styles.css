@@ -379,12 +379,6 @@ main.themeBright .heroTitle {
   -webkit-background-clip: text;
 }
 
-main.themeBright .heroFallingPattern,
-main.themeBright .editorialFallingPattern {
-  opacity: 0.42;
-  mix-blend-mode: multiply;
-}
-
 main.themeBright .heroBackdrop::before {
   border-color: rgba(15, 23, 42, 0.1);
   background:
@@ -505,28 +499,6 @@ main.themeBright .motionLabSection {
     linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(224, 242, 254, 0.58)),
     rgba(255, 255, 255, 0.72);
   box-shadow: 0 26px 80px rgba(15, 23, 42, 0.09);
-}
-
-main.themeBright .editorialDreamSection {
-  color: #102033;
-  border-color: rgba(14, 116, 144, 0.14);
-  background:
-    radial-gradient(circle at 16% 18%, rgba(14, 165, 233, 0.2), transparent 24%),
-    radial-gradient(circle at 88% 68%, rgba(20, 184, 166, 0.16), transparent 28%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(224, 242, 254, 0.58)),
-    rgba(255, 255, 255, 0.76);
-}
-
-main.themeBright .editorialDreamMain p,
-main.themeBright .editorialDreamDetails p,
-main.themeBright .editorialDreamKicker strong {
-  color: #334155;
-}
-
-main.themeBright .editorialDreamDetails article {
-  border-color: rgba(14, 116, 144, 0.14);
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
 }
 
 main.themeBright .motionLabCopy p:not(.eyebrow),
@@ -2338,42 +2310,6 @@ a {
     rgba(15, 23, 42, 0.72);
 }
 
-.fallingPattern {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: var(--falling-background);
-  pointer-events: none;
-}
-
-.fallingPatternMotion {
-  position: absolute;
-  inset: -8%;
-  opacity: 0;
-  will-change: background-position;
-}
-
-.fallingPatternVeil {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(12px);
-  background-image: radial-gradient(circle at 50% 50%, transparent 0, transparent 2px, var(--falling-background) 2px);
-  background-size: var(--falling-dot-size) var(--falling-dot-size);
-  mask-image: radial-gradient(ellipse at 50% 48%, transparent 0 12%, #000 74%);
-}
-
-.heroFallingPattern {
-  z-index: 0;
-  opacity: 0.36;
-  mix-blend-mode: screen;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
-}
-
-.hero > *:not(.heroFallingPattern) {
-  position: relative;
-  z-index: 1;
-}
-
 .cinematicRibbon {
   width: min(1120px, calc(100% - 32px));
   margin: -18px auto 24px;
@@ -2403,139 +2339,6 @@ a {
   text-transform: uppercase;
   text-shadow: 0 0 22px rgba(94, 234, 212, 0.3);
   white-space: nowrap;
-}
-
-.editorialDreamSection {
-  position: relative;
-  display: grid;
-  grid-template-columns: 0.36fr 1.12fr;
-  gap: clamp(22px, 4vw, 54px);
-  width: min(1280px, calc(100% - 32px));
-  margin: 18px auto 28px;
-  overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.12);
-  border-radius: 16px;
-  padding: clamp(26px, 6vw, 72px);
-  background:
-    radial-gradient(circle at 18% 18%, rgba(94, 234, 212, 0.18), transparent 24%),
-    radial-gradient(circle at 86% 78%, rgba(250, 204, 21, 0.14), transparent 28%),
-    linear-gradient(135deg, rgba(15, 23, 42, 0.86), rgba(2, 6, 23, 0.64));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 34px 100px rgba(2, 6, 23, 0.26);
-}
-
-.editorialDreamSection::after {
-  position: absolute;
-  right: -12%;
-  bottom: -24%;
-  width: min(560px, 52vw);
-  height: min(560px, 52vw);
-  content: "";
-  border: 1px solid rgba(94, 234, 212, 0.16);
-  border-radius: 999px;
-  background: conic-gradient(from 120deg, transparent, rgba(94, 234, 212, 0.12), transparent, rgba(251, 113, 133, 0.1), transparent);
-  animation: ambientMesh 20s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
-.editorialFallingPattern {
-  z-index: 0;
-  opacity: 0.46;
-  mix-blend-mode: screen;
-}
-
-.editorialDreamKicker,
-.editorialDreamMain,
-.editorialDreamDetails {
-  position: relative;
-  z-index: 1;
-}
-
-.editorialDreamKicker {
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 16px;
-  min-height: 100%;
-}
-
-.editorialDreamKicker span {
-  color: #5eead4;
-  font-size: 0.78rem;
-  font-weight: 950;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.editorialDreamKicker strong {
-  max-width: 180px;
-  color: #cbd5e1;
-  font-size: 0.95rem;
-  line-height: 1.25;
-}
-
-.editorialDreamMain {
-  display: grid;
-  gap: 22px;
-}
-
-.editorialDreamMain h2 {
-  max-width: 980px;
-  margin: 0;
-  font-size: clamp(3rem, 8vw, 8.2rem);
-  line-height: 0.86;
-}
-
-.editorialDreamMain h2 span {
-  display: block;
-  color: #f8fafc;
-}
-
-.editorialDreamMain p {
-  max-width: 760px;
-  color: #cbd5e1;
-  font-size: clamp(1.05rem, 2vw, 1.45rem);
-}
-
-.editorialDreamDetails {
-  display: grid;
-  grid-column: 2;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.12);
-  border-radius: 12px;
-  background: rgba(226, 232, 240, 0.12);
-}
-
-.editorialDreamDetails article {
-  min-height: 190px;
-  padding: 22px;
-  background: rgba(2, 6, 23, 0.52);
-  transition: transform 180ms ease, background 180ms ease;
-}
-
-.editorialDreamDetails article:hover {
-  background: rgba(15, 23, 42, 0.78);
-}
-
-.editorialDreamDetails span {
-  color: #5eead4;
-  font-size: 0.86rem;
-  font-weight: 950;
-}
-
-.editorialDreamDetails strong {
-  display: block;
-  margin: 22px 0 8px;
-  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
-  line-height: 1;
-}
-
-.editorialDreamDetails p {
-  margin: 0;
-  color: #cbd5e1;
 }
 
 .motionLabSection {
@@ -4760,19 +4563,6 @@ a {
     padding: 28px;
   }
 
-  .editorialDreamSection {
-    grid-template-columns: 1fr;
-  }
-
-  .editorialDreamDetails {
-    grid-column: 1;
-    grid-template-columns: 1fr;
-  }
-
-  .editorialDreamKicker {
-    min-height: 0;
-  }
-
   .motionLabDeck > div:last-child {
     width: 100%;
   }
@@ -4952,20 +4742,6 @@ a {
     padding: 22px;
   }
 
-  .editorialDreamSection {
-    width: min(100% - 24px, 1120px);
-    padding: 24px;
-  }
-
-  .editorialDreamMain h2 {
-    font-size: clamp(2.65rem, 13vw, 4.2rem);
-    line-height: 0.94;
-  }
-
-  .editorialDreamDetails article {
-    min-height: 150px;
-  }
-
   .motionLabCopy h2 {
     font-size: clamp(2.2rem, 12vw, 3.1rem);
   }
@@ -5134,11 +4910,6 @@ a {
 
   .motionShaderPanel canvas {
     opacity: 0.42;
-  }
-
-  .fallingPatternMotion,
-  .editorialDreamSection::after {
-    animation: none !important;
   }
 
   .introLoaderTrack i {
