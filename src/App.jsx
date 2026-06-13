@@ -4,6 +4,7 @@ import { CheckCircle2, Code2, Gauge, Layers3, Moon, MousePointer2, Palette, Sear
 import ShaderBackground from "./components/ui/ShaderBackground";
 import MotionShaderPanel from "./components/ui/MotionShaderPanel";
 import GooeyText from "./components/ui/GooeyText";
+import ThreeDMarquee from "./components/ui/ThreeDMarquee";
 
 const services = [
   {
@@ -470,6 +471,7 @@ const languageCopy = {
         ["Shader hero", "Pointer-reactive color rings"],
         ["Line field", "Animated web-grid texture"],
       ],
+      marquee: ["3D marquee", "A rotating wall of website sections"],
       chips: ["WebGL", "Liquid glass", "Responsive motion"],
       cta: "See pricing",
     },
@@ -621,6 +623,7 @@ const languageCopy = {
         ["Shader hero", "Imlece tepki veren renk halkalari"],
         ["Cizgi alani", "Hareketli web-grid dokusu"],
       ],
+      marquee: ["3D marquee", "Web sitesi bolumlerinden donen bir vitrin"],
       chips: ["WebGL", "Liquid glass", "Responsive hareket"],
       cta: "Fiyatlara bak",
     },
@@ -2216,6 +2219,9 @@ function App() {
               label={copy.motionLab.cards[1][0]}
               title={copy.motionLab.cards[1][1]}
             />
+          </motion.div>
+          <motion.div className="motionMarqueeWrap" variants={scaleIn} whileHover={{ y: -8, rotate: 0.5 }}>
+            <ThreeDMarquee label={copy.motionLab.marquee[0]} title={copy.motionLab.marquee[1]} />
           </motion.div>
         </motion.div>
       </motion.section>
