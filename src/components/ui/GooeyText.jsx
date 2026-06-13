@@ -7,8 +7,10 @@ function GooeyText({ texts, morphTime = 1, cooldownTime = 0.28, className = "" }
 
   useEffect(() => {
     if (!texts.length) return undefined;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) {
+    const useStaticText =
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      window.matchMedia("(max-width: 760px)").matches;
+    if (useStaticText) {
       if (text1Ref.current && text2Ref.current) {
         text1Ref.current.textContent = texts[0];
         text1Ref.current.style.opacity = "1";

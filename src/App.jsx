@@ -1010,6 +1010,16 @@ function ThreeWebsiteLab({ copy, isTurkish }) {
     let disposed = false;
     let cleanupScene = () => {};
     let loadObserver = null;
+    const useStaticScene = window.matchMedia("(max-width: 760px)").matches;
+
+    if (useStaticScene) {
+      mount.classList.add("threeCanvasStatic");
+      setIsSceneReady(true);
+      return () => {
+        mount.classList.remove("threeCanvasStatic");
+        setIsSceneReady(false);
+      };
+    }
 
     const setupScene = async () => {
       const THREE = await import("three");

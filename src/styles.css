@@ -4971,6 +4971,67 @@ a {
   }
 }
 
+@media (max-width: 760px) {
+  .shaderBackground {
+    display: none;
+  }
+
+  .motionShaderPanel canvas,
+  .threeCanvasMount canvas {
+    display: none;
+  }
+
+  .motionShaderPanel::before {
+    animation: none;
+  }
+
+  .gooeyText {
+    height: 58px;
+  }
+
+  .gooeyTextStage {
+    filter: none !important;
+  }
+
+  .gooeyTextStage span {
+    font-size: clamp(2rem, 11vw, 2.8rem);
+  }
+
+  .threeCanvasStatic {
+    position: absolute;
+    inset: -5% -8%;
+    z-index: 2;
+    display: block;
+    overflow: hidden;
+    border-radius: 20px;
+    background:
+      linear-gradient(90deg, rgba(94, 234, 212, 0.38), rgba(94, 234, 212, 0.06)) 22% 34% / 52% 10px no-repeat,
+      linear-gradient(90deg, rgba(250, 204, 21, 0.34), rgba(250, 204, 21, 0.06)) 18% 54% / 38% 10px no-repeat,
+      radial-gradient(circle at 64% 38%, rgba(94, 234, 212, 0.26), transparent 28%),
+      linear-gradient(135deg, rgba(15, 23, 42, 0.72), rgba(2, 6, 23, 0.42));
+  }
+
+  .threeCanvasStatic::before,
+  .threeCanvasStatic::after {
+    position: absolute;
+    content: "";
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.1);
+  }
+
+  .threeCanvasStatic::before {
+    inset: 18% 14% 24% 16%;
+  }
+
+  .threeCanvasStatic::after {
+    right: 12%;
+    bottom: 18%;
+    width: 34%;
+    height: 24%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

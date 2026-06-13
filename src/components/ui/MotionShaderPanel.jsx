@@ -75,6 +75,14 @@ function MotionShaderPanel({ variant = "rings", title, label }) {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
     const panel = canvas.closest(".motionShaderPanel");
+    const useStaticFallback =
+      window.matchMedia("(max-width: 760px)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (useStaticFallback) {
+      panel?.classList.add("shaderFallbackOnly");
+      return () => panel?.classList.remove("shaderFallbackOnly");
+    }
 
     const gl = canvas.getContext("webgl", { alpha: true, antialias: false });
     if (!gl) {

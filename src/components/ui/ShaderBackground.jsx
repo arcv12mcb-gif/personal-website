@@ -7,6 +7,9 @@ function ShaderBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
+    const isMobile = window.matchMedia("(max-width: 760px)").matches;
+    if (isMobile) return undefined;
+
     const gl = canvas.getContext("webgl", { alpha: true, antialias: false });
     if (!gl) return undefined;
 
