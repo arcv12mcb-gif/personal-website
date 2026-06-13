@@ -74,9 +74,13 @@ function MotionShaderPanel({ variant = "rings", title, label }) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
+    const panel = canvas.closest(".motionShaderPanel");
 
     const gl = canvas.getContext("webgl", { alpha: true, antialias: false });
-    if (!gl) return undefined;
+    if (!gl) {
+      panel?.classList.add("shaderFallbackOnly");
+      return undefined;
+    }
 
     const vertexSource = `
       attribute vec2 aPosition;
@@ -100,13 +104,20 @@ function MotionShaderPanel({ variant = "rings", title, label }) {
 
     const vertexShader = compileShader(gl.VERTEX_SHADER, vertexSource);
     const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
-    if (!vertexShader || !fragmentShader) return undefined;
+    if (!vertexShader || !fragmentShader) {
+      panel?.classList.add("shaderFallbackOnly");
+      return undefined;
+    }
 
     const program = gl.createProgram();
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return undefined;
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      panel?.classList.add("shaderFallbackOnly");
+      return undefined;
+    }
+    panel?.classList.remove("shaderFallbackOnly");
 
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -164,6 +175,7 @@ function MotionShaderPanel({ variant = "rings", title, label }) {
       gl.deleteProgram(program);
       gl.deleteShader(vertexShader);
       gl.deleteShader(fragmentShader);
+      panel?.classList.remove("shaderFallbackOnly");
     };
   }, [variant]);
 
