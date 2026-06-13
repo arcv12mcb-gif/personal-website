@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
 import ShaderBackground from "./components/ui/ShaderBackground";
 import MotionShaderPanel from "./components/ui/MotionShaderPanel";
+import GooeyText from "./components/ui/GooeyText";
 
 const services = [
   {
@@ -449,6 +450,7 @@ const languageCopy = {
       eyebrow: "Motion lab",
       title: "A little movement where it earns attention.",
       text: "Interactive shader details, soft glass buttons, and responsive hover states can make a website feel more premium without slowing down the message.",
+      morphWords: ["Design", "Motion", "Trust", "Launch"],
       cards: [
         ["Shader hero", "Pointer-reactive color rings"],
         ["Line field", "Animated web-grid texture"],
@@ -599,6 +601,7 @@ const languageCopy = {
       eyebrow: "Hareket laboratuvari",
       title: "Dikkati hak eden yerlerde biraz hareket.",
       text: "Interaktif shader detaylari, yumusak cam hissi veren butonlar ve responsive hover durumlari siteyi agirlastirmadan daha premium hissettirebilir.",
+      morphWords: ["Tasarim", "Hareket", "Guven", "Yayin"],
       cards: [
         ["Shader hero", "Imlece tepki veren renk halkalari"],
         ["Cizgi alani", "Hareketli web-grid dokusu"],
@@ -2112,6 +2115,7 @@ function App() {
               <span key={chip}>{chip}</span>
             ))}
           </div>
+          <GooeyText texts={copy.motionLab.morphWords} className="motionLabGooey" />
           <a
             className="primaryButton liquidButton"
             href={SHOW_PRICING ? "/pricing/" : "/contact/"}
