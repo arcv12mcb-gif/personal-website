@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { CheckCircle2, Code2, Layers3, Moon, MousePointer2, Palette, Sun } from "lucide-react";
+import { CheckCircle2, Code2, Gauge, Layers3, Moon, MousePointer2, Palette, SearchCheck, ShieldCheck, Sun } from "lucide-react";
 import ShaderBackground from "./components/ui/ShaderBackground";
 import MotionShaderPanel from "./components/ui/MotionShaderPanel";
 import GooeyText from "./components/ui/GooeyText";
@@ -152,6 +152,21 @@ const pricingPlans = [
   {
     title: "Polish",
     text: "A fuller build with custom sections, motion, launch support, and post-launch cleanup.",
+  },
+];
+
+const qualitySignals = [
+  {
+    title: "Fast on phones",
+    text: "Heavy effects are kept controlled on mobile so the site feels smooth while people scroll and tap.",
+  },
+  {
+    title: "Search-ready basics",
+    text: "Page titles, descriptions, clean structure, sitemap thinking, and natural business wording are part of the build.",
+  },
+  {
+    title: "Trust before flash",
+    text: "Clear service copy, visible contact paths, readable contrast, and calm motion help visitors know what to do next.",
   },
 ];
 
@@ -815,6 +830,20 @@ const turkishContent = {
     {
       title: "Parlatma",
       text: "Ozel bolumler, hareket, yayin destegi ve yayin sonrasi temizlik iceren daha kapsamli kurulum.",
+    },
+  ],
+  qualitySignals: [
+    {
+      title: "Telefonda hizli",
+      text: "Agir efektler mobilde kontrollu tutulur; site kaydirirken ve dokunurken daha akici hisseder.",
+    },
+    {
+      title: "Aramaya hazir temel yapi",
+      text: "Sayfa basliklari, aciklamalar, temiz yapi, sitemap dusuncesi ve dogal isletme dili kurulumun parcasidir.",
+    },
+    {
+      title: "Gosteristen once guven",
+      text: "Net hizmet metni, gorunur iletisim yollari, okunabilir kontrast ve sakin hareket ziyaretcinin sonraki adimi anlamasina yardim eder.",
     },
   ],
   subscriptionPlans: [
@@ -1490,6 +1519,37 @@ function PlansSection({ copy, plans }) {
   );
 }
 
+function QualitySignals({ items }) {
+  const icons = [Gauge, SearchCheck, ShieldCheck];
+
+  return (
+    <motion.section
+      className="section qualitySection"
+      variants={stagger}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewport}
+      aria-label="Website quality signals"
+    >
+      {items.map((item, index) => {
+        const Icon = icons[index] ?? CheckCircle2;
+
+        return (
+          <motion.article className="qualitySignal" key={item.title} variants={scaleIn}>
+            <span className="qualityIcon" aria-hidden="true">
+              <Icon size={21} />
+            </span>
+            <div>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </div>
+          </motion.article>
+        );
+      })}
+    </motion.section>
+  );
+}
+
 function PrivacyPolicy({ copy, sections }) {
   return (
     <section className="section privacySection">
@@ -1575,6 +1635,7 @@ function App() {
   const localizedServiceHighlights = isTurkish ? turkishContent.serviceHighlights : serviceHighlights;
   const localizedPortfolioProjects = isTurkish ? turkishContent.portfolioProjects : portfolioProjects;
   const localizedPricingPlans = isTurkish ? turkishContent.pricingPlans : pricingPlans;
+  const localizedQualitySignals = isTurkish ? turkishContent.qualitySignals : qualitySignals;
   const localizedSubscriptionPlans = isTurkish ? turkishContent.subscriptionPlans : subscriptionPlans;
   const localizedContactDetails = isTurkish ? turkishContent.contactDetails : contactDetails;
   const localizedPrivacySections = isTurkish ? turkishContent.privacySections : privacySections;
@@ -1659,14 +1720,20 @@ function App() {
 
   useEffect(() => {
     const meta = pageMeta[currentRoute] ?? pageMeta["/"];
+    const canonicalUrl = `https://aliarhancanbaz.com${currentRoute === "/" ? "/" : currentRoute}`;
     document.title = meta.title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", canonicalUrl);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", meta.title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", meta.title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", meta.description);
   }, [currentRoute]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setShowContactPrompt(true);
-      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, ENGAGEMENT_PROMPT_DELAY_MS);
 
     return () => window.clearTimeout(timer);
@@ -2176,6 +2243,8 @@ function App() {
           <span>{copy.hero.stats[2][1]}</span>
         </motion.div>
       </motion.section>
+
+      <QualitySignals items={localizedQualitySignals} />
         </>
       )}
 
