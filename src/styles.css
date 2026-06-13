@@ -1892,15 +1892,11 @@ a {
 .langTr .heroBackdrop::after,
 .langTr .webBlueprint,
 .langTr .designGrid {
-  opacity: 0.28;
+  opacity: 0.42;
 }
 
 .langTr .heroVisual {
-  opacity: 0.58;
-}
-
-.langTr .shaderBackground {
-  opacity: 0.28;
+  opacity: 0.72;
 }
 
 .heroActions {
