@@ -476,6 +476,27 @@ main.themeBright .qualityIcon {
   background: rgba(255, 255, 255, 0.76);
 }
 
+main.themeBright .studioPathBoard,
+main.themeBright .studioPathPoint {
+  border-color: rgba(14, 116, 144, 0.16);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(224, 242, 254, 0.68)),
+    rgba(255, 255, 255, 0.8);
+}
+
+main.themeBright .studioPathPoint h3,
+main.themeBright .studioPathIntro h2 {
+  color: #102033;
+}
+
+main.themeBright .studioPathPoint p {
+  color: #334155;
+}
+
+main.themeBright .studioPathPoint span {
+  color: #0e7490;
+}
+
 main.themeBright .primaryButton,
 main.themeBright .contactButton,
 main.themeBright .modelControls .activeModel,
@@ -2806,6 +2827,128 @@ input:focus-visible {
   line-height: 1.6;
 }
 
+.studioPathSection {
+  display: grid;
+  grid-template-columns: 0.72fr 1.28fr;
+  gap: clamp(20px, 4vw, 44px);
+  align-items: center;
+  padding-top: 64px;
+}
+
+.studioPathIntro h2 {
+  max-width: 410px;
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(2.1rem, 4.7vw, 4.45rem);
+  line-height: 0.95;
+}
+
+.studioPathBoard {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 18px;
+  background:
+    linear-gradient(90deg, rgba(94, 234, 212, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(94, 234, 212, 0.07) 1px, transparent 1px),
+    radial-gradient(circle at 70% 22%, rgba(250, 204, 21, 0.18), transparent 28%),
+    rgba(15, 23, 42, 0.68);
+  background-size: 46px 46px, 46px 46px, auto, auto;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 28px 90px rgba(2, 6, 23, 0.25);
+}
+
+.studioPathLine {
+  position: absolute;
+  left: 11%;
+  right: 11%;
+  top: 50%;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5eead4, #facc15, #5eead4);
+  box-shadow: 0 0 26px rgba(94, 234, 212, 0.28);
+  transform: rotate(-8deg);
+  transform-origin: center;
+}
+
+.studioPathLine::after {
+  position: absolute;
+  inset: -4px 80% -4px 0;
+  border-radius: inherit;
+  content: "";
+  background: rgba(255, 255, 255, 0.65);
+  animation: studioPathPulse 4.8s ease-in-out infinite;
+}
+
+@keyframes studioPathPulse {
+  0%,
+  20% {
+    transform: translateX(0);
+  }
+
+  78%,
+  100% {
+    transform: translateX(560%);
+  }
+}
+
+.studioPathPoint {
+  position: absolute;
+  width: min(260px, 40%);
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  border-radius: 16px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.66)),
+    rgba(15, 23, 42, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 48px rgba(2, 6, 23, 0.2);
+}
+
+.studioPathPoint1 {
+  top: 32px;
+  left: 34px;
+}
+
+.studioPathPoint2 {
+  top: 78px;
+  right: 42px;
+}
+
+.studioPathPoint3 {
+  bottom: 48px;
+  left: 18%;
+}
+
+.studioPathPoint4 {
+  right: 30px;
+  bottom: 30px;
+}
+
+.studioPathPoint span {
+  color: #5eead4;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.studioPathPoint h3 {
+  margin: 7px 0 0;
+  color: #f8fafc;
+  font-size: 1.05rem;
+}
+
+.studioPathPoint p {
+  margin: 8px 0 0;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .section,
 .processSection,
 .contact {
@@ -4834,6 +4977,44 @@ input:focus-visible {
     transform: none;
   }
 
+  .studioPathSection {
+    grid-template-columns: 1fr;
+    padding-top: 44px;
+  }
+
+  .studioPathBoard {
+    display: grid;
+    min-height: auto;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .studioPathLine {
+    left: 30px;
+    right: auto;
+    top: 28px;
+    bottom: 28px;
+    width: 3px;
+    height: auto;
+    transform: none;
+  }
+
+  .studioPathLine::after {
+    inset: 0 -4px 80% -4px;
+    animation: none;
+  }
+
+  .studioPathPoint,
+  .studioPathPoint1,
+  .studioPathPoint2,
+  .studioPathPoint3,
+  .studioPathPoint4 {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin-left: 30px;
+  }
+
   .motionLabSection {
     grid-template-columns: 1fr;
     padding: 28px;
@@ -5280,6 +5461,10 @@ input:focus-visible {
 
   .motionShaderPanel canvas {
     opacity: 0.42;
+  }
+
+  .studioPathLine::after {
+    transform: none !important;
   }
 
   .introLoaderTrack i {

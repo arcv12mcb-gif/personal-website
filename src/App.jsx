@@ -171,6 +171,29 @@ const qualitySignals = [
   },
 ];
 
+const studioPath = [
+  {
+    label: "First glance",
+    title: "People understand the offer",
+    text: "The top of the page says what the business does before visitors have to hunt for it.",
+  },
+  {
+    label: "Trust check",
+    title: "They see proof and details",
+    text: "Services, photos, pricing cues, and clear wording answer the questions customers usually have.",
+  },
+  {
+    label: "Action path",
+    title: "Contact feels obvious",
+    text: "Buttons, email links, and forms are placed where the next step naturally belongs.",
+  },
+  {
+    label: "Launch loop",
+    title: "The site can keep improving",
+    text: "After launch, the structure can grow with better pages, search details, and updates.",
+  },
+];
+
 const subscriptionPlans = [
   {
     name: "Go",
@@ -463,6 +486,10 @@ const languageCopy = {
       noteText: "Start with a clear scope, then upgrade only when it helps.",
       noteLink: "Talk about options",
     },
+    studioMap: {
+      eyebrow: "Studio map",
+      title: "Turn a visitor into a clear next step.",
+    },
     motionLab: {
       eyebrow: "Motion lab",
       title: "A little movement where it earns attention.",
@@ -614,6 +641,10 @@ const languageCopy = {
       noteLabel: "Butce dostu plan",
       noteText: "Net bir kapsamla baslayin, sadece faydali oldugunda yukseltilir.",
       noteLink: "Secenekleri konusalim",
+    },
+    studioMap: {
+      eyebrow: "Studyo haritasi",
+      title: "Ziyaretciyi net bir sonraki adima tasiyin.",
     },
     motionLab: {
       eyebrow: "Hareket laboratuvari",
@@ -848,6 +879,28 @@ const turkishContent = {
     {
       title: "Gosteristen once guven",
       text: "Net hizmet metni, gorunur iletisim yollari, okunabilir kontrast ve sakin hareket ziyaretcinin sonraki adimi anlamasina yardim eder.",
+    },
+  ],
+  studioPath: [
+    {
+      label: "Ilk bakis",
+      title: "Ziyaretci teklifi hemen anlar",
+      text: "Sayfanin ust kismi, ziyaretci aramak zorunda kalmadan isletmenin ne yaptigini soyler.",
+    },
+    {
+      label: "Guven kontrolu",
+      title: "Kaniti ve detaylari gorur",
+      text: "Hizmetler, fotograflar, fiyat ipuclari ve net metin musterilerin normalde sordugu sorulari cevaplar.",
+    },
+    {
+      label: "Aksiyon yolu",
+      title: "Iletisim net hisseder",
+      text: "Butonlar, e-posta linkleri ve formlar sonraki adimin dogal oldugu yerlere konur.",
+    },
+    {
+      label: "Yayin dongusu",
+      title: "Site gelismeye devam edebilir",
+      text: "Yayindan sonra yapi daha iyi sayfalar, arama detaylari ve guncellemelerle buyuyebilir.",
     },
   ],
   subscriptionPlans: [
@@ -1555,6 +1608,35 @@ function QualitySignals({ items }) {
   );
 }
 
+function StudioPathMap({ copy, items }) {
+  return (
+    <motion.section
+      className="section studioPathSection"
+      variants={stagger}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewport}
+      aria-label="Website customer path"
+    >
+      <motion.div className="studioPathIntro" variants={fadeUp}>
+        <p className="eyebrow">{copy.eyebrow}</p>
+        <h2>{copy.title}</h2>
+      </motion.div>
+
+      <motion.div className="studioPathBoard" variants={scaleIn}>
+        <div className="studioPathLine" aria-hidden="true" />
+        {items.map((item, index) => (
+          <article className={`studioPathPoint studioPathPoint${index + 1}`} key={item.label}>
+            <span>{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </article>
+        ))}
+      </motion.div>
+    </motion.section>
+  );
+}
+
 function PrivacyPolicy({ copy, sections }) {
   return (
     <section className="section privacySection">
@@ -1641,6 +1723,7 @@ function App() {
   const localizedPortfolioProjects = isTurkish ? turkishContent.portfolioProjects : portfolioProjects;
   const localizedPricingPlans = isTurkish ? turkishContent.pricingPlans : pricingPlans;
   const localizedQualitySignals = isTurkish ? turkishContent.qualitySignals : qualitySignals;
+  const localizedStudioPath = isTurkish ? turkishContent.studioPath : studioPath;
   const localizedSubscriptionPlans = isTurkish ? turkishContent.subscriptionPlans : subscriptionPlans;
   const localizedContactDetails = isTurkish ? turkishContent.contactDetails : contactDetails;
   const localizedPrivacySections = isTurkish ? turkishContent.privacySections : privacySections;
@@ -2253,6 +2336,7 @@ function App() {
       </motion.section>
 
       <QualitySignals items={localizedQualitySignals} />
+      <StudioPathMap copy={copy.studioMap} items={localizedStudioPath} />
         </>
       )}
 
