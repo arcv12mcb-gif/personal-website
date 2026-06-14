@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website may use cookies or similar technologies to improve user experience and analyze website traffic. You can disable cookies through your browser settings.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We do not currently use tracking or advertising cookies.",
   },
   {
     title: "Your rights",
@@ -352,6 +352,20 @@ const modelModes = [
 
 const ENGAGEMENT_PROMPT_DELAY_MS = 20 * 60 * 1000;
 const SHOW_PRICING = true;
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+const getCookie = (name) => {
+  if (typeof document === "undefined") return "";
+  return document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`))
+    ?.split("=")[1] ?? "";
+};
+
+const setPreferenceCookie = (name, value) => {
+  if (typeof document === "undefined") return;
+  document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax`;
+};
 
 const pageRoutes = [
   { path: "/", label: "Home", title: "Home" },
@@ -999,7 +1013,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz kullanici deneyimini iyilestirmek ve trafik analiz etmek icin cerezler veya benzer teknolojiler kullanabilir. Cerezleri tarayici ayarlarinizdan kapatabilirsiniz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Su anda takip veya reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -1695,18 +1709,24 @@ function PrivacyPolicy({ copy, sections }) {
 }
 
 function App() {
-  const [isBright, setIsBright] = useState(false);
+  const [isBright, setIsBright] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return getCookie("site-theme") === "bright";
+  });
   const [isLoadingIntro, setIsLoadingIntro] = useState(() => {
     if (typeof window === "undefined") return true;
-    return window.sessionStorage.getItem("intro-seen") !== "true";
+    return getCookie("intro-seen") !== "true" && window.sessionStorage.getItem("intro-seen") !== "true";
   });
   const [language, setLanguage] = useState(() => {
     if (typeof window === "undefined") return "en";
-    return window.localStorage.getItem("site-language") === "tr" ? "tr" : "en";
+    const storedLanguage = getCookie("site-language") || window.localStorage.getItem("site-language");
+    return storedLanguage === "tr" ? "tr" : "en";
   });
   const [showLanguagePrompt, setShowLanguagePrompt] = useState(() => {
     if (typeof window === "undefined") return false;
-    return !window.localStorage.getItem("site-language") && window.localStorage.getItem("language-prompt-seen") !== "true";
+    const storedLanguage = getCookie("site-language") || window.localStorage.getItem("site-language");
+    const promptSeen = getCookie("language-prompt-seen") === "true" || window.localStorage.getItem("language-prompt-seen") === "true";
+    return !storedLanguage && !promptSeen;
   });
   const [activeService, setActiveService] = useState(0);
   const [pageCount, setPageCount] = useState(3);
@@ -1751,11 +1771,14 @@ function App() {
     setLanguage(nextLanguage);
     window.localStorage.setItem("site-language", nextLanguage);
     window.localStorage.setItem("language-prompt-seen", "true");
+    setPreferenceCookie("site-language", nextLanguage);
+    setPreferenceCookie("language-prompt-seen", "true");
     setShowLanguagePrompt(false);
   };
 
   const dismissLanguagePrompt = () => {
     window.localStorage.setItem("language-prompt-seen", "true");
+    setPreferenceCookie("language-prompt-seen", "true");
     setShowLanguagePrompt(false);
   };
 
@@ -1793,6 +1816,7 @@ function App() {
 
     const timer = window.setTimeout(() => {
       window.sessionStorage.setItem("intro-seen", "true");
+      setPreferenceCookie("intro-seen", "true");
       setIsLoadingIntro(false);
     }, 1450);
 
@@ -1999,7 +2023,13 @@ function App() {
           <button
             className="themeToggle"
             type="button"
-            onClick={() => setIsBright((value) => !value)}
+            onClick={() => {
+              setIsBright((value) => {
+                const nextValue = !value;
+                setPreferenceCookie("site-theme", nextValue ? "bright" : "dark");
+                return nextValue;
+              });
+            }}
             aria-label="Toggle website theme"
           >
             {isBright ? <Moon size={17} /> : <Sun size={17} />}
