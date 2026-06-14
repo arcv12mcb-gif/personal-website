@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { CheckCircle2, Code2, Gauge, Layers3, Moon, MousePointer2, Palette, SearchCheck, ShieldCheck, Sun } from "lucide-react";
+import { CheckCircle2, Code2, Gauge, Languages, Layers3, Moon, MousePointer2, Palette, SearchCheck, ShieldCheck, Sun } from "lucide-react";
 import ShaderBackground from "./components/ui/ShaderBackground";
 import MotionShaderPanel from "./components/ui/MotionShaderPanel";
 import GooeyText from "./components/ui/GooeyText";
@@ -168,6 +168,10 @@ const qualitySignals = [
   {
     title: "Trust before flash",
     text: "Clear service copy, visible contact paths, readable contrast, and calm motion help visitors know what to do next.",
+  },
+  {
+    title: "Many languages",
+    text: "We can build websites in Turkish, Spanish, English, French, German, Russian, Arabic, and more.",
   },
 ];
 
@@ -880,6 +884,10 @@ const turkishContent = {
       title: "Gosteristen once guven",
       text: "Net hizmet metni, gorunur iletisim yollari, okunabilir kontrast ve sakin hareket ziyaretcinin sonraki adimi anlamasina yardim eder.",
     },
+    {
+      title: "Birden fazla dil",
+      text: "Turkce, Ispanyolca, Ingilizce, Fransizca, Almanca, Rusca, Arapca ve daha fazla dilde web sitesi hazirlayabiliriz.",
+    },
   ],
   studioPath: [
     {
@@ -1578,7 +1586,7 @@ function PlansSection({ copy, plans }) {
 }
 
 function QualitySignals({ items }) {
-  const icons = [Gauge, SearchCheck, ShieldCheck];
+  const icons = [Gauge, SearchCheck, ShieldCheck, Languages];
 
   return (
     <motion.section
