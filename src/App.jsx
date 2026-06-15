@@ -479,7 +479,23 @@ const recordVisitorEvent = async (eventType, path = "/") => {
   if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
   if (!["page_view", "email_click"].includes(eventType)) return;
 
+  const visitorId = getVisitorId();
+
   try {
+    if (eventType === "page_view") {
+      await supabaseRequest("/rest/v1/visitor_profiles?on_conflict=visitor_id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "resolution=merge-duplicates,return=minimal",
+        },
+        body: JSON.stringify({
+          visitor_id: visitorId,
+          last_seen: new Date().toISOString(),
+        }),
+      });
+    }
+
     await supabaseRequest("/rest/v1/visitor_events", {
       method: "POST",
       headers: {
@@ -487,7 +503,7 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         Prefer: "return=minimal",
       },
       body: JSON.stringify({
-        visitor_id: getVisitorId(),
+        visitor_id: visitorId,
         event_type: eventType,
         path,
       }),
@@ -497,12 +513,29 @@ const recordVisitorEvent = async (eventType, path = "/") => {
   }
 };
 
+const readVisitorProfileCount = async () => {
+  const response = await supabaseRequest("/rest/v1/visitor_profiles?select=visitor_id", {
+    method: "HEAD",
+    headers: { Prefer: "count=exact" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to read visitor profile count.");
+  }
+
+  const contentRange = response.headers.get("content-range") ?? "0-0/0";
+  return Number(contentRange.split("/")[1] ?? 0);
+};
+
 const readVisitorEventCount = async (eventType, start) => {
   const query = new URLSearchParams({
     select: "id",
     event_type: `eq.${eventType}`,
-    created_at: `gte.${start.toISOString()}`,
   });
+  if (start) {
+    query.set("created_at", `gte.${start.toISOString()}`);
+  }
+
   const response = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`, {
     method: "HEAD",
     headers: { Prefer: "count=exact" },
@@ -529,7 +562,9 @@ const readVisitorEventStats = async () => {
     year: startOfLocalYear(now),
   };
 
-  const [visitsToday, visitsWeek, visitsMonth, visitsYear, emailsToday, emailsWeek, emailsMonth, emailsYear] = await Promise.all([
+  const [allTimeVisitors, allTimeVisits, visitsToday, visitsWeek, visitsMonth, visitsYear, emailsToday, emailsWeek, emailsMonth, emailsYear] = await Promise.all([
+    readVisitorProfileCount(),
+    readVisitorEventCount("page_view"),
     readVisitorEventCount("page_view", ranges.today),
     readVisitorEventCount("page_view", ranges.week),
     readVisitorEventCount("page_view", ranges.month),
@@ -546,7 +581,9 @@ const readVisitorEventStats = async () => {
 
   return {
     status: "ready",
+    allTimeVisitors,
     visits: {
+      allTime: allTimeVisits,
       today: visitsToday,
       week: visitsWeek,
       month: visitsMonth,
@@ -2087,7 +2124,27 @@ function AdminPage({ navigateTo }) {
     if (visitorStats.status === "error") return "Could not load";
     return "Connect Supabase";
   };
+  const uniqueVisitorValue =
+    visitorStats.status === "ready"
+      ? visitorStats.allTimeVisitors
+      : visitorStats.status === "loading"
+        ? "Loading..."
+        : visitorStats.status === "missing"
+          ? "Run SQL setup"
+          : visitorStats.status === "error"
+            ? "Could not load"
+            : "Connect Supabase";
   const adminInsights = [
+    {
+      label: "All-time visitors",
+      value: uniqueVisitorValue,
+      text: "Counts unique browser visitor IDs that have ever loaded the website.",
+    },
+    {
+      label: "All-time page visits",
+      value: statValue("visits", "allTime"),
+      text: "Counts every recorded page visit, including repeat visits.",
+    },
     {
       label: "Turkish visitors",
       value: languageStatsText,

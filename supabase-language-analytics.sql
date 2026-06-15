@@ -55,3 +55,34 @@ create policy "visitor events can be inserted"
   on public.visitor_events
   for insert
   with check (event_type in ('page_view', 'email_click'));
+
+create table if not exists public.visitor_profiles (
+  visitor_id uuid primary key,
+  first_seen timestamptz not null default now(),
+  last_seen timestamptz not null default now()
+);
+
+create index if not exists visitor_profiles_last_seen_idx
+  on public.visitor_profiles (last_seen desc);
+
+alter table public.visitor_profiles enable row level security;
+
+drop policy if exists "visitor profiles are countable" on public.visitor_profiles;
+drop policy if exists "visitor profiles can be inserted" on public.visitor_profiles;
+drop policy if exists "visitor profiles can be updated" on public.visitor_profiles;
+
+create policy "visitor profiles are countable"
+  on public.visitor_profiles
+  for select
+  using (true);
+
+create policy "visitor profiles can be inserted"
+  on public.visitor_profiles
+  for insert
+  with check (true);
+
+create policy "visitor profiles can be updated"
+  on public.visitor_profiles
+  for update
+  using (true)
+  with check (true);
