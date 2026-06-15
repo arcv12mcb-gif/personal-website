@@ -1945,17 +1945,23 @@ function AdminPage({ navigateTo }) {
       status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     }));
 
-    Promise.all([readLanguagePreferenceStats(), readVisitorEventStats()])
-      .then(([languageStats, visitorStats]) => {
-        if (isMounted) {
-          setLanguageStats(languageStats);
-          setVisitorStats(visitorStats);
-        }
+    readLanguagePreferenceStats()
+      .then((stats) => {
+        if (isMounted) setLanguageStats(stats);
       })
       .catch(() => {
         if (isMounted) {
           setLanguageStats({ status: "error", en: 0, tr: 0, total: 0 });
-          setVisitorStats({ status: "error" });
+        }
+      });
+
+    readVisitorEventStats()
+      .then((stats) => {
+        if (isMounted) setVisitorStats(stats);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setVisitorStats({ status: "missing" });
         }
       });
 
@@ -2077,6 +2083,7 @@ function AdminPage({ navigateTo }) {
   const statValue = (group, key) => {
     if (visitorStats.status === "ready") return visitorStats[group][key];
     if (visitorStats.status === "loading") return "Loading...";
+    if (visitorStats.status === "missing") return "Run SQL setup";
     if (visitorStats.status === "error") return "Could not load";
     return "Connect Supabase";
   };
@@ -2104,7 +2111,7 @@ function AdminPage({ navigateTo }) {
     {
       label: "People entered today",
       value: statValue("visits", "today"),
-      text: "Counts page visits recorded since local midnight.",
+      text: visitorStats.status === "missing" ? "Run the updated Supabase SQL file to create visitor_events." : "Counts page visits recorded since local midnight.",
     },
     {
       label: "People entered this week",
