@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences in aggregate. We do not currently use advertising cookies.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences, page visits, and email-button clicks in aggregate. We do not currently use advertising cookies.",
   },
   {
     title: "Your rights",
@@ -461,6 +461,110 @@ const readLanguagePreferenceStats = async () => {
   ]);
 
   return { status: "ready", en, tr, total: en + tr };
+};
+
+const startOfLocalDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const startOfLocalWeek = (date) => {
+  const start = startOfLocalDay(date);
+  const dayOffset = (start.getDay() + 6) % 7;
+  start.setDate(start.getDate() - dayOffset);
+  return start;
+};
+const startOfLocalMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1);
+const startOfLocalYear = (date) => new Date(date.getFullYear(), 0, 1);
+const elapsedDays = (start, end) => Math.max(1, Math.ceil((end - start) / 86400000));
+const formatAverage = (count, days) => (count / days).toFixed(count >= days ? 1 : 2);
+
+const recordVisitorEvent = async (eventType, path = "/") => {
+  if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
+  if (!["page_view", "email_click"].includes(eventType)) return;
+
+  try {
+    await supabaseRequest("/rest/v1/visitor_events", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        visitor_id: getVisitorId(),
+        event_type: eventType,
+        path,
+      }),
+    });
+  } catch {
+    // Analytics should never block normal website behavior.
+  }
+};
+
+const readVisitorEventCount = async (eventType, start) => {
+  const query = new URLSearchParams({
+    select: "id",
+    event_type: `eq.${eventType}`,
+    created_at: `gte.${start.toISOString()}`,
+  });
+  const response = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`, {
+    method: "HEAD",
+    headers: { Prefer: "count=exact" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to read visitor event count.");
+  }
+
+  const contentRange = response.headers.get("content-range") ?? "0-0/0";
+  return Number(contentRange.split("/")[1] ?? 0);
+};
+
+const readVisitorEventStats = async () => {
+  if (!LANGUAGE_ANALYTICS_ENABLED) {
+    return { status: "setup" };
+  }
+
+  const now = new Date();
+  const ranges = {
+    today: startOfLocalDay(now),
+    week: startOfLocalWeek(now),
+    month: startOfLocalMonth(now),
+    year: startOfLocalYear(now),
+  };
+
+  const [visitsToday, visitsWeek, visitsMonth, visitsYear, emailsToday, emailsWeek, emailsMonth, emailsYear] = await Promise.all([
+    readVisitorEventCount("page_view", ranges.today),
+    readVisitorEventCount("page_view", ranges.week),
+    readVisitorEventCount("page_view", ranges.month),
+    readVisitorEventCount("page_view", ranges.year),
+    readVisitorEventCount("email_click", ranges.today),
+    readVisitorEventCount("email_click", ranges.week),
+    readVisitorEventCount("email_click", ranges.month),
+    readVisitorEventCount("email_click", ranges.year),
+  ]);
+
+  const weekDays = elapsedDays(ranges.week, now);
+  const monthDays = elapsedDays(ranges.month, now);
+  const yearDays = elapsedDays(ranges.year, now);
+
+  return {
+    status: "ready",
+    visits: {
+      today: visitsToday,
+      week: visitsWeek,
+      month: visitsMonth,
+      year: visitsYear,
+      weekAverage: formatAverage(visitsWeek, weekDays),
+      monthAverage: formatAverage(visitsMonth, monthDays),
+      yearAverage: formatAverage(visitsYear, yearDays),
+    },
+    emails: {
+      today: emailsToday,
+      week: emailsWeek,
+      month: emailsMonth,
+      year: emailsYear,
+      weekAverage: formatAverage(emailsWeek, weekDays),
+      monthAverage: formatAverage(emailsMonth, monthDays),
+      yearAverage: formatAverage(emailsYear, yearDays),
+    },
+  };
 };
 
 const pageRoutes = [
@@ -1114,7 +1218,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -1820,6 +1924,9 @@ function AdminPage({ navigateTo }) {
     tr: 0,
     total: 0,
   }));
+  const [visitorStats, setVisitorStats] = useState(() => ({
+    status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+  }));
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
@@ -1833,14 +1940,22 @@ function AdminPage({ navigateTo }) {
       ...current,
       status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     }));
+    setVisitorStats((current) => ({
+      ...current,
+      status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+    }));
 
-    readLanguagePreferenceStats()
-      .then((stats) => {
-        if (isMounted) setLanguageStats(stats);
+    Promise.all([readLanguagePreferenceStats(), readVisitorEventStats()])
+      .then(([languageStats, visitorStats]) => {
+        if (isMounted) {
+          setLanguageStats(languageStats);
+          setVisitorStats(visitorStats);
+        }
       })
       .catch(() => {
         if (isMounted) {
           setLanguageStats({ status: "error", en: 0, tr: 0, total: 0 });
+          setVisitorStats({ status: "error" });
         }
       });
 
@@ -1959,6 +2074,12 @@ function AdminPage({ navigateTo }) {
         : languageStats.status === "error"
           ? "Could not load counts"
           : "Connect Supabase";
+  const statValue = (group, key) => {
+    if (visitorStats.status === "ready") return visitorStats[group][key];
+    if (visitorStats.status === "loading") return "Loading...";
+    if (visitorStats.status === "error") return "Could not load";
+    return "Connect Supabase";
+  };
   const adminInsights = [
     {
       label: "Turkish visitors",
@@ -1979,6 +2100,46 @@ function AdminPage({ navigateTo }) {
       label: "This browser",
       value: savedLanguage === "tr" ? "Turkish" : "English",
       text: `Intro animation: ${introSeen}. This card is local to the browser you are using now.`,
+    },
+    {
+      label: "People entered today",
+      value: statValue("visits", "today"),
+      text: "Counts page visits recorded since local midnight.",
+    },
+    {
+      label: "People entered this week",
+      value: statValue("visits", "week"),
+      text: `Daily average: ${statValue("visits", "weekAverage")} visits.`,
+    },
+    {
+      label: "People entered this month",
+      value: statValue("visits", "month"),
+      text: `Daily average: ${statValue("visits", "monthAverage")} visits.`,
+    },
+    {
+      label: "People entered this year",
+      value: statValue("visits", "year"),
+      text: `Daily average: ${statValue("visits", "yearAverage")} visits.`,
+    },
+    {
+      label: "Email button today",
+      value: statValue("emails", "today"),
+      text: "Counts clicks on the email contact button since local midnight.",
+    },
+    {
+      label: "Email button this week",
+      value: statValue("emails", "week"),
+      text: `Daily average: ${statValue("emails", "weekAverage")} clicks.`,
+    },
+    {
+      label: "Email button this month",
+      value: statValue("emails", "month"),
+      text: `Daily average: ${statValue("emails", "monthAverage")} clicks.`,
+    },
+    {
+      label: "Email button this year",
+      value: statValue("emails", "year"),
+      text: `Daily average: ${statValue("emails", "yearAverage")} clicks.`,
     },
   ];
 
@@ -2175,6 +2336,10 @@ function App() {
       recordLanguagePreference(storedLanguage);
     }
   }, [language]);
+
+  useEffect(() => {
+    recordVisitorEvent("page_view", currentRoute);
+  }, [currentRoute]);
 
   useEffect(() => {
     const handlePopState = () => setCurrentRoute(getRouteFromPath());
@@ -3084,6 +3249,7 @@ function App() {
           <a
             className="contactButton"
             href={`mailto:aliarhancanbaz@gmail.com?subject=${emailSubject}&body=${emailBody}`}
+            onClick={() => recordVisitorEvent("email_click", currentRoute)}
           >
             {copy.contact.button}
           </a>
