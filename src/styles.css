@@ -311,6 +311,7 @@ main.themeBright .privacyShell,
 main.themeBright .privacyCard,
 main.themeBright .privacyContact,
 main.themeBright .adminShell,
+main.themeBright .adminInsightCard,
 main.themeBright .adminLinkCard {
   color: #102033;
   border-color: rgba(14, 116, 144, 0.14);
@@ -328,6 +329,7 @@ main.themeBright .privacyCard li,
 main.themeBright .privacyContact p,
 main.themeBright .adminIntro,
 main.themeBright .adminField label,
+main.themeBright .adminInsightCard p,
 main.themeBright .adminLinkCard strong,
 main.themeBright .adminNote,
 main.themeBright .legalLinks a {
@@ -338,12 +340,14 @@ main.themeBright .privacySummary h2,
 main.themeBright .privacyCard h3,
 main.themeBright .privacyMeta strong,
 main.themeBright .adminShell h1,
+main.themeBright .adminInsightCard strong,
 main.themeBright .adminLinkCard span {
   color: #102033;
 }
 
 main.themeBright .privacyMeta,
 main.themeBright .adminField input,
+main.themeBright .adminInsightCard,
 main.themeBright .adminNote,
 main.themeBright .legalLinks {
   border-color: rgba(14, 116, 144, 0.14);
@@ -3752,6 +3756,46 @@ input:focus-visible {
   margin-top: 28px;
 }
 
+.adminInsightGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.adminInsightCard {
+  min-height: 158px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.1), rgba(250, 204, 21, 0.05)),
+    rgba(2, 6, 23, 0.32);
+}
+
+.adminInsightCard span {
+  display: block;
+  color: #5eead4;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.adminInsightCard strong {
+  display: block;
+  margin-top: 10px;
+  color: #f8fafc;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.08;
+}
+
+.adminInsightCard p {
+  margin: 12px 0 0;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
 .adminLinkCard {
   display: grid;
   min-height: 118px;
@@ -5309,6 +5353,10 @@ input:focus-visible {
     flex-direction: column;
   }
 
+  .adminInsightGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .adminGrid {
     grid-template-columns: 1fr;
   }
@@ -5592,6 +5640,10 @@ input:focus-visible {
 
   .adminShell {
     width: min(100% - 24px, 760px);
+  }
+
+  .adminInsightGrid {
+    grid-template-columns: 1fr;
   }
 
   .adminLogout {

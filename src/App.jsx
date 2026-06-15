@@ -1824,6 +1824,32 @@ function AdminPage({ navigateTo }) {
     ["Privacy", "/privacy/", "Check legal copy"],
     ["Contact", "/contact/", "Test the contact path"],
   ];
+  const savedLanguage = getCookie("site-language") || "en";
+  const savedTheme = getCookie("site-theme") === "bright" ? "Light mode" : "Dark mode";
+  const introSeen = getCookie("intro-seen") === "true" ? "Seen" : "Not saved";
+  const languagePromptSeen = getCookie("language-prompt-seen") === "true" ? "Answered" : "Not answered";
+  const adminInsights = [
+    {
+      label: "Turkish preference",
+      value: savedLanguage === "tr" ? "This browser: Turkish" : "This browser: English",
+      text: "Global visitor counts need analytics. Right now the site only saves each visitor's language choice in their own browser.",
+    },
+    {
+      label: "Theme preference",
+      value: savedTheme,
+      text: "Shows the theme saved on this browser with the site preference cookie.",
+    },
+    {
+      label: "Language popup",
+      value: languagePromptSeen,
+      text: "Shows whether this browser already answered the Turkish language popup.",
+    },
+    {
+      label: "Intro animation",
+      value: introSeen,
+      text: "Shows whether this browser already finished the intro loader.",
+    },
+  ];
 
   return (
     <section className="section adminSection">
@@ -1846,6 +1872,16 @@ function AdminPage({ navigateTo }) {
         <p className="adminIntro">
           This is a private shortcut page for checking the important parts of the site quickly.
         </p>
+
+        <div className="adminInsightGrid" aria-label="Website preference information">
+          {adminInsights.map((item) => (
+            <article className="adminInsightCard" key={item.label}>
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
 
         <div className="adminGrid">
           {adminLinks.map(([label, path, text]) => (
