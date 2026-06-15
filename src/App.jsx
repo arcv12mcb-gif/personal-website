@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We do not currently use tracking or advertising cookies.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences in aggregate. We do not currently use advertising cookies.",
   },
   {
     title: "Your rights",
@@ -356,6 +356,9 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const ADMIN_SESSION_KEY = "aaca-admin-unlocked";
 const ADMIN_USERNAME_HASH = "c9c0c94d6dca08474780043d8f8486305d92fbffd1f57f3810f8eff2f4f5dd57";
 const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c71cea108dd23c1";
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/$/, "");
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
+const LANGUAGE_ANALYTICS_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 const getCookie = (name) => {
   if (typeof document === "undefined") return "";
@@ -375,6 +378,89 @@ const hashText = async (value) => {
   return Array.from(new Uint8Array(hashBuffer))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+};
+
+const createVisitorId = () => {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (char) =>
+    (Number(char) ^ (Math.random() * 16) >> (Number(char) / 4)).toString(16)
+  );
+};
+
+const getVisitorId = () => {
+  const existingId = getCookie("site-visitor-id");
+  if (existingId) return existingId;
+
+  const nextId = createVisitorId();
+  setPreferenceCookie("site-visitor-id", nextId);
+  return nextId;
+};
+
+const supabaseRequest = (path, options = {}) => {
+  const headers = {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    ...options.headers,
+  };
+
+  return fetch(`${SUPABASE_URL}${path}`, {
+    ...options,
+    headers,
+  });
+};
+
+const recordLanguagePreference = async (language) => {
+  if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
+  if (!["en", "tr"].includes(language)) return;
+
+  const visitorId = getVisitorId();
+
+  try {
+    await supabaseRequest("/rest/v1/language_preferences?on_conflict=visitor_id", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      },
+      body: JSON.stringify({
+        visitor_id: visitorId,
+        language,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+  } catch {
+    // Analytics should never block the website.
+  }
+};
+
+const readLanguagePreferenceCount = async (language) => {
+  const response = await supabaseRequest(`/rest/v1/language_preferences?select=visitor_id&language=eq.${language}`, {
+    method: "HEAD",
+    headers: { Prefer: "count=exact" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to read language preference count.");
+  }
+
+  const contentRange = response.headers.get("content-range") ?? "0-0/0";
+  return Number(contentRange.split("/")[1] ?? 0);
+};
+
+const readLanguagePreferenceStats = async () => {
+  if (!LANGUAGE_ANALYTICS_ENABLED) {
+    return { status: "setup", en: 0, tr: 0, total: 0 };
+  }
+
+  const [en, tr] = await Promise.all([
+    readLanguagePreferenceCount("en"),
+    readLanguagePreferenceCount("tr"),
+  ]);
+
+  return { status: "ready", en, tr, total: en + tr };
 };
 
 const pageRoutes = [
@@ -1028,7 +1114,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Su anda takip veya reklam cerezleri kullanmiyoruz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -1728,10 +1814,40 @@ function AdminPage({ navigateTo }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+  const [languageStats, setLanguageStats] = useState(() => ({
+    status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+    en: 0,
+    tr: 0,
+    total: 0,
+  }));
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
   });
+
+  useEffect(() => {
+    if (!isUnlocked) return;
+
+    let isMounted = true;
+    setLanguageStats((current) => ({
+      ...current,
+      status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+    }));
+
+    readLanguagePreferenceStats()
+      .then((stats) => {
+        if (isMounted) setLanguageStats(stats);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setLanguageStats({ status: "error", en: 0, tr: 0, total: 0 });
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isUnlocked]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -1827,12 +1943,32 @@ function AdminPage({ navigateTo }) {
   const savedLanguage = getCookie("site-language") || "en";
   const savedTheme = getCookie("site-theme") === "bright" ? "Light mode" : "Dark mode";
   const introSeen = getCookie("intro-seen") === "true" ? "Seen" : "Not saved";
-  const languagePromptSeen = getCookie("language-prompt-seen") === "true" ? "Answered" : "Not answered";
+  const languageStatsText =
+    languageStats.status === "ready"
+      ? `${languageStats.tr} Turkish / ${languageStats.total} total`
+      : languageStats.status === "loading"
+        ? "Loading counts..."
+        : languageStats.status === "error"
+          ? "Could not load counts"
+          : "Connect Supabase";
+  const englishStatsText =
+    languageStats.status === "ready"
+      ? `${languageStats.en} English / ${languageStats.total} total`
+      : languageStats.status === "loading"
+        ? "Loading counts..."
+        : languageStats.status === "error"
+          ? "Could not load counts"
+          : "Connect Supabase";
   const adminInsights = [
     {
-      label: "Turkish preference",
-      value: savedLanguage === "tr" ? "This browser: Turkish" : "This browser: English",
-      text: "Global visitor counts need analytics. Right now the site only saves each visitor's language choice in their own browser.",
+      label: "Turkish visitors",
+      value: languageStatsText,
+      text: "Counts unique browser visitor IDs whose saved language preference is Turkish.",
+    },
+    {
+      label: "English visitors",
+      value: englishStatsText,
+      text: "Counts unique browser visitor IDs whose saved language preference is English.",
     },
     {
       label: "Theme preference",
@@ -1840,14 +1976,9 @@ function AdminPage({ navigateTo }) {
       text: "Shows the theme saved on this browser with the site preference cookie.",
     },
     {
-      label: "Language popup",
-      value: languagePromptSeen,
-      text: "Shows whether this browser already answered the Turkish language popup.",
-    },
-    {
-      label: "Intro animation",
-      value: introSeen,
-      text: "Shows whether this browser already finished the intro loader.",
+      label: "This browser",
+      value: savedLanguage === "tr" ? "Turkish" : "English",
+      text: `Intro animation: ${introSeen}. This card is local to the browser you are using now.`,
     },
   ];
 
@@ -1974,12 +2105,17 @@ function App() {
     window.localStorage.setItem("language-prompt-seen", "true");
     setPreferenceCookie("site-language", nextLanguage);
     setPreferenceCookie("language-prompt-seen", "true");
+    recordLanguagePreference(nextLanguage);
     setShowLanguagePrompt(false);
   };
 
   const dismissLanguagePrompt = () => {
+    setLanguage("en");
+    window.localStorage.setItem("site-language", "en");
     window.localStorage.setItem("language-prompt-seen", "true");
+    setPreferenceCookie("site-language", "en");
     setPreferenceCookie("language-prompt-seen", "true");
+    recordLanguagePreference("en");
     setShowLanguagePrompt(false);
   };
 
@@ -2031,6 +2167,13 @@ function App() {
 
   useEffect(() => {
     document.documentElement.lang = language === "tr" ? "tr" : "en";
+  }, [language]);
+
+  useEffect(() => {
+    const storedLanguage = getCookie("site-language") || window.localStorage.getItem("site-language");
+    if (storedLanguage === "en" || storedLanguage === "tr") {
+      recordLanguagePreference(storedLanguage);
+    }
   }, [language]);
 
   useEffect(() => {
