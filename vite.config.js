@@ -16,6 +16,7 @@ export default defineConfig({
         pricing: resolve(__dirname, "pricing/index.html"),
         contact: resolve(__dirname, "contact/index.html"),
         privacy: resolve(__dirname, "privacy/index.html"),
+        admin: resolve(__dirname, "admin/index.html"),
       },
     },
   },

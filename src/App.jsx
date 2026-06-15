@@ -353,6 +353,9 @@ const modelModes = [
 const ENGAGEMENT_PROMPT_DELAY_MS = 20 * 60 * 1000;
 const SHOW_PRICING = true;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+const ADMIN_SESSION_KEY = "aaca-admin-unlocked";
+const ADMIN_USERNAME_HASH = "c9c0c94d6dca08474780043d8f8486305d92fbffd1f57f3810f8eff2f4f5dd57";
+const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c71cea108dd23c1";
 
 const getCookie = (name) => {
   if (typeof document === "undefined") return "";
@@ -367,6 +370,13 @@ const setPreferenceCookie = (name, value) => {
   document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax`;
 };
 
+const hashText = async (value) => {
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+};
+
 const pageRoutes = [
   { path: "/", label: "Home", title: "Home" },
   { path: "/about/", label: "About", title: "About Ali" },
@@ -376,6 +386,7 @@ const pageRoutes = [
   { path: "/pricing/", label: "Pricing", title: "Pricing", hidden: !SHOW_PRICING },
   { path: "/contact/", label: "Contact", title: "Contact" },
   { path: "/privacy/", label: "Privacy", title: "Privacy Policy" },
+  { path: "/admin/", label: "Admin", title: "Admin", navHidden: true },
 ];
 
 const routeLookup = new Set(pageRoutes.filter((route) => !route.hidden).map((route) => route.path));
@@ -424,6 +435,10 @@ const pageMeta = {
   "/privacy/": {
     title: "Privacy Policy | Ali Arhan Canbaz Web Studio",
     description: "Privacy policy for Ali Arhan Canbaz Web Studio and website project inquiries.",
+  },
+  "/admin/": {
+    title: "Admin | Ali Arhan Canbaz Web Studio",
+    description: "Private admin area for Ali Arhan Canbaz Web Studio.",
   },
 };
 
@@ -1708,6 +1723,156 @@ function PrivacyPolicy({ copy, sections }) {
   );
 }
 
+function AdminPage({ navigateTo }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+  });
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    setIsChecking(true);
+
+    try {
+      const [usernameHash, passwordHash] = await Promise.all([
+        hashText(username.trim()),
+        hashText(password),
+      ]);
+
+      if (usernameHash === ADMIN_USERNAME_HASH && passwordHash === ADMIN_PASSWORD_HASH) {
+        window.sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+        setPassword("");
+        setIsUnlocked(true);
+        return;
+      }
+
+      setError("Username or password is incorrect.");
+    } catch {
+      setError("This browser could not check the login. Please try again.");
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const handleLogout = () => {
+    window.sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    setUsername("");
+    setPassword("");
+    setError("");
+    setIsUnlocked(false);
+  };
+
+  if (!isUnlocked) {
+    return (
+      <section className="section adminSection">
+        <motion.div
+          className="adminShell"
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="adminLock" aria-hidden="true">
+            <ShieldCheck size={28} />
+          </div>
+          <p className="eyebrow">Private access</p>
+          <h1>Admin login</h1>
+          <p className="adminIntro">Enter the studio username and password to open your private shortcuts.</p>
+
+          <form className="adminForm" onSubmit={handleSubmit}>
+            <div className="adminField">
+              <label htmlFor="adminUsername">Username</label>
+              <input
+                id="adminUsername"
+                autoComplete="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                required
+              />
+            </div>
+
+            <div className="adminField">
+              <label htmlFor="adminPassword">Password</label>
+              <input
+                id="adminPassword"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </div>
+
+            {error && <p className="adminError">{error}</p>}
+
+            <button className="primaryButton adminSubmit" type="submit" disabled={isChecking}>
+              {isChecking ? "Checking..." : "Unlock admin"}
+            </button>
+          </form>
+        </motion.div>
+      </section>
+    );
+  }
+
+  const adminLinks = [
+    ["Live website", "/", "Open the homepage"],
+    ["Pricing", "/pricing/", "Review current plans"],
+    ["Privacy", "/privacy/", "Check legal copy"],
+    ["Contact", "/contact/", "Test the contact path"],
+  ];
+
+  return (
+    <section className="section adminSection">
+      <motion.div
+        className="adminShell adminDashboard"
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="adminTopline">
+          <div>
+            <p className="eyebrow">Admin area</p>
+            <h1>Welcome back.</h1>
+          </div>
+          <button className="adminLogout" type="button" onClick={handleLogout}>
+            Log out
+          </button>
+        </div>
+
+        <p className="adminIntro">
+          This is a private shortcut page for checking the important parts of the site quickly.
+        </p>
+
+        <div className="adminGrid">
+          {adminLinks.map(([label, path, text]) => (
+            <a className="adminLinkCard" key={path} href={path} onClick={(event) => navigateTo(path, event)}>
+              <span>{label}</span>
+              <strong>{text}</strong>
+            </a>
+          ))}
+          <a
+            className="adminLinkCard"
+            href="https://github.com/arcv12mcb-gif/personal-website"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>GitHub</span>
+            <strong>Open the website code</strong>
+          </a>
+        </div>
+
+        <p className="adminNote">
+          Note: this is a static website admin page, so do not store client secrets, private files, or payment details here.
+        </p>
+      </motion.div>
+    </section>
+  );
+}
+
 function App() {
   const [isBright, setIsBright] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -1901,6 +2066,7 @@ function App() {
   const isPricingPage = currentRoute === "/pricing/";
   const isContactPage = currentRoute === "/contact/";
   const isPrivacyPage = currentRoute === "/privacy/";
+  const isAdminPage = currentRoute === "/admin/";
 
   return (
     <main
@@ -1993,7 +2159,7 @@ function App() {
         <div className="navActions">
           <div className="navLinks" aria-label="Main pages">
             {pageRoutes
-              .filter((route) => !route.hidden && route.path !== "/" && route.path !== "/contact/" && route.path !== "/privacy/")
+              .filter((route) => !route.hidden && !route.navHidden && route.path !== "/" && route.path !== "/contact/" && route.path !== "/privacy/")
               .map((route) => (
                 <a
                   key={route.path}
@@ -2702,6 +2868,8 @@ function App() {
       )}
 
       {isPrivacyPage && <PrivacyPolicy copy={copy.privacy} sections={localizedPrivacySections} />}
+
+      {isAdminPage && <AdminPage navigateTo={navigateTo} />}
 
       {/* CONTACT */}
       {(isHome || isWorkPage || (SHOW_PRICING && isPricingPage) || isContactPage) && (
