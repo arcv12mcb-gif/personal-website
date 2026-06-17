@@ -662,7 +662,7 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
     select: "created_at,path,referrer,source,timezone",
     event_type: "eq.page_view",
     order: "created_at.desc",
-    limit: "10",
+    limit: "100",
   });
   if (excludedVisitorId) {
     query.set("visitor_id", `neq.${excludedVisitorId}`);
@@ -2236,6 +2236,18 @@ function AdminPage({ navigateTo }) {
           : visitorStats.status === "error"
             ? "Could not load"
             : "Connect Supabase";
+  const topEntrySources =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((sources, entry) => {
+            const source = entry.source || "Direct";
+            sources[source] = (sources[source] ?? 0) + 1;
+            return sources;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
   const adminInsights = [
     {
       label: "All-time visitors",
@@ -2357,12 +2369,24 @@ function AdminPage({ navigateTo }) {
               <p className="eyebrow">Recent entries</p>
               <h2>When and where visitors entered</h2>
             </div>
-            <span>{recentEntries.status === "ready" ? `${recentEntries.entries.length} latest` : "Live data"}</span>
+            <span>{recentEntries.status === "ready" ? `${recentEntries.entries.length} checked` : "Live data"}</span>
           </div>
+
+          {recentEntries.status === "ready" && topEntrySources.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Top entry sources">
+              {topEntrySources.map(([source, count]) => (
+                <article className="adminSourceCard" key={source}>
+                  <span>{source}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "entry" : "entries"}</p>
+                </article>
+              ))}
+            </div>
+          )}
 
           {recentEntries.status === "ready" && recentEntries.entries.length > 0 && (
             <div className="adminEntryList">
-              {recentEntries.entries.map((entry, index) => (
+              {recentEntries.entries.slice(0, 10).map((entry, index) => (
                 <article className="adminEntry" key={`${entry.created_at}-${index}`}>
                   <div>
                     <strong>{formatAdminTime(entry.created_at)}</strong>

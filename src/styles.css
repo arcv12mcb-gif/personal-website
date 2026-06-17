@@ -314,6 +314,7 @@ main.themeBright .adminShell,
 main.themeBright .adminInsightCard,
 main.themeBright .adminRecentPanel,
 main.themeBright .adminEntry,
+main.themeBright .adminSourceCard,
 main.themeBright .adminLinkCard {
   color: #102033;
   border-color: rgba(14, 116, 144, 0.14);
@@ -334,6 +335,7 @@ main.themeBright .adminField label,
 main.themeBright .adminInsightCard p,
 main.themeBright .adminEntry p,
 main.themeBright .adminEntry span,
+main.themeBright .adminSourceCard p,
 main.themeBright .adminRecentEmpty,
 main.themeBright .adminLinkCard strong,
 main.themeBright .adminNote,
@@ -348,6 +350,8 @@ main.themeBright .adminShell h1,
 main.themeBright .adminInsightCard strong,
 main.themeBright .adminRecentHeader h2,
 main.themeBright .adminEntry strong,
+main.themeBright .adminSourceCard strong,
+main.themeBright .adminSourceCard span,
 main.themeBright .adminLinkCard span {
   color: #102033;
 }
@@ -357,6 +361,7 @@ main.themeBright .adminField input,
 main.themeBright .adminInsightCard,
 main.themeBright .adminRecentPanel,
 main.themeBright .adminEntry,
+main.themeBright .adminSourceCard,
 main.themeBright .adminNote,
 main.themeBright .legalLinks {
   border-color: rgba(14, 116, 144, 0.14);
@@ -3863,6 +3868,47 @@ input:focus-visible {
   white-space: nowrap;
 }
 
+.adminSourceGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.adminSourceCard {
+  min-height: 100px;
+  border: 1px solid rgba(226, 232, 240, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.09), rgba(56, 189, 248, 0.05)),
+    rgba(2, 6, 23, 0.24);
+}
+
+.adminSourceCard span {
+  display: block;
+  overflow: hidden;
+  color: #f8fafc;
+  font-size: 0.82rem;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adminSourceCard strong {
+  display: block;
+  margin-top: 8px;
+  color: #5eead4;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.adminSourceCard p {
+  margin: 8px 0 0;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+}
+
 .adminEntryList {
   display: grid;
   gap: 10px;
@@ -5488,6 +5534,10 @@ input:focus-visible {
     grid-template-columns: 1fr;
   }
 
+  .adminSourceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .adminGrid {
     grid-template-columns: 1fr;
   }
@@ -5784,6 +5834,10 @@ input:focus-visible {
   .adminRecentHeader > span {
     width: 100%;
     text-align: center;
+  }
+
+  .adminSourceGrid {
+    grid-template-columns: 1fr;
   }
 
   .adminExclude,
