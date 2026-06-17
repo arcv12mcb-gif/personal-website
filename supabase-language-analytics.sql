@@ -36,6 +36,7 @@ create table if not exists public.visitor_events (
   source text not null default 'Direct',
   country text,
   country_code text,
+  ip_address text,
   timezone text,
   created_at timestamptz not null default now()
 );
@@ -51,6 +52,9 @@ alter table public.visitor_events
 
 alter table public.visitor_events
   add column if not exists country_code text;
+
+alter table public.visitor_events
+  add column if not exists ip_address text;
 
 alter table public.visitor_events
   add column if not exists timezone text;
@@ -86,6 +90,7 @@ create table if not exists public.visitor_profiles (
   visitor_id uuid primary key,
   country text,
   country_code text,
+  ip_address text,
   first_seen timestamptz not null default now(),
   last_seen timestamptz not null default now()
 );
@@ -95,6 +100,9 @@ alter table public.visitor_profiles
 
 alter table public.visitor_profiles
   add column if not exists country_code text;
+
+alter table public.visitor_profiles
+  add column if not exists ip_address text;
 
 create index if not exists visitor_profiles_last_seen_idx
   on public.visitor_profiles (last_seen desc);

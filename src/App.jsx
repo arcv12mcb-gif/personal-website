@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences, page visits, referrer sources, approximate visitor country, browser timezones, and email-button clicks in aggregate. We do not currently use advertising cookies.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID and IP address to count language preferences, page visits, referrer sources, approximate visitor country, browser timezones, and email-button clicks in aggregate. We do not currently use advertising cookies.",
   },
   {
     title: "Your rights",
@@ -513,13 +513,18 @@ const getVisitSource = () => {
 
 const getVisitorCountry = async () => {
   if (typeof window === "undefined") {
-    return { country: "", countryCode: "" };
+    return { country: "", countryCode: "", ipAddress: "" };
   }
 
   const cachedCountry = window.localStorage.getItem("site-country-name");
   const cachedCountryCode = window.localStorage.getItem("site-country-code");
-  if (cachedCountry || cachedCountryCode) {
-    return { country: cachedCountry ?? "", countryCode: cachedCountryCode ?? "" };
+  const cachedIpAddress = window.localStorage.getItem("site-ip-address");
+  if (cachedCountry || cachedCountryCode || cachedIpAddress) {
+    return {
+      country: cachedCountry ?? "",
+      countryCode: cachedCountryCode ?? "",
+      ipAddress: cachedIpAddress ?? "",
+    };
   }
 
   try {
@@ -528,11 +533,13 @@ const getVisitorCountry = async () => {
     const data = await response.json();
     const country = data.country_name ?? data.country ?? "";
     const countryCode = data.country_code ?? "";
+    const ipAddress = data.ip ?? "";
     window.localStorage.setItem("site-country-name", country);
     window.localStorage.setItem("site-country-code", countryCode);
-    return { country, countryCode };
+    window.localStorage.setItem("site-ip-address", ipAddress);
+    return { country, countryCode, ipAddress };
   } catch {
-    return { country: "", countryCode: "" };
+    return { country: "", countryCode: "", ipAddress: "" };
   }
 };
 
@@ -543,7 +550,7 @@ const recordVisitorEvent = async (eventType, path = "/") => {
 
   const visitorId = getVisitorId();
   const { referrer, source } = getVisitSource();
-  const { country, countryCode } = await getVisitorCountry();
+  const { country, countryCode, ipAddress } = await getVisitorCountry();
 
   try {
     if (eventType === "page_view") {
@@ -558,6 +565,7 @@ const recordVisitorEvent = async (eventType, path = "/") => {
           last_seen: new Date().toISOString(),
           country,
           country_code: countryCode,
+          ip_address: ipAddress,
         }),
       });
     }
@@ -576,6 +584,7 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         source,
         country,
         country_code: countryCode,
+        ip_address: ipAddress,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
       }),
     });
@@ -689,7 +698,7 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
   }
 
   const query = new URLSearchParams({
-    select: "created_at,path,referrer,source,country,country_code,timezone",
+    select: "created_at,path,referrer,source,country,country_code,ip_address,timezone",
     event_type: "eq.page_view",
     order: "created_at.desc",
     limit: "100",
@@ -1357,7 +1366,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, yaklasik ziyaretci ulkesini, tarayici saat dilimlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, yaklasik ziyaretci ulkesini, IP adresini, tarayici saat dilimlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -2449,6 +2458,7 @@ function AdminPage({ navigateTo }) {
                   <p>
                     From: {entry.source || "Direct"}
                     {entry.country ? ` | Country: ${entry.country}` : ""}
+                    {entry.ip_address ? ` | IP: ${entry.ip_address}` : ""}
                     {entry.timezone ? ` | Timezone: ${entry.timezone}` : ""}
                   </p>
                 </article>
