@@ -354,6 +354,7 @@ const ENGAGEMENT_PROMPT_DELAY_MS = 20 * 60 * 1000;
 const SHOW_PRICING = true;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const ADMIN_SESSION_KEY = "aaca-admin-unlocked";
+const ANALYTICS_EXCLUDED_COOKIE = "site-analytics-excluded";
 const ADMIN_USERNAME_HASH = "c9c0c94d6dca08474780043d8f8486305d92fbffd1f57f3810f8eff2f4f5dd57";
 const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c71cea108dd23c1";
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/$/, "");
@@ -372,6 +373,8 @@ const setPreferenceCookie = (name, value) => {
   if (typeof document === "undefined") return;
   document.cookie = `${name}=${encodeURIComponent(value)}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax`;
 };
+
+const isAnalyticsExcluded = () => getCookie(ANALYTICS_EXCLUDED_COOKIE) === "true";
 
 const hashText = async (value) => {
   const hashBuffer = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
@@ -414,6 +417,7 @@ const supabaseRequest = (path, options = {}) => {
 
 const recordLanguagePreference = async (language) => {
   if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
+  if (isAnalyticsExcluded()) return;
   if (!["en", "tr"].includes(language)) return;
 
   const visitorId = getVisitorId();
@@ -436,8 +440,16 @@ const recordLanguagePreference = async (language) => {
   }
 };
 
-const readLanguagePreferenceCount = async (language) => {
-  const response = await supabaseRequest(`/rest/v1/language_preferences?select=visitor_id&language=eq.${language}`, {
+const readLanguagePreferenceCount = async (language, excludedVisitorId = "") => {
+  const query = new URLSearchParams({
+    select: "visitor_id",
+    language: `eq.${language}`,
+  });
+  if (excludedVisitorId) {
+    query.set("visitor_id", `neq.${excludedVisitorId}`);
+  }
+
+  const response = await supabaseRequest(`/rest/v1/language_preferences?${query.toString()}`, {
     method: "HEAD",
     headers: { Prefer: "count=exact" },
   });
@@ -450,14 +462,14 @@ const readLanguagePreferenceCount = async (language) => {
   return Number(contentRange.split("/")[1] ?? 0);
 };
 
-const readLanguagePreferenceStats = async () => {
+const readLanguagePreferenceStats = async (excludedVisitorId = "") => {
   if (!LANGUAGE_ANALYTICS_ENABLED) {
     return { status: "setup", en: 0, tr: 0, total: 0 };
   }
 
   const [en, tr] = await Promise.all([
-    readLanguagePreferenceCount("en"),
-    readLanguagePreferenceCount("tr"),
+    readLanguagePreferenceCount("en", excludedVisitorId),
+    readLanguagePreferenceCount("tr", excludedVisitorId),
   ]);
 
   return { status: "ready", en, tr, total: en + tr };
@@ -501,6 +513,7 @@ const getVisitSource = () => {
 
 const recordVisitorEvent = async (eventType, path = "/") => {
   if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
+  if (isAnalyticsExcluded()) return;
   if (!["page_view", "email_click"].includes(eventType)) return;
 
   const visitorId = getVisitorId();
@@ -541,8 +554,13 @@ const recordVisitorEvent = async (eventType, path = "/") => {
   }
 };
 
-const readVisitorProfileCount = async () => {
-  const response = await supabaseRequest("/rest/v1/visitor_profiles?select=visitor_id", {
+const readVisitorProfileCount = async (excludedVisitorId = "") => {
+  const query = new URLSearchParams({ select: "visitor_id" });
+  if (excludedVisitorId) {
+    query.set("visitor_id", `neq.${excludedVisitorId}`);
+  }
+
+  const response = await supabaseRequest(`/rest/v1/visitor_profiles?${query.toString()}`, {
     method: "HEAD",
     headers: { Prefer: "count=exact" },
   });
@@ -555,13 +573,16 @@ const readVisitorProfileCount = async () => {
   return Number(contentRange.split("/")[1] ?? 0);
 };
 
-const readVisitorEventCount = async (eventType, start) => {
+const readVisitorEventCount = async (eventType, start, excludedVisitorId = "") => {
   const query = new URLSearchParams({
     select: "id",
     event_type: `eq.${eventType}`,
   });
   if (start) {
     query.set("created_at", `gte.${start.toISOString()}`);
+  }
+  if (excludedVisitorId) {
+    query.set("visitor_id", `neq.${excludedVisitorId}`);
   }
 
   const response = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`, {
@@ -577,7 +598,7 @@ const readVisitorEventCount = async (eventType, start) => {
   return Number(contentRange.split("/")[1] ?? 0);
 };
 
-const readVisitorEventStats = async () => {
+const readVisitorEventStats = async (excludedVisitorId = "") => {
   if (!LANGUAGE_ANALYTICS_ENABLED) {
     return { status: "setup" };
   }
@@ -591,16 +612,16 @@ const readVisitorEventStats = async () => {
   };
 
   const [allTimeVisitors, allTimeVisits, visitsToday, visitsWeek, visitsMonth, visitsYear, emailsToday, emailsWeek, emailsMonth, emailsYear] = await Promise.all([
-    readVisitorProfileCount(),
-    readVisitorEventCount("page_view"),
-    readVisitorEventCount("page_view", ranges.today),
-    readVisitorEventCount("page_view", ranges.week),
-    readVisitorEventCount("page_view", ranges.month),
-    readVisitorEventCount("page_view", ranges.year),
-    readVisitorEventCount("email_click", ranges.today),
-    readVisitorEventCount("email_click", ranges.week),
-    readVisitorEventCount("email_click", ranges.month),
-    readVisitorEventCount("email_click", ranges.year),
+    readVisitorProfileCount(excludedVisitorId),
+    readVisitorEventCount("page_view", undefined, excludedVisitorId),
+    readVisitorEventCount("page_view", ranges.today, excludedVisitorId),
+    readVisitorEventCount("page_view", ranges.week, excludedVisitorId),
+    readVisitorEventCount("page_view", ranges.month, excludedVisitorId),
+    readVisitorEventCount("page_view", ranges.year, excludedVisitorId),
+    readVisitorEventCount("email_click", ranges.today, excludedVisitorId),
+    readVisitorEventCount("email_click", ranges.week, excludedVisitorId),
+    readVisitorEventCount("email_click", ranges.month, excludedVisitorId),
+    readVisitorEventCount("email_click", ranges.year, excludedVisitorId),
   ]);
 
   const weekDays = elapsedDays(ranges.week, now);
@@ -632,7 +653,7 @@ const readVisitorEventStats = async () => {
   };
 };
 
-const readRecentVisitorEntries = async () => {
+const readRecentVisitorEntries = async (excludedVisitorId = "") => {
   if (!LANGUAGE_ANALYTICS_ENABLED) {
     return { status: "setup", entries: [] };
   }
@@ -643,6 +664,9 @@ const readRecentVisitorEntries = async () => {
     order: "created_at.desc",
     limit: "10",
   });
+  if (excludedVisitorId) {
+    query.set("visitor_id", `neq.${excludedVisitorId}`);
+  }
   const response = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`);
 
   if (!response.ok) {
@@ -2016,6 +2040,10 @@ function AdminPage({ navigateTo }) {
     status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     entries: [],
   }));
+  const [analyticsExcluded, setAnalyticsExcluded] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return isAnalyticsExcluded();
+  });
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
@@ -2025,6 +2053,7 @@ function AdminPage({ navigateTo }) {
     if (!isUnlocked) return;
 
     let isMounted = true;
+    const excludedVisitorId = analyticsExcluded ? getVisitorId() : "";
     setLanguageStats((current) => ({
       ...current,
       status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
@@ -2038,7 +2067,7 @@ function AdminPage({ navigateTo }) {
       status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     }));
 
-    readLanguagePreferenceStats()
+    readLanguagePreferenceStats(excludedVisitorId)
       .then((stats) => {
         if (isMounted) setLanguageStats(stats);
       })
@@ -2048,7 +2077,7 @@ function AdminPage({ navigateTo }) {
         }
       });
 
-    readVisitorEventStats()
+    readVisitorEventStats(excludedVisitorId)
       .then((stats) => {
         if (isMounted) setVisitorStats(stats);
       })
@@ -2058,7 +2087,7 @@ function AdminPage({ navigateTo }) {
         }
       });
 
-    readRecentVisitorEntries()
+    readRecentVisitorEntries(excludedVisitorId)
       .then((entries) => {
         if (isMounted) setRecentEntries(entries);
       })
@@ -2071,7 +2100,7 @@ function AdminPage({ navigateTo }) {
     return () => {
       isMounted = false;
     };
-  }, [isUnlocked]);
+  }, [isUnlocked, analyticsExcluded]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -2105,6 +2134,13 @@ function AdminPage({ navigateTo }) {
     setPassword("");
     setError("");
     setIsUnlocked(false);
+  };
+
+  const toggleAnalyticsExclusion = () => {
+    const nextValue = !analyticsExcluded;
+    getVisitorId();
+    setPreferenceCookie(ANALYTICS_EXCLUDED_COOKIE, nextValue ? "true" : "false");
+    setAnalyticsExcluded(nextValue);
   };
 
   if (!isUnlocked) {
@@ -2286,13 +2322,23 @@ function AdminPage({ navigateTo }) {
             <p className="eyebrow">Admin area</p>
             <h1>Welcome back.</h1>
           </div>
-          <button className="adminLogout" type="button" onClick={handleLogout}>
-            Log out
-          </button>
+          <div className="adminTopActions">
+            <button
+              className={`adminExclude ${analyticsExcluded ? "activeAdminExclude" : ""}`}
+              type="button"
+              onClick={toggleAnalyticsExclusion}
+            >
+              {analyticsExcluded ? "This browser excluded" : "Exclude this browser"}
+            </button>
+            <button className="adminLogout" type="button" onClick={handleLogout}>
+              Log out
+            </button>
+          </div>
         </div>
 
         <p className="adminIntro">
           This is a private shortcut page for checking the important parts of the site quickly.
+          {analyticsExcluded ? " This browser is excluded from the analytics shown below." : ""}
         </p>
 
         <div className="adminInsightGrid" aria-label="Website preference information">

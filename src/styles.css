@@ -364,6 +364,7 @@ main.themeBright .legalLinks {
 }
 
 main.themeBright .adminLock,
+main.themeBright .adminExclude,
 main.themeBright .adminLogout {
   color: #0e7490;
   border-color: rgba(14, 116, 144, 0.18);
@@ -3747,6 +3748,15 @@ input:focus-visible {
   margin-top: 4px;
 }
 
+.adminTopActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.adminExclude,
 .adminLogout {
   min-height: 42px;
   border: 1px solid rgba(226, 232, 240, 0.14);
@@ -3756,6 +3766,18 @@ input:focus-visible {
   background: rgba(2, 6, 23, 0.34);
   font-weight: 850;
   cursor: pointer;
+}
+
+.adminExclude {
+  color: #07111c;
+  border-color: rgba(94, 234, 212, 0.28);
+  background: #5eead4;
+}
+
+.activeAdminExclude {
+  color: #f8fafc;
+  border-color: rgba(250, 204, 21, 0.32);
+  background: rgba(250, 204, 21, 0.14);
 }
 
 .adminGrid {
@@ -5448,6 +5470,16 @@ input:focus-visible {
     flex-direction: column;
   }
 
+  .adminTopActions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .adminExclude,
+  .adminLogout {
+    flex: 1 1 180px;
+  }
+
   .adminInsightGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5754,6 +5786,7 @@ input:focus-visible {
     text-align: center;
   }
 
+  .adminExclude,
   .adminLogout {
     width: 100%;
   }
