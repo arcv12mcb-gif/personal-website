@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences, page visits, referrer sources, browser timezones, and email-button clicks in aggregate. We do not currently use advertising cookies.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences, page visits, referrer sources, approximate visitor country, browser timezones, and email-button clicks in aggregate. We do not currently use advertising cookies.",
   },
   {
     title: "Your rights",
@@ -511,6 +511,31 @@ const getVisitSource = () => {
   }
 };
 
+const getVisitorCountry = async () => {
+  if (typeof window === "undefined") {
+    return { country: "", countryCode: "" };
+  }
+
+  const cachedCountry = window.localStorage.getItem("site-country-name");
+  const cachedCountryCode = window.localStorage.getItem("site-country-code");
+  if (cachedCountry || cachedCountryCode) {
+    return { country: cachedCountry ?? "", countryCode: cachedCountryCode ?? "" };
+  }
+
+  try {
+    const response = await fetch("https://ipapi.co/json/");
+    if (!response.ok) throw new Error("Country lookup failed.");
+    const data = await response.json();
+    const country = data.country_name ?? data.country ?? "";
+    const countryCode = data.country_code ?? "";
+    window.localStorage.setItem("site-country-name", country);
+    window.localStorage.setItem("site-country-code", countryCode);
+    return { country, countryCode };
+  } catch {
+    return { country: "", countryCode: "" };
+  }
+};
+
 const recordVisitorEvent = async (eventType, path = "/") => {
   if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
   if (isAnalyticsExcluded()) return;
@@ -518,6 +543,7 @@ const recordVisitorEvent = async (eventType, path = "/") => {
 
   const visitorId = getVisitorId();
   const { referrer, source } = getVisitSource();
+  const { country, countryCode } = await getVisitorCountry();
 
   try {
     if (eventType === "page_view") {
@@ -530,6 +556,8 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         body: JSON.stringify({
           visitor_id: visitorId,
           last_seen: new Date().toISOString(),
+          country,
+          country_code: countryCode,
         }),
       });
     }
@@ -546,6 +574,8 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         path,
         referrer,
         source,
+        country,
+        country_code: countryCode,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
       }),
     });
@@ -659,7 +689,7 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
   }
 
   const query = new URLSearchParams({
-    select: "created_at,path,referrer,source,timezone",
+    select: "created_at,path,referrer,source,country,country_code,timezone",
     event_type: "eq.page_view",
     order: "created_at.desc",
     limit: "100",
@@ -1327,7 +1357,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, tarayici saat dilimlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, yaklasik ziyaretci ulkesini, tarayici saat dilimlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -2248,6 +2278,18 @@ function AdminPage({ navigateTo }) {
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5)
       : [];
+  const topEntryCountries =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((countries, entry) => {
+            const country = entry.country || "Unknown";
+            countries[country] = (countries[country] ?? 0) + 1;
+            return countries;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
   const adminInsights = [
     {
       label: "All-time visitors",
@@ -2384,6 +2426,18 @@ function AdminPage({ navigateTo }) {
             </div>
           )}
 
+          {recentEntries.status === "ready" && topEntryCountries.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Top entry countries">
+              {topEntryCountries.map(([country, count]) => (
+                <article className="adminSourceCard" key={country}>
+                  <span>{country}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "visitor entry" : "visitor entries"}</p>
+                </article>
+              ))}
+            </div>
+          )}
+
           {recentEntries.status === "ready" && recentEntries.entries.length > 0 && (
             <div className="adminEntryList">
               {recentEntries.entries.slice(0, 10).map((entry, index) => (
@@ -2394,6 +2448,7 @@ function AdminPage({ navigateTo }) {
                   </div>
                   <p>
                     From: {entry.source || "Direct"}
+                    {entry.country ? ` | Country: ${entry.country}` : ""}
                     {entry.timezone ? ` | Timezone: ${entry.timezone}` : ""}
                   </p>
                 </article>

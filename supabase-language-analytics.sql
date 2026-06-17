@@ -34,6 +34,8 @@ create table if not exists public.visitor_events (
   path text not null default '/',
   referrer text,
   source text not null default 'Direct',
+  country text,
+  country_code text,
   timezone text,
   created_at timestamptz not null default now()
 );
@@ -43,6 +45,12 @@ alter table public.visitor_events
 
 alter table public.visitor_events
   add column if not exists source text not null default 'Direct';
+
+alter table public.visitor_events
+  add column if not exists country text;
+
+alter table public.visitor_events
+  add column if not exists country_code text;
 
 alter table public.visitor_events
   add column if not exists timezone text;
@@ -55,6 +63,9 @@ create index if not exists visitor_events_visitor_id_idx
 
 create index if not exists visitor_events_source_created_at_idx
   on public.visitor_events (source, created_at desc);
+
+create index if not exists visitor_events_country_created_at_idx
+  on public.visitor_events (country, created_at desc);
 
 alter table public.visitor_events enable row level security;
 
@@ -73,9 +84,17 @@ create policy "visitor events can be inserted"
 
 create table if not exists public.visitor_profiles (
   visitor_id uuid primary key,
+  country text,
+  country_code text,
   first_seen timestamptz not null default now(),
   last_seen timestamptz not null default now()
 );
+
+alter table public.visitor_profiles
+  add column if not exists country text;
+
+alter table public.visitor_profiles
+  add column if not exists country_code text;
 
 create index if not exists visitor_profiles_last_seen_idx
   on public.visitor_profiles (last_seen desc);
