@@ -32,14 +32,29 @@ create table if not exists public.visitor_events (
   visitor_id uuid not null,
   event_type text not null check (event_type in ('page_view', 'email_click')),
   path text not null default '/',
+  referrer text,
+  source text not null default 'Direct',
+  timezone text,
   created_at timestamptz not null default now()
 );
+
+alter table public.visitor_events
+  add column if not exists referrer text;
+
+alter table public.visitor_events
+  add column if not exists source text not null default 'Direct';
+
+alter table public.visitor_events
+  add column if not exists timezone text;
 
 create index if not exists visitor_events_event_type_created_at_idx
   on public.visitor_events (event_type, created_at desc);
 
 create index if not exists visitor_events_visitor_id_idx
   on public.visitor_events (visitor_id);
+
+create index if not exists visitor_events_source_created_at_idx
+  on public.visitor_events (source, created_at desc);
 
 alter table public.visitor_events enable row level security;
 

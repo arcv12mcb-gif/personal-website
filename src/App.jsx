@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences, page visits, and email-button clicks in aggregate. We do not currently use advertising cookies.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID to count language preferences, page visits, referrer sources, browser timezones, and email-button clicks in aggregate. We do not currently use advertising cookies.",
   },
   {
     title: "Your rights",
@@ -474,12 +474,37 @@ const startOfLocalMonth = (date) => new Date(date.getFullYear(), date.getMonth()
 const startOfLocalYear = (date) => new Date(date.getFullYear(), 0, 1);
 const elapsedDays = (start, end) => Math.max(1, Math.ceil((end - start) / 86400000));
 const formatAverage = (count, days) => (count / days).toFixed(count >= days ? 1 : 2);
+const formatAdminTime = (value) =>
+  new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(value));
+const getVisitSource = () => {
+  if (typeof document === "undefined" || !document.referrer) {
+    return { referrer: "", source: "Direct" };
+  }
+
+  try {
+    const referrerUrl = new URL(document.referrer);
+    const currentHost = window.location.hostname.replace(/^www\./, "");
+    const referrerHost = referrerUrl.hostname.replace(/^www\./, "");
+    return {
+      referrer: document.referrer,
+      source: referrerHost === currentHost ? "Internal" : referrerHost,
+    };
+  } catch {
+    return { referrer: document.referrer, source: "Unknown" };
+  }
+};
 
 const recordVisitorEvent = async (eventType, path = "/") => {
   if (!LANGUAGE_ANALYTICS_ENABLED || typeof window === "undefined") return;
   if (!["page_view", "email_click"].includes(eventType)) return;
 
   const visitorId = getVisitorId();
+  const { referrer, source } = getVisitSource();
 
   try {
     if (eventType === "page_view") {
@@ -506,6 +531,9 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         visitor_id: visitorId,
         event_type: eventType,
         path,
+        referrer,
+        source,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
       }),
     });
   } catch {
@@ -602,6 +630,26 @@ const readVisitorEventStats = async () => {
       yearAverage: formatAverage(emailsYear, yearDays),
     },
   };
+};
+
+const readRecentVisitorEntries = async () => {
+  if (!LANGUAGE_ANALYTICS_ENABLED) {
+    return { status: "setup", entries: [] };
+  }
+
+  const query = new URLSearchParams({
+    select: "created_at,path,referrer,source,timezone",
+    event_type: "eq.page_view",
+    order: "created_at.desc",
+    limit: "10",
+  });
+  const response = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`);
+
+  if (!response.ok) {
+    throw new Error("Unable to read recent visitor entries.");
+  }
+
+  return { status: "ready", entries: await response.json() };
 };
 
 const pageRoutes = [
@@ -1255,7 +1303,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, tarayici saat dilimlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -1964,6 +2012,10 @@ function AdminPage({ navigateTo }) {
   const [visitorStats, setVisitorStats] = useState(() => ({
     status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
   }));
+  const [recentEntries, setRecentEntries] = useState(() => ({
+    status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+    entries: [],
+  }));
   const [isUnlocked, setIsUnlocked] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
@@ -1978,6 +2030,10 @@ function AdminPage({ navigateTo }) {
       status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     }));
     setVisitorStats((current) => ({
+      ...current,
+      status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+    }));
+    setRecentEntries((current) => ({
       ...current,
       status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     }));
@@ -1999,6 +2055,16 @@ function AdminPage({ navigateTo }) {
       .catch(() => {
         if (isMounted) {
           setVisitorStats({ status: "missing" });
+        }
+      });
+
+    readRecentVisitorEntries()
+      .then((entries) => {
+        if (isMounted) setRecentEntries(entries);
+      })
+      .catch(() => {
+        if (isMounted) {
+          setRecentEntries({ status: "missing", entries: [] });
         }
       });
 
@@ -2238,6 +2304,43 @@ function AdminPage({ navigateTo }) {
             </article>
           ))}
         </div>
+
+        <section className="adminRecentPanel" aria-label="Recent website entries">
+          <div className="adminRecentHeader">
+            <div>
+              <p className="eyebrow">Recent entries</p>
+              <h2>When and where visitors entered</h2>
+            </div>
+            <span>{recentEntries.status === "ready" ? `${recentEntries.entries.length} latest` : "Live data"}</span>
+          </div>
+
+          {recentEntries.status === "ready" && recentEntries.entries.length > 0 && (
+            <div className="adminEntryList">
+              {recentEntries.entries.map((entry, index) => (
+                <article className="adminEntry" key={`${entry.created_at}-${index}`}>
+                  <div>
+                    <strong>{formatAdminTime(entry.created_at)}</strong>
+                    <span>{entry.path || "/"}</span>
+                  </div>
+                  <p>
+                    From: {entry.source || "Direct"}
+                    {entry.timezone ? ` | Timezone: ${entry.timezone}` : ""}
+                  </p>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {recentEntries.status === "ready" && recentEntries.entries.length === 0 && (
+            <p className="adminRecentEmpty">No recent page entries recorded yet.</p>
+          )}
+
+          {recentEntries.status === "loading" && <p className="adminRecentEmpty">Loading recent entries...</p>}
+          {recentEntries.status === "missing" && (
+            <p className="adminRecentEmpty">Run the updated Supabase SQL file to add source and referrer fields.</p>
+          )}
+          {recentEntries.status === "setup" && <p className="adminRecentEmpty">Connect Supabase to show recent entries.</p>}
+        </section>
 
         <div className="adminGrid">
           {adminLinks.map(([label, path, text]) => (

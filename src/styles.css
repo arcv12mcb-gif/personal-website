@@ -312,6 +312,8 @@ main.themeBright .privacyCard,
 main.themeBright .privacyContact,
 main.themeBright .adminShell,
 main.themeBright .adminInsightCard,
+main.themeBright .adminRecentPanel,
+main.themeBright .adminEntry,
 main.themeBright .adminLinkCard {
   color: #102033;
   border-color: rgba(14, 116, 144, 0.14);
@@ -330,6 +332,9 @@ main.themeBright .privacyContact p,
 main.themeBright .adminIntro,
 main.themeBright .adminField label,
 main.themeBright .adminInsightCard p,
+main.themeBright .adminEntry p,
+main.themeBright .adminEntry span,
+main.themeBright .adminRecentEmpty,
 main.themeBright .adminLinkCard strong,
 main.themeBright .adminNote,
 main.themeBright .legalLinks a {
@@ -341,6 +346,8 @@ main.themeBright .privacyCard h3,
 main.themeBright .privacyMeta strong,
 main.themeBright .adminShell h1,
 main.themeBright .adminInsightCard strong,
+main.themeBright .adminRecentHeader h2,
+main.themeBright .adminEntry strong,
 main.themeBright .adminLinkCard span {
   color: #102033;
 }
@@ -348,6 +355,8 @@ main.themeBright .adminLinkCard span {
 main.themeBright .privacyMeta,
 main.themeBright .adminField input,
 main.themeBright .adminInsightCard,
+main.themeBright .adminRecentPanel,
+main.themeBright .adminEntry,
 main.themeBright .adminNote,
 main.themeBright .legalLinks {
   border-color: rgba(14, 116, 144, 0.14);
@@ -3796,6 +3805,92 @@ input:focus-visible {
   font-size: 0.9rem;
 }
 
+.adminRecentPanel {
+  margin-top: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 16px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(94, 234, 212, 0.05)),
+    rgba(2, 6, 23, 0.3);
+}
+
+.adminRecentHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.adminRecentHeader h2 {
+  margin: 4px 0 0;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  line-height: 1;
+}
+
+.adminRecentHeader > span {
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #5eead4;
+  background: rgba(2, 6, 23, 0.34);
+  font-size: 0.78rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.adminEntryList {
+  display: grid;
+  gap: 10px;
+}
+
+.adminEntry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.72fr);
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(226, 232, 240, 0.1);
+  border-radius: 12px;
+  padding: 14px;
+  background: rgba(2, 6, 23, 0.28);
+}
+
+.adminEntry strong,
+.adminEntry span {
+  display: block;
+}
+
+.adminEntry strong {
+  color: #f8fafc;
+  font-size: 1rem;
+}
+
+.adminEntry span,
+.adminEntry p,
+.adminRecentEmpty {
+  color: #cbd5e1;
+}
+
+.adminEntry span {
+  margin-top: 4px;
+  font-weight: 800;
+}
+
+.adminEntry p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.adminRecentEmpty {
+  margin: 0;
+  border: 1px dashed rgba(226, 232, 240, 0.14);
+  border-radius: 12px;
+  padding: 14px;
+  background: rgba(2, 6, 23, 0.18);
+}
+
 .adminLinkCard {
   display: grid;
   min-height: 118px;
@@ -5357,6 +5452,10 @@ input:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .adminEntry {
+    grid-template-columns: 1fr;
+  }
+
   .adminGrid {
     grid-template-columns: 1fr;
   }
@@ -5644,6 +5743,15 @@ input:focus-visible {
 
   .adminInsightGrid {
     grid-template-columns: 1fr;
+  }
+
+  .adminRecentHeader {
+    flex-direction: column;
+  }
+
+  .adminRecentHeader > span {
+    width: 100%;
+    text-align: center;
   }
 
   .adminLogout {
