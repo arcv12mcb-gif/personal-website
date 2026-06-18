@@ -355,6 +355,7 @@ const SHOW_PRICING = true;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const ADMIN_SESSION_KEY = "aaca-admin-unlocked";
 const ANALYTICS_EXCLUDED_COOKIE = "site-analytics-excluded";
+const GEO_CACHE_VERSION = "2";
 const ADMIN_USERNAME_HASH = "c9c0c94d6dca08474780043d8f8486305d92fbffd1f57f3810f8eff2f4f5dd57";
 const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c71cea108dd23c1";
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/$/, "");
@@ -516,10 +517,11 @@ const getVisitorCountry = async () => {
     return { country: "", countryCode: "", ipAddress: "" };
   }
 
+  const cachedGeoVersion = window.localStorage.getItem("site-geo-version");
   const cachedCountry = window.localStorage.getItem("site-country-name");
   const cachedCountryCode = window.localStorage.getItem("site-country-code");
   const cachedIpAddress = window.localStorage.getItem("site-ip-address");
-  if (cachedCountry || cachedCountryCode || cachedIpAddress) {
+  if (cachedGeoVersion === GEO_CACHE_VERSION && (cachedCountry || cachedCountryCode || cachedIpAddress)) {
     return {
       country: cachedCountry ?? "",
       countryCode: cachedCountryCode ?? "",
@@ -537,6 +539,7 @@ const getVisitorCountry = async () => {
     window.localStorage.setItem("site-country-name", country);
     window.localStorage.setItem("site-country-code", countryCode);
     window.localStorage.setItem("site-ip-address", ipAddress);
+    window.localStorage.setItem("site-geo-version", GEO_CACHE_VERSION);
     return { country, countryCode, ipAddress };
   } catch {
     return { country: "", countryCode: "", ipAddress: "" };
@@ -2291,7 +2294,7 @@ function AdminPage({ navigateTo }) {
     recentEntries.status === "ready"
       ? Object.entries(
           recentEntries.entries.reduce((countries, entry) => {
-            const country = entry.country || "Unknown";
+            const country = entry.country || "Not captured yet";
             countries[country] = (countries[country] ?? 0) + 1;
             return countries;
           }, {})
@@ -2457,8 +2460,8 @@ function AdminPage({ navigateTo }) {
                   </div>
                   <p>
                     From: {entry.source || "Direct"}
-                    {entry.country ? ` | Country: ${entry.country}` : ""}
-                    {entry.ip_address ? ` | IP: ${entry.ip_address}` : ""}
+                    {" | "}Country: {entry.country || "Not captured yet"}
+                    {" | "}IP: {entry.ip_address || "Not captured yet"}
                     {entry.timezone ? ` | Timezone: ${entry.timezone}` : ""}
                   </p>
                 </article>
