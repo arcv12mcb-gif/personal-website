@@ -355,7 +355,7 @@ const SHOW_PRICING = true;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const ADMIN_SESSION_KEY = "aaca-admin-unlocked";
 const ANALYTICS_EXCLUDED_COOKIE = "site-analytics-excluded";
-const GEO_CACHE_VERSION = "3";
+const GEO_CACHE_VERSION = "2";
 const ADMIN_USERNAME_HASH = "c9c0c94d6dca08474780043d8f8486305d92fbffd1f57f3810f8eff2f4f5dd57";
 const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c71cea108dd23c1";
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/$/, "");
@@ -512,17 +512,6 @@ const getVisitSource = () => {
   }
 };
 
-const readVisitorIpFallback = async () => {
-  try {
-    const response = await fetch("https://api.ipify.org?format=json");
-    if (!response.ok) return "";
-    const data = await response.json();
-    return data.ip ?? "";
-  } catch {
-    return "";
-  }
-};
-
 const getVisitorCountry = async () => {
   if (typeof window === "undefined") {
     return { country: "", countryCode: "", ipAddress: "" };
@@ -546,21 +535,14 @@ const getVisitorCountry = async () => {
     const data = await response.json();
     const country = data.country_name ?? data.country ?? "";
     const countryCode = data.country_code ?? "";
-    const ipAddress = data.ip ?? (await readVisitorIpFallback());
+    const ipAddress = data.ip ?? "";
     window.localStorage.setItem("site-country-name", country);
     window.localStorage.setItem("site-country-code", countryCode);
     window.localStorage.setItem("site-ip-address", ipAddress);
     window.localStorage.setItem("site-geo-version", GEO_CACHE_VERSION);
     return { country, countryCode, ipAddress };
   } catch {
-    const ipAddress = await readVisitorIpFallback();
-    if (ipAddress) {
-      window.localStorage.setItem("site-country-name", "");
-      window.localStorage.setItem("site-country-code", "");
-      window.localStorage.setItem("site-ip-address", ipAddress);
-      window.localStorage.setItem("site-geo-version", GEO_CACHE_VERSION);
-    }
-    return { country: "", countryCode: "", ipAddress };
+    return { country: "", countryCode: "", ipAddress: "" };
   }
 };
 
