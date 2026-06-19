@@ -487,6 +487,7 @@ const startOfLocalMonth = (date) => new Date(date.getFullYear(), date.getMonth()
 const startOfLocalYear = (date) => new Date(date.getFullYear(), 0, 1);
 const elapsedDays = (start, end) => Math.max(1, Math.ceil((end - start) / 86400000));
 const formatAverage = (count, days) => (count / days).toFixed(count >= days ? 1 : 2);
+const formatPercent = (part, total) => (total > 0 ? `${((part / total) * 100).toFixed(part >= total ? 0 : 1)}%` : "0%");
 const formatAdminTime = (value) =>
   new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -494,6 +495,15 @@ const formatAdminTime = (value) =>
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date(value));
+const getDeviceType = () => {
+  if (typeof navigator === "undefined") return "";
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  const hasTouch = navigator.maxTouchPoints > 1;
+  if (/ipad|tablet/.test(userAgent) || (hasTouch && /macintosh/.test(userAgent))) return "Tablet";
+  if (/mobi|android|iphone|ipod|windows phone/.test(userAgent)) return "Mobile";
+  return "Desktop";
+};
 const getVisitSource = () => {
   if (typeof document === "undefined" || !document.referrer) {
     return { referrer: "", source: "Direct" };
@@ -572,43 +582,70 @@ const recordVisitorEvent = async (eventType, path = "/") => {
   const visitorId = getVisitorId();
   const { referrer, source } = getVisitSource();
   const { country, countryCode, ipAddress } = await getVisitorCountry();
+  const deviceType = getDeviceType();
 
   try {
     if (eventType === "page_view") {
-      await supabaseRequest("/rest/v1/visitor_profiles?on_conflict=visitor_id", {
+      const profileBody = {
+        visitor_id: visitorId,
+        last_seen: new Date().toISOString(),
+        country,
+        country_code: countryCode,
+        ip_address: ipAddress,
+        device_type: deviceType,
+      };
+      const profileResponse = await supabaseRequest("/rest/v1/visitor_profiles?on_conflict=visitor_id", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Prefer: "resolution=merge-duplicates,return=minimal",
         },
-        body: JSON.stringify({
-          visitor_id: visitorId,
-          last_seen: new Date().toISOString(),
-          country,
-          country_code: countryCode,
-          ip_address: ipAddress,
-        }),
+        body: JSON.stringify(profileBody),
       });
+      if (!profileResponse.ok && profileResponse.status === 400) {
+        const { device_type: _deviceType, ...fallbackProfileBody } = profileBody;
+        await supabaseRequest("/rest/v1/visitor_profiles?on_conflict=visitor_id", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates,return=minimal",
+          },
+          body: JSON.stringify(fallbackProfileBody),
+        });
+      }
     }
 
-    await supabaseRequest("/rest/v1/visitor_events", {
+    const eventBody = {
+      visitor_id: visitorId,
+      event_type: eventType,
+      path,
+      referrer,
+      source,
+      country,
+      country_code: countryCode,
+      ip_address: ipAddress,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
+      device_type: deviceType,
+    };
+    const eventResponse = await supabaseRequest("/rest/v1/visitor_events", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Prefer: "return=minimal",
       },
-      body: JSON.stringify({
-        visitor_id: visitorId,
-        event_type: eventType,
-        path,
-        referrer,
-        source,
-        country,
-        country_code: countryCode,
-        ip_address: ipAddress,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
-      }),
+      body: JSON.stringify(eventBody),
     });
+    if (!eventResponse.ok && eventResponse.status === 400) {
+      const { device_type: _deviceType, ...fallbackEventBody } = eventBody;
+      await supabaseRequest("/rest/v1/visitor_events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify(fallbackEventBody),
+      });
+    }
   } catch {
     // Analytics should never block normal website behavior.
   }
@@ -671,9 +708,10 @@ const readVisitorEventStats = async (excludedVisitorId = "") => {
     year: startOfLocalYear(now),
   };
 
-  const [allTimeVisitors, allTimeVisits, visitsToday, visitsWeek, visitsMonth, visitsYear, emailsToday, emailsWeek, emailsMonth, emailsYear] = await Promise.all([
+  const [allTimeVisitors, allTimeVisits, allTimeEmails, visitsToday, visitsWeek, visitsMonth, visitsYear, emailsToday, emailsWeek, emailsMonth, emailsYear] = await Promise.all([
     readVisitorProfileCount(excludedVisitorId),
     readVisitorEventCount("page_view", undefined, excludedVisitorId),
+    readVisitorEventCount("email_click", undefined, excludedVisitorId),
     readVisitorEventCount("page_view", ranges.today, excludedVisitorId),
     readVisitorEventCount("page_view", ranges.week, excludedVisitorId),
     readVisitorEventCount("page_view", ranges.month, excludedVisitorId),
@@ -700,8 +738,11 @@ const readVisitorEventStats = async (excludedVisitorId = "") => {
       weekAverage: formatAverage(visitsWeek, weekDays),
       monthAverage: formatAverage(visitsMonth, monthDays),
       yearAverage: formatAverage(visitsYear, yearDays),
+      allTimeContactRate: formatPercent(allTimeEmails, allTimeVisits),
+      todayContactRate: formatPercent(emailsToday, visitsToday),
     },
     emails: {
+      allTime: allTimeEmails,
       today: emailsToday,
       week: emailsWeek,
       month: emailsMonth,
@@ -719,7 +760,7 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
   }
 
   const query = new URLSearchParams({
-    select: "created_at,path,referrer,source,country,country_code,ip_address,timezone",
+    select: "created_at,path,referrer,source,country,country_code,ip_address,timezone,device_type",
     event_type: "eq.page_view",
     order: "created_at.desc",
     limit: "100",
@@ -728,6 +769,15 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
     query.set("visitor_id", `neq.${excludedVisitorId}`);
   }
   const response = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`);
+
+  if (!response.ok && response.status === 400) {
+    query.set("select", "created_at,path,referrer,source,country,country_code,ip_address,timezone");
+    const fallbackResponse = await supabaseRequest(`/rest/v1/visitor_events?${query.toString()}`);
+    if (!fallbackResponse.ok) {
+      throw new Error("Unable to read recent visitor entries.");
+    }
+    return { status: "ready", entries: await fallbackResponse.json() };
+  }
 
   if (!response.ok) {
     throw new Error("Unable to read recent visitor entries.");
@@ -2296,6 +2346,13 @@ function AdminPage({ navigateTo }) {
           : visitorStats.status === "error"
             ? "Could not load"
             : "Connect Supabase";
+  const conversionValue = (key) => {
+    if (visitorStats.status === "ready") return visitorStats.visits[key];
+    if (visitorStats.status === "loading") return "Loading...";
+    if (visitorStats.status === "missing") return "Run SQL setup";
+    if (visitorStats.status === "error") return "Could not load";
+    return "Connect Supabase";
+  };
   const topEntrySources =
     recentEntries.status === "ready"
       ? Object.entries(
@@ -2320,6 +2377,30 @@ function AdminPage({ navigateTo }) {
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5)
       : [];
+  const topEntryPages =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((pages, entry) => {
+            const page = entry.path || "/";
+            pages[page] = (pages[page] ?? 0) + 1;
+            return pages;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
+  const topEntryDevices =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((devices, entry) => {
+            const device = entry.device_type || "Not captured yet";
+            devices[device] = (devices[device] ?? 0) + 1;
+            return devices;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
   const adminInsights = [
     {
       label: "All-time visitors",
@@ -2330,6 +2411,16 @@ function AdminPage({ navigateTo }) {
       label: "All-time page visits",
       value: statValue("visits", "allTime"),
       text: "Counts every recorded page visit, including repeat visits.",
+    },
+    {
+      label: "All-time contact rate",
+      value: conversionValue("allTimeContactRate"),
+      text: "Email button clicks divided by all recorded page visits.",
+    },
+    {
+      label: "Contact rate today",
+      value: conversionValue("todayContactRate"),
+      text: "Today's email button clicks divided by today's page visits.",
     },
     {
       label: "Turkish visitors",
@@ -2468,6 +2559,30 @@ function AdminPage({ navigateTo }) {
             </div>
           )}
 
+          {recentEntries.status === "ready" && topEntryPages.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Most visited pages">
+              {topEntryPages.map(([page, count]) => (
+                <article className="adminSourceCard" key={page}>
+                  <span>{page}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "page visit" : "page visits"}</p>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {recentEntries.status === "ready" && topEntryDevices.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Visitor device types">
+              {topEntryDevices.map(([device, count]) => (
+                <article className="adminSourceCard" key={device}>
+                  <span>{device}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "visitor entry" : "visitor entries"}</p>
+                </article>
+              ))}
+            </div>
+          )}
+
           {recentEntries.status === "ready" && recentEntries.entries.length > 0 && (
             <div className="adminEntryList">
               {recentEntries.entries.slice(0, 10).map((entry, index) => (
@@ -2480,6 +2595,7 @@ function AdminPage({ navigateTo }) {
                     From: {entry.source || "Direct"}
                     {" | "}Country: {entry.country || "Not captured yet"}
                     {" | "}IP: {entry.ip_address || "Not captured yet"}
+                    {" | "}Device: {entry.device_type || "Not captured yet"}
                     {entry.timezone ? ` | Timezone: ${entry.timezone}` : ""}
                   </p>
                 </article>

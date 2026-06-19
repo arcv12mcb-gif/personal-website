@@ -38,6 +38,7 @@ create table if not exists public.visitor_events (
   country_code text,
   ip_address text,
   timezone text,
+  device_type text,
   created_at timestamptz not null default now()
 );
 
@@ -59,6 +60,9 @@ alter table public.visitor_events
 alter table public.visitor_events
   add column if not exists timezone text;
 
+alter table public.visitor_events
+  add column if not exists device_type text;
+
 create index if not exists visitor_events_event_type_created_at_idx
   on public.visitor_events (event_type, created_at desc);
 
@@ -70,6 +74,9 @@ create index if not exists visitor_events_source_created_at_idx
 
 create index if not exists visitor_events_country_created_at_idx
   on public.visitor_events (country, created_at desc);
+
+create index if not exists visitor_events_device_type_created_at_idx
+  on public.visitor_events (device_type, created_at desc);
 
 alter table public.visitor_events enable row level security;
 
@@ -91,6 +98,7 @@ create table if not exists public.visitor_profiles (
   country text,
   country_code text,
   ip_address text,
+  device_type text,
   first_seen timestamptz not null default now(),
   last_seen timestamptz not null default now()
 );
@@ -103,6 +111,9 @@ alter table public.visitor_profiles
 
 alter table public.visitor_profiles
   add column if not exists ip_address text;
+
+alter table public.visitor_profiles
+  add column if not exists device_type text;
 
 create index if not exists visitor_profiles_last_seen_idx
   on public.visitor_profiles (last_seen desc);
