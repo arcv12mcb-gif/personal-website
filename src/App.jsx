@@ -295,7 +295,7 @@ const privacySections = [
   },
   {
     title: "Third-party services",
-    text: "Our website may contain links to third-party websites. We are not responsible for the privacy practices of those websites. We may also use IP lookup providers, such as ipapi.co and api.ipify.org, to help estimate visitor country and count basic website activity.",
+    text: "Our website may contain links to third-party websites. We are not responsible for the privacy practices of those websites. We may also use IP lookup providers, such as ipapi.co, api.ipify.org, and ipwho.is, to help estimate visitor country and count basic website activity.",
   },
   {
     title: "Cookies",
@@ -355,7 +355,7 @@ const SHOW_PRICING = true;
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const ADMIN_SESSION_KEY = "aaca-admin-unlocked";
 const ANALYTICS_EXCLUDED_COOKIE = "site-analytics-excluded";
-const GEO_CACHE_VERSION = "3";
+const GEO_CACHE_VERSION = "4";
 const ADMIN_USERNAME_HASH = "c9c0c94d6dca08474780043d8f8486305d92fbffd1f57f3810f8eff2f4f5dd57";
 const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c71cea108dd23c1";
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/$/, "");
@@ -533,6 +533,22 @@ const readVisitorIpFallback = async () => {
   }
 };
 
+const readVisitorGeoFallback = async () => {
+  try {
+    const response = await fetch("https://ipwho.is/");
+    if (!response.ok) return { country: "", countryCode: "", ipAddress: "" };
+    const data = await response.json();
+    if (data.success === false) return { country: "", countryCode: "", ipAddress: "" };
+    return {
+      country: data.country ?? "",
+      countryCode: data.country_code ?? "",
+      ipAddress: data.ip ?? "",
+    };
+  } catch {
+    return { country: "", countryCode: "", ipAddress: "" };
+  }
+};
+
 const getVisitorCountry = async () => {
   if (typeof window === "undefined") {
     return { country: "", countryCode: "", ipAddress: "" };
@@ -556,21 +572,25 @@ const getVisitorCountry = async () => {
     const data = await response.json();
     const country = data.country_name ?? data.country ?? "";
     const countryCode = data.country_code ?? "";
-    const ipAddress = data.ip ?? (await readVisitorIpFallback());
-    window.localStorage.setItem("site-country-name", country);
-    window.localStorage.setItem("site-country-code", countryCode);
+    const fallbackGeo = !country || !countryCode || !data.ip ? await readVisitorGeoFallback() : null;
+    const ipAddress = data.ip ?? fallbackGeo?.ipAddress ?? (await readVisitorIpFallback());
+    const nextCountry = country || fallbackGeo?.country || "";
+    const nextCountryCode = countryCode || fallbackGeo?.countryCode || "";
+    window.localStorage.setItem("site-country-name", nextCountry);
+    window.localStorage.setItem("site-country-code", nextCountryCode);
     window.localStorage.setItem("site-ip-address", ipAddress);
     window.localStorage.setItem("site-geo-version", GEO_CACHE_VERSION);
-    return { country, countryCode, ipAddress };
+    return { country: nextCountry, countryCode: nextCountryCode, ipAddress };
   } catch {
-    const ipAddress = await readVisitorIpFallback();
-    if (ipAddress) {
-      window.localStorage.setItem("site-country-name", "");
-      window.localStorage.setItem("site-country-code", "");
+    const fallbackGeo = await readVisitorGeoFallback();
+    const ipAddress = fallbackGeo.ipAddress || (await readVisitorIpFallback());
+    if (ipAddress || fallbackGeo.country || fallbackGeo.countryCode) {
+      window.localStorage.setItem("site-country-name", fallbackGeo.country);
+      window.localStorage.setItem("site-country-code", fallbackGeo.countryCode);
       window.localStorage.setItem("site-ip-address", ipAddress);
       window.localStorage.setItem("site-geo-version", GEO_CACHE_VERSION);
     }
-    return { country: "", countryCode: "", ipAddress };
+    return { country: fallbackGeo.country, countryCode: fallbackGeo.countryCode, ipAddress };
   }
 };
 
@@ -1433,7 +1453,7 @@ const turkishContent = {
     },
     {
       title: "Ucuncu taraf hizmetler",
-      text: "Web sitemiz ucuncu taraf web sitelerine baglantilar icerebilir. Bu sitelerin gizlilik uygulamalarindan sorumlu degiliz. Ziyaretci ulkesini tahmin etmek ve temel site etkinligini saymak icin ipapi.co ve api.ipify.org gibi IP arama saglayicilarini da kullanabiliriz.",
+      text: "Web sitemiz ucuncu taraf web sitelerine baglantilar icerebilir. Bu sitelerin gizlilik uygulamalarindan sorumlu degiliz. Ziyaretci ulkesini tahmin etmek ve temel site etkinligini saymak icin ipapi.co, api.ipify.org ve ipwho.is gibi IP arama saglayicilarini da kullanabiliriz.",
     },
     {
       title: "Cerezler",
