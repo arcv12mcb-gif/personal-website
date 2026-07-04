@@ -299,7 +299,7 @@ const privacySections = [
   },
   {
     title: "Cookies",
-    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID and IP address to count language preferences, page visits, referrer sources, approximate visitor country, browser timezones, and email-button clicks in aggregate. We do not currently use advertising cookies.",
+    text: "Our website uses first-party preference cookies and similar browser storage to remember choices like language, theme, and whether the intro or language prompt has already been shown. We may also use a random first-party visitor ID and IP address to count language preferences, page visits, referrer sources, approximate visitor country, browser timezones, device type, browser, operating system, browser language, screen-size category, returning visitor status, and email-button clicks in aggregate. We do not currently use advertising cookies.",
   },
   {
     title: "Your rights",
@@ -504,6 +504,55 @@ const getDeviceType = () => {
   if (/mobi|android|iphone|ipod|windows phone/.test(userAgent)) return "Mobile";
   return "Desktop";
 };
+const getBrowserName = () => {
+  if (typeof navigator === "undefined") return "";
+
+  const userAgent = navigator.userAgent;
+  if (/Edg\//.test(userAgent)) return "Edge";
+  if (/OPR\//.test(userAgent)) return "Opera";
+  if (/Chrome\//.test(userAgent) && !/Chromium\//.test(userAgent)) return "Chrome";
+  if (/Safari\//.test(userAgent) && !/Chrome\//.test(userAgent)) return "Safari";
+  if (/Firefox\//.test(userAgent)) return "Firefox";
+  return "Other";
+};
+const getOperatingSystem = () => {
+  if (typeof navigator === "undefined") return "";
+
+  const userAgent = navigator.userAgent;
+  if (/Windows NT/.test(userAgent)) return "Windows";
+  if (/Android/.test(userAgent)) return "Android";
+  if (/iPhone|iPad|iPod/.test(userAgent)) return "iOS";
+  if (/Mac OS X|Macintosh/.test(userAgent)) return "macOS";
+  if (/Linux/.test(userAgent)) return "Linux";
+  return "Other";
+};
+const getScreenSizeCategory = () => {
+  if (typeof window === "undefined") return "";
+
+  const width = window.screen?.width || window.innerWidth || 0;
+  if (width < 640) return "Phone";
+  if (width < 1024) return "Tablet";
+  if (width < 1440) return "Laptop";
+  return "Desktop";
+};
+const getSitePreferenceSnapshot = () => ({
+  siteLanguage: getCookie("site-language") || window.localStorage?.getItem("site-language") || "en",
+  siteTheme: getCookie("site-theme") || "dark",
+});
+const getVisitorPageViewCount = (eventType) => {
+  if (typeof window === "undefined") return { pageViewCount: 0, returningVisitor: false };
+
+  const currentCount = Number(window.localStorage.getItem("site-page-view-count") || "0");
+  if (eventType !== "page_view") {
+    return { pageViewCount: currentCount, returningVisitor: currentCount > 1 };
+  }
+
+  const nextCount = currentCount + 1;
+  window.localStorage.setItem("site-page-view-count", String(nextCount));
+  return { pageViewCount: nextCount, returningVisitor: nextCount > 1 };
+};
+const withoutKeys = (body, keys) =>
+  Object.fromEntries(Object.entries(body).filter(([key]) => !keys.includes(key)));
 const getVisitSource = () => {
   if (typeof document === "undefined" || !document.referrer) {
     return { referrer: "", source: "Direct" };
@@ -603,6 +652,23 @@ const recordVisitorEvent = async (eventType, path = "/") => {
   const { referrer, source } = getVisitSource();
   const { country, countryCode, ipAddress } = await getVisitorCountry();
   const deviceType = getDeviceType();
+  const browserName = getBrowserName();
+  const osName = getOperatingSystem();
+  const browserLanguage = navigator.language || "";
+  const screenSize = getScreenSizeCategory();
+  const { siteLanguage, siteTheme } = getSitePreferenceSnapshot();
+  const { pageViewCount, returningVisitor } = getVisitorPageViewCount(eventType);
+  const newProfileFields = [
+    "device_type",
+    "browser_name",
+    "os_name",
+    "browser_language",
+    "screen_size",
+    "site_language",
+    "site_theme",
+    "returning_visitor",
+    "page_view_count",
+  ];
 
   try {
     if (eventType === "page_view") {
@@ -613,6 +679,14 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         country_code: countryCode,
         ip_address: ipAddress,
         device_type: deviceType,
+        browser_name: browserName,
+        os_name: osName,
+        browser_language: browserLanguage,
+        screen_size: screenSize,
+        site_language: siteLanguage,
+        site_theme: siteTheme,
+        returning_visitor: returningVisitor,
+        page_view_count: pageViewCount,
       };
       const profileResponse = await supabaseRequest("/rest/v1/visitor_profiles?on_conflict=visitor_id", {
         method: "POST",
@@ -623,14 +697,13 @@ const recordVisitorEvent = async (eventType, path = "/") => {
         body: JSON.stringify(profileBody),
       });
       if (!profileResponse.ok && profileResponse.status === 400) {
-        const { device_type: _deviceType, ...fallbackProfileBody } = profileBody;
         await supabaseRequest("/rest/v1/visitor_profiles?on_conflict=visitor_id", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Prefer: "resolution=merge-duplicates,return=minimal",
           },
-          body: JSON.stringify(fallbackProfileBody),
+          body: JSON.stringify(withoutKeys(profileBody, newProfileFields)),
         });
       }
     }
@@ -646,6 +719,14 @@ const recordVisitorEvent = async (eventType, path = "/") => {
       ip_address: ipAddress,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "",
       device_type: deviceType,
+      browser_name: browserName,
+      os_name: osName,
+      browser_language: browserLanguage,
+      screen_size: screenSize,
+      site_language: siteLanguage,
+      site_theme: siteTheme,
+      returning_visitor: returningVisitor,
+      page_view_count: pageViewCount,
     };
     const eventResponse = await supabaseRequest("/rest/v1/visitor_events", {
       method: "POST",
@@ -656,14 +737,13 @@ const recordVisitorEvent = async (eventType, path = "/") => {
       body: JSON.stringify(eventBody),
     });
     if (!eventResponse.ok && eventResponse.status === 400) {
-      const { device_type: _deviceType, ...fallbackEventBody } = eventBody;
       await supabaseRequest("/rest/v1/visitor_events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Prefer: "return=minimal",
         },
-        body: JSON.stringify(fallbackEventBody),
+        body: JSON.stringify(withoutKeys(eventBody, newProfileFields)),
       });
     }
   } catch {
@@ -780,7 +860,7 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
   }
 
   const query = new URLSearchParams({
-    select: "created_at,path,referrer,source,country,country_code,ip_address,timezone,device_type",
+    select: "created_at,path,referrer,source,country,country_code,ip_address,timezone,device_type,browser_name,os_name,browser_language,screen_size,site_language,site_theme,returning_visitor,page_view_count",
     event_type: "eq.page_view",
     order: "created_at.desc",
     limit: "100",
@@ -1457,7 +1537,7 @@ const turkishContent = {
     },
     {
       title: "Cerezler",
-      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, yaklasik ziyaretci ulkesini, IP adresini, tarayici saat dilimlerini ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
+      text: "Web sitemiz dil, tema ve intro ya da dil bildiriminin daha once gosterilip gosterilmedigi gibi tercihleri hatirlamak icin birinci taraf tercih cerezleri ve benzer tarayici depolama teknolojileri kullanir. Dil tercihlerini, sayfa ziyaretlerini, yonlendirme kaynaklarini, yaklasik ziyaretci ulkesini, IP adresini, tarayici saat dilimlerini, cihaz turunu, tarayiciyi, isletim sistemini, tarayici dilini, ekran boyutu kategorisini, geri donen ziyaretci durumunu ve e-posta butonu tiklamalarini toplu olarak saymak icin rastgele bir birinci taraf ziyaretci kimligi de kullanabiliriz. Su anda reklam cerezleri kullanmiyoruz.",
     },
     {
       title: "Haklariniz",
@@ -2421,6 +2501,46 @@ function AdminPage({ navigateTo }) {
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5)
       : [];
+  const topEntryBrowsers =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((browsers, entry) => {
+            const browser = entry.browser_name || "Not captured yet";
+            browsers[browser] = (browsers[browser] ?? 0) + 1;
+            return browsers;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
+  const topEntryOperatingSystems =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((systems, entry) => {
+            const system = entry.os_name || "Not captured yet";
+            systems[system] = (systems[system] ?? 0) + 1;
+            return systems;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
+  const topEntryScreenSizes =
+    recentEntries.status === "ready"
+      ? Object.entries(
+          recentEntries.entries.reduce((sizes, entry) => {
+            const size = entry.screen_size || "Not captured yet";
+            sizes[size] = (sizes[size] ?? 0) + 1;
+            return sizes;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+      : [];
+  const returningEntries =
+    recentEntries.status === "ready"
+      ? recentEntries.entries.filter((entry) => entry.returning_visitor).length
+      : 0;
   const adminInsights = [
     {
       label: "All-time visitors",
@@ -2441,6 +2561,11 @@ function AdminPage({ navigateTo }) {
       label: "Contact rate today",
       value: conversionValue("todayContactRate"),
       text: "Today's email button clicks divided by today's page visits.",
+    },
+    {
+      label: "Returning entries",
+      value: recentEntries.status === "ready" ? `${returningEntries} / ${recentEntries.entries.length}` : recentEntries.status === "loading" ? "Loading..." : "Live data",
+      text: "Recent entries from browsers that have viewed more than one page.",
     },
     {
       label: "Turkish visitors",
@@ -2603,6 +2728,42 @@ function AdminPage({ navigateTo }) {
             </div>
           )}
 
+          {recentEntries.status === "ready" && topEntryBrowsers.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Visitor browsers">
+              {topEntryBrowsers.map(([browser, count]) => (
+                <article className="adminSourceCard" key={browser}>
+                  <span>{browser}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "browser entry" : "browser entries"}</p>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {recentEntries.status === "ready" && topEntryOperatingSystems.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Visitor operating systems">
+              {topEntryOperatingSystems.map(([system, count]) => (
+                <article className="adminSourceCard" key={system}>
+                  <span>{system}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "system entry" : "system entries"}</p>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {recentEntries.status === "ready" && topEntryScreenSizes.length > 0 && (
+            <div className="adminSourceGrid" aria-label="Visitor screen sizes">
+              {topEntryScreenSizes.map(([size, count]) => (
+                <article className="adminSourceCard" key={size}>
+                  <span>{size}</span>
+                  <strong>{count}</strong>
+                  <p>{count === 1 ? "screen entry" : "screen entries"}</p>
+                </article>
+              ))}
+            </div>
+          )}
+
           {recentEntries.status === "ready" && recentEntries.entries.length > 0 && (
             <div className="adminEntryList">
               {recentEntries.entries.slice(0, 10).map((entry, index) => (
@@ -2616,6 +2777,14 @@ function AdminPage({ navigateTo }) {
                     {" | "}Country: {entry.country || "Not captured yet"}
                     {" | "}IP: {entry.ip_address || "Not captured yet"}
                     {" | "}Device: {entry.device_type || "Not captured yet"}
+                    {" | "}Browser: {entry.browser_name || "Not captured yet"}
+                    {" | "}OS: {entry.os_name || "Not captured yet"}
+                    {" | "}Browser language: {entry.browser_language || "Not captured yet"}
+                    {" | "}Screen: {entry.screen_size || "Not captured yet"}
+                    {" | "}Site language: {entry.site_language || "Not captured yet"}
+                    {" | "}Theme: {entry.site_theme || "Not captured yet"}
+                    {" | "}Returning: {typeof entry.returning_visitor === "boolean" ? (entry.returning_visitor ? "Yes" : "No") : "Not captured yet"}
+                    {" | "}Page views: {entry.page_view_count || "Not captured yet"}
                     {entry.timezone ? ` | Timezone: ${entry.timezone}` : ""}
                   </p>
                 </article>

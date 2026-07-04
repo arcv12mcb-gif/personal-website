@@ -39,6 +39,14 @@ create table if not exists public.visitor_events (
   ip_address text,
   timezone text,
   device_type text,
+  browser_name text,
+  os_name text,
+  browser_language text,
+  screen_size text,
+  site_language text,
+  site_theme text,
+  returning_visitor boolean,
+  page_view_count integer,
   created_at timestamptz not null default now()
 );
 
@@ -63,6 +71,30 @@ alter table public.visitor_events
 alter table public.visitor_events
   add column if not exists device_type text;
 
+alter table public.visitor_events
+  add column if not exists browser_name text;
+
+alter table public.visitor_events
+  add column if not exists os_name text;
+
+alter table public.visitor_events
+  add column if not exists browser_language text;
+
+alter table public.visitor_events
+  add column if not exists screen_size text;
+
+alter table public.visitor_events
+  add column if not exists site_language text;
+
+alter table public.visitor_events
+  add column if not exists site_theme text;
+
+alter table public.visitor_events
+  add column if not exists returning_visitor boolean;
+
+alter table public.visitor_events
+  add column if not exists page_view_count integer;
+
 create index if not exists visitor_events_event_type_created_at_idx
   on public.visitor_events (event_type, created_at desc);
 
@@ -77,6 +109,12 @@ create index if not exists visitor_events_country_created_at_idx
 
 create index if not exists visitor_events_device_type_created_at_idx
   on public.visitor_events (device_type, created_at desc);
+
+create index if not exists visitor_events_browser_name_created_at_idx
+  on public.visitor_events (browser_name, created_at desc);
+
+create index if not exists visitor_events_os_name_created_at_idx
+  on public.visitor_events (os_name, created_at desc);
 
 alter table public.visitor_events enable row level security;
 
@@ -99,6 +137,14 @@ create table if not exists public.visitor_profiles (
   country_code text,
   ip_address text,
   device_type text,
+  browser_name text,
+  os_name text,
+  browser_language text,
+  screen_size text,
+  site_language text,
+  site_theme text,
+  returning_visitor boolean,
+  page_view_count integer,
   first_seen timestamptz not null default now(),
   last_seen timestamptz not null default now()
 );
@@ -114,6 +160,30 @@ alter table public.visitor_profiles
 
 alter table public.visitor_profiles
   add column if not exists device_type text;
+
+alter table public.visitor_profiles
+  add column if not exists browser_name text;
+
+alter table public.visitor_profiles
+  add column if not exists os_name text;
+
+alter table public.visitor_profiles
+  add column if not exists browser_language text;
+
+alter table public.visitor_profiles
+  add column if not exists screen_size text;
+
+alter table public.visitor_profiles
+  add column if not exists site_language text;
+
+alter table public.visitor_profiles
+  add column if not exists site_theme text;
+
+alter table public.visitor_profiles
+  add column if not exists returning_visitor boolean;
+
+alter table public.visitor_profiles
+  add column if not exists page_view_count integer;
 
 create index if not exists visitor_profiles_last_seen_idx
   on public.visitor_profiles (last_seen desc);
