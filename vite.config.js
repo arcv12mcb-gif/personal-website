@@ -14,6 +14,7 @@ export default defineConfig({
         work: resolve(__dirname, "work/index.html"),
         process: resolve(__dirname, "process/index.html"),
         pricing: resolve(__dirname, "pricing/index.html"),
+        learningLab: resolve(__dirname, "learning-lab/index.html"),
         contact: resolve(__dirname, "contact/index.html"),
         privacy: resolve(__dirname, "privacy/index.html"),
         admin: resolve(__dirname, "admin/index.html"),

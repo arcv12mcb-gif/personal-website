@@ -893,6 +893,7 @@ const pageRoutes = [
   { path: "/work/", label: "Work", title: "Work" },
   { path: "/process/", label: "Process", title: "Process" },
   { path: "/pricing/", label: "Pricing", title: "Pricing", hidden: !SHOW_PRICING },
+  { path: "/learning-lab/", label: "Learning Lab", title: "Learning Lab" },
   { path: "/contact/", label: "Contact", title: "Contact" },
   { path: "/privacy/", label: "Privacy", title: "Privacy Policy" },
   { path: "/admin/", label: "Admin", title: "Admin", navHidden: true },
@@ -937,6 +938,10 @@ const pageMeta = {
     title: "Website Pricing | Ali Arhan Canbaz",
     description: "Simple website package options for businesses and creators.",
   },
+  "/learning-lab/": {
+    title: "Learning Lab | Ali Arhan Canbaz Web Studio",
+    description: "A simplified interactive reinforcement-learning simulation with coins, rewards, and model activity.",
+  },
   "/contact/": {
     title: "Contact Ali Arhan Canbaz | Start a Website Project",
     description: "Contact Ali Arhan Canbaz to start a clean modern website for your business.",
@@ -949,6 +954,124 @@ const pageMeta = {
     title: "Admin | Ali Arhan Canbaz Web Studio",
     description: "Private admin area for Ali Arhan Canbaz Web Studio.",
   },
+};
+
+const labClamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+const labDistance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const createLabCoin = (id) => ({
+  id,
+  x: 16 + Math.random() * 54,
+  y: 16 + Math.random() * 66,
+});
+const createLearningLabState = () => ({
+  agent: { x: 18, y: 24, carrying: null, heading: 0 },
+  coins: Array.from({ length: 6 }, (_, index) => createLabCoin(index)),
+  box: { x: 84, y: 72 },
+  weights: { coin: 0.34, box: 0.24, explore: 0.2 },
+  dopamine: 0.18,
+  reward: 0,
+  prediction: 0,
+  error: 0,
+  deposits: 0,
+  pickups: 0,
+  ticks: 0,
+  avgReward: 0,
+  trail: [],
+  message: "The agent is exploring the arena.",
+});
+const nearestLabCoin = (agent, coins) =>
+  coins.reduce(
+    (best, coin) => {
+      const distance = labDistance(agent, coin);
+      return distance < best.distance ? { coin, distance } : best;
+    },
+    { coin: null, distance: Infinity }
+  );
+
+const stepLearningLab = (state, controls) => {
+  const { coin, distance: coinDistance } = nearestLabCoin(state.agent, state.coins);
+  const boxDistance = labDistance(state.agent, state.box);
+  const carrying = state.agent.carrying !== null;
+  const coinProximity = coin ? labClamp(1 - coinDistance / 100) : 0;
+  const boxProximity = labClamp(1 - boxDistance / 100);
+  const coinDrive = carrying ? 0 : state.weights.coin * (0.42 + coinProximity) + state.dopamine * 0.12;
+  const boxDrive = carrying ? state.weights.box * (0.42 + boxProximity) + controls.rewardLevel * 0.12 : 0;
+  const exploreDrive = state.weights.explore * (1.1 - labClamp(state.dopamine, 0, 0.9));
+  const target = boxDrive > coinDrive ? state.box : coin;
+  const wanderAngle = (state.ticks * 0.41 + state.weights.explore * 8) % (Math.PI * 2);
+  const wander = {
+    x: Math.cos(wanderAngle) * exploreDrive * 13,
+    y: Math.sin(wanderAngle * 1.17) * exploreDrive * 13,
+  };
+  const dx = target ? target.x - state.agent.x : wander.x;
+  const dy = target ? target.y - state.agent.y : wander.y;
+  const length = Math.hypot(dx + wander.x, dy + wander.y) || 1;
+  const moveSize = 0.9 + controls.speed * 0.42;
+  const nextAgent = {
+    ...state.agent,
+    x: labClamp(state.agent.x + ((dx + wander.x) / length) * moveSize, 4, 96),
+    y: labClamp(state.agent.y + ((dy + wander.y) / length) * moveSize, 6, 94),
+    heading: Math.atan2(dy + wander.y, dx + wander.x),
+  };
+
+  let reward = 0;
+  let message = carrying ? "Carrying a coin toward the deposit box." : "Searching for the next coin.";
+  let pickups = state.pickups;
+  let deposits = state.deposits;
+  let coins = state.coins;
+  let carriedId = state.agent.carrying;
+
+  if (!carrying && coin && labDistance(nextAgent, coin) < 4.8) {
+    carriedId = coin.id;
+    reward += 0.16 * controls.rewardLevel;
+    pickups += 1;
+    message = "Coin picked up. A small reward signal nudged the coin-seeking weight.";
+  }
+
+  if (carriedId !== null && labDistance(nextAgent, state.box) < 6.4) {
+    reward += 1.05 * controls.rewardLevel;
+    deposits += 1;
+    coins = coins.map((item) => (item.id === carriedId ? createLabCoin(item.id) : item));
+    carriedId = null;
+    message = "Coin deposited. The larger reward strengthened the box-seeking path.";
+  }
+
+  nextAgent.carrying = carriedId;
+
+  const nextCarrying = nextAgent.carrying !== null;
+  const prediction = nextCarrying
+    ? state.weights.box * boxProximity
+    : state.weights.coin * coinProximity + state.weights.explore * 0.1;
+  const error = reward - prediction;
+  const learningRate = 0.045;
+  const nextWeights = {
+    coin: labClamp(state.weights.coin + learningRate * error * (nextCarrying ? 0.14 : Math.max(coinProximity, 0.22)), 0.05, 1.2),
+    box: labClamp(state.weights.box + learningRate * error * (nextCarrying ? Math.max(boxProximity, 0.2) : 0.08), 0.05, 1.2),
+    explore: labClamp(state.weights.explore + learningRate * ((reward > 0 ? -0.28 * reward : 0.02) - state.dopamine * 0.02), 0.04, 0.75),
+  };
+  const dopamine = labClamp(
+    Math.max(controls.dopamineLevel, state.dopamine * 0.92 + reward * 0.42 - 0.015),
+    0,
+    1.35
+  );
+  const trail = [{ x: nextAgent.x, y: nextAgent.y }, ...state.trail].slice(0, 16);
+
+  return {
+    ...state,
+    agent: nextAgent,
+    coins,
+    weights: nextWeights,
+    dopamine,
+    reward,
+    prediction,
+    error,
+    deposits,
+    pickups,
+    ticks: state.ticks + 1,
+    avgReward: state.avgReward * 0.94 + reward * 0.06,
+    trail,
+    message,
+  };
 };
 
 const languageCopy = {
@@ -967,6 +1090,7 @@ const languageCopy = {
       "/work/": "Work",
       "/process/": "Process",
       "/pricing/": "Pricing",
+      "/learning-lab/": "Lab",
     },
     headers: {
       about: ["About", "Meet Ali Arhan Canbaz.", "A focused web designer helping businesses get a clean, trustworthy online presence."],
@@ -974,6 +1098,7 @@ const languageCopy = {
       work: ["Portfolio", "Examples of websites I can build.", "A few project directions that show the kind of clean, practical sites this studio is built for."],
       process: ["Process", "A clear path from idea to live website.", "Each step is designed to keep the project understandable, budget-aware, and easy to review."],
       pricing: ["Pricing", "Start with the right size.", "Pick the level that fits your current budget, then expand the website when the business is ready."],
+      learningLab: ["Learning Lab", "A tiny agent that learns from rewards.", "Collect coins, deposit them in the box, and watch a simplified learning signal change the model's behavior."],
       contact: ["Contact", "Start your website project.", "Send a quick message with what you need, and I will help you choose the right first step."],
       privacy: ["Privacy", "Privacy Policy.", "A simple explanation of what information may be collected, how it is used, and how to contact us."],
     },
@@ -1123,6 +1248,7 @@ const languageCopy = {
       "/work/": "Isler",
       "/process/": "Surec",
       "/pricing/": "Fiyatlar",
+      "/learning-lab/": "Lab",
     },
     headers: {
       about: ["Hakkimda", "Ali Arhan Canbaz ile tanisin.", "Isletmelerin temiz ve guvenilir bir online gorunume sahip olmasina yardim eden odakli bir web tasarimci."],
@@ -1130,6 +1256,7 @@ const languageCopy = {
       work: ["Portfolyo", "Yapabilecegim web sitesi ornekleri.", "Bu studyo icin hazirlanan temiz ve pratik site tarzlarini gosteren bazi proje yonleri."],
       process: ["Surec", "Fikirden yayindaki siteye net bir yol.", "Her adim projeyi anlasilir, butceye uygun ve kolay incelenebilir tutmak icin tasarlanir."],
       pricing: ["Fiyatlar", "Dogru boyutla baslayin.", "Mevcut butcenize uygun seviyeyi secin, is hazir oldugunda web sitesini genisletin."],
+      learningLab: ["Ogrenme Laboratuvari", "Odullerle ogrenmeye calisan kucuk bir ajan.", "Paralari toplayin, kutuya biraktirin ve basitlestirilmis ogrenme sinyalinin modeli nasil degistirdigini izleyin."],
       contact: ["Iletisim", "Web sitesi projenizi baslatin.", "Ne istediginizi kisa bir mesajla gonderin, size en dogru ilk adimi secmede yardim edeyim."],
       privacy: ["Gizlilik", "Gizlilik Politikasi.", "Hangi bilgilerin toplanabilecegini, nasil kullanildigini ve bize nasil ulasabileceginizi aciklayan basit bir sayfa."],
     },
@@ -2000,6 +2127,274 @@ function ThreeWebsiteLab({ copy, isTurkish }) {
           <small>{currentModeLabel}</small>
         </div>
       </div>
+    </section>
+  );
+}
+
+function LearningLabPage() {
+  const [sim, setSim] = useState(() => createLearningLabState());
+  const [isPaused, setIsPaused] = useState(false);
+  const [controls, setControls] = useState({
+    dopamineLevel: 0.12,
+    rewardLevel: 1,
+    speed: 3,
+  });
+
+  useEffect(() => {
+    if (isPaused) return undefined;
+
+    const timer = window.setInterval(() => {
+      setSim((current) => stepLearningLab(current, controls));
+    }, Math.max(38, 220 - controls.speed * 28));
+
+    return () => window.clearInterval(timer);
+  }, [controls, isPaused]);
+
+  const activeCoin = sim.agent.carrying !== null
+    ? sim.coins.find((coin) => coin.id === sim.agent.carrying)
+    : null;
+  const closestCoin = nearestLabCoin(sim.agent, sim.coins);
+  const coinSignal = closestCoin.coin ? labClamp(1 - closestCoin.distance / 100) : 0;
+  const boxSignal = labClamp(1 - labDistance(sim.agent, sim.box) / 100);
+  const actionSignal = sim.agent.carrying !== null ? boxSignal : coinSignal;
+  const memorySignal = labClamp((sim.weights.coin + sim.weights.box) / 2);
+  const neuronNodes = [
+    { id: "sensory", label: "Sensory", value: coinSignal, x: 12, y: 32 },
+    { id: "value", label: "Value", value: labClamp(sim.prediction), x: 36, y: 18 },
+    { id: "reward", label: "Reward", value: labClamp(sim.dopamine), x: 62, y: 32 },
+    { id: "memory", label: "Weights", value: memorySignal, x: 42, y: 70 },
+    { id: "motor", label: "Motor", value: actionSignal, x: 82, y: 56 },
+  ];
+  const neuronLines = [
+    ["sensory", "value", coinSignal],
+    ["value", "reward", Math.abs(sim.error)],
+    ["reward", "memory", sim.dopamine],
+    ["memory", "motor", memorySignal],
+    ["sensory", "motor", actionSignal],
+  ];
+  const nodeById = Object.fromEntries(neuronNodes.map((node) => [node.id, node]));
+
+  const setControl = (key, value) => {
+    setControls((current) => ({ ...current, [key]: value }));
+  };
+
+  return (
+    <section className="section learningLabSection">
+      <motion.div
+        className="learningLabIntro"
+        variants={stagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={viewport}
+      >
+        <motion.p className="eyebrow" variants={fadeUp}>Interactive simulation</motion.p>
+        <motion.h2 variants={fadeUp}>A tiny fly-like agent learns where rewards happen.</motion.h2>
+        <motion.p variants={fadeUp}>
+          This is a simplified educational reinforcement-learning toy. It is not a Google fly connectome,
+          not a biologically validated brain model, and not a real animal simulation. The arena, reward signal,
+          and neuron map below are driven by the live model state.
+        </motion.p>
+      </motion.div>
+
+      <div className="learningLabShell">
+        <motion.div className="learningArenaPanel" variants={fadeUp} initial="hidden" animate="visible">
+          <div className="learningPanelTop">
+            <div>
+              <p className="eyebrow">Browser arena</p>
+              <h3>Coin pickup and deposit task</h3>
+            </div>
+            <span>{isPaused ? "Paused" : "Training"}</span>
+          </div>
+
+          <div className="learningArena" aria-label="Fly-like learning agent arena">
+            <div
+              className="depositBox"
+              style={{ left: `${sim.box.x}%`, top: `${sim.box.y}%` }}
+              aria-label="Deposit box"
+            >
+              Box
+            </div>
+
+            {sim.trail.map((point, index) => (
+              <span
+                className="agentTrail"
+                key={`${point.x}-${point.y}-${index}`}
+                style={{
+                  left: `${point.x}%`,
+                  top: `${point.y}%`,
+                  opacity: 1 - index / sim.trail.length,
+                }}
+              />
+            ))}
+
+            {sim.coins.map((coin) => (
+              <span
+                className={`labCoin ${activeCoin?.id === coin.id ? "carriedCoin" : ""}`}
+                key={coin.id}
+                style={{
+                  left: `${activeCoin?.id === coin.id ? sim.agent.x + 2 : coin.x}%`,
+                  top: `${activeCoin?.id === coin.id ? sim.agent.y - 4 : coin.y}%`,
+                }}
+                aria-label="Coin"
+              />
+            ))}
+
+            <div
+              className="flyAgent"
+              style={{
+                left: `${sim.agent.x}%`,
+                top: `${sim.agent.y}%`,
+                transform: `translate(-50%, -50%) rotate(${sim.agent.heading}rad)`,
+              }}
+              aria-label="Learning agent"
+            >
+              <span className="flyWing flyWingOne"></span>
+              <span className="flyBody"></span>
+              <span className="flyWing flyWingTwo"></span>
+            </div>
+          </div>
+
+          <div className="learningStatus" aria-live="polite">
+            <strong>{sim.message}</strong>
+            <p>
+              Reward prediction error: {sim.error.toFixed(2)}. Deposits strengthen the box-seeking weight;
+              small pickup rewards tune coin seeking.
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.aside className="learningControls" variants={fadeUp} initial="hidden" animate="visible">
+          <div className="learningControlActions">
+            <button type="button" onClick={() => setIsPaused((value) => !value)}>
+              {isPaused ? "Resume" : "Pause"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSim(createLearningLabState());
+                setIsPaused(false);
+              }}
+            >
+              Reset
+            </button>
+          </div>
+
+          <label>
+            <span>Training speed</span>
+            <input
+              type="range"
+              min="1"
+              max="6"
+              step="1"
+              value={controls.speed}
+              onChange={(event) => setControl("speed", Number(event.target.value))}
+            />
+            <strong>{controls.speed}x</strong>
+          </label>
+
+          <label>
+            <span>Baseline dopamine-like signal</span>
+            <input
+              type="range"
+              min="0"
+              max="0.55"
+              step="0.01"
+              value={controls.dopamineLevel}
+              onChange={(event) => setControl("dopamineLevel", Number(event.target.value))}
+            />
+            <strong>{controls.dopamineLevel.toFixed(2)}</strong>
+          </label>
+
+          <label>
+            <span>Reward strength</span>
+            <input
+              type="range"
+              min="0.4"
+              max="1.8"
+              step="0.05"
+              value={controls.rewardLevel}
+              onChange={(event) => setControl("rewardLevel", Number(event.target.value))}
+            />
+            <strong>{controls.rewardLevel.toFixed(2)}</strong>
+          </label>
+
+          <div className="learningMetricGrid">
+            <article>
+              <span>Deposits</span>
+              <strong>{sim.deposits}</strong>
+            </article>
+            <article>
+              <span>Pickups</span>
+              <strong>{sim.pickups}</strong>
+            </article>
+            <article>
+              <span>Dopamine-like</span>
+              <strong>{sim.dopamine.toFixed(2)}</strong>
+            </article>
+            <article>
+              <span>Avg reward</span>
+              <strong>{sim.avgReward.toFixed(2)}</strong>
+            </article>
+          </div>
+
+          <div className="weightBars" aria-label="Learned weights">
+            {Object.entries(sim.weights).map(([key, value]) => (
+              <div key={key}>
+                <span>{key}</span>
+                <i style={{ width: `${labClamp(value / 1.2) * 100}%` }}></i>
+                <strong>{value.toFixed(2)}</strong>
+              </div>
+            ))}
+          </div>
+        </motion.aside>
+      </div>
+
+      <motion.div className="neuronMapPanel" variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport}>
+        <div>
+          <p className="eyebrow">Model activity map</p>
+          <h3>Signals tied to the current simulation state</h3>
+          <p>
+            Line brightness comes from live values: coin proximity, reward prediction error, the dopamine-like reward
+            signal, learned weights, and current action confidence.
+          </p>
+        </div>
+
+        <div className="neuronMap" aria-label="Animated model neuron interaction map">
+          <svg viewBox="0 0 100 100" role="img" aria-label="Simplified neuron map">
+            {neuronLines.map(([from, to, value]) => {
+              const start = nodeById[from];
+              const end = nodeById[to];
+              return (
+                <line
+                  key={`${from}-${to}`}
+                  x1={start.x}
+                  y1={start.y}
+                  x2={end.x}
+                  y2={end.y}
+                  style={{
+                    "--line-alpha": 0.16 + labClamp(value) * 0.72,
+                    "--line-width": 1 + labClamp(value) * 4,
+                  }}
+                />
+              );
+            })}
+          </svg>
+          {neuronNodes.map((node) => (
+            <div
+              className="neuronNode"
+              key={node.id}
+              style={{
+                left: `${node.x}%`,
+                top: `${node.y}%`,
+                "--node-activity": node.value,
+              }}
+            >
+              <strong>{node.label}</strong>
+              <span>{node.value.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </section>
   );
 }
@@ -3036,9 +3431,11 @@ function App() {
   const isWorkPage = currentRoute === "/work/";
   const isProcessPage = currentRoute === "/process/";
   const isPricingPage = currentRoute === "/pricing/";
+  const isLearningLabPage = currentRoute === "/learning-lab/";
   const isContactPage = currentRoute === "/contact/";
   const isPrivacyPage = currentRoute === "/privacy/";
   const isAdminPage = currentRoute === "/admin/";
+  const shouldShowLanguagePrompt = showLanguagePrompt && !isLearningLabPage;
 
   return (
     <main
@@ -3098,12 +3495,12 @@ function App() {
         aria-label={copy.promptTitle}
         initial={false}
         animate={{
-          opacity: showLanguagePrompt ? 1 : 0,
-          y: showLanguagePrompt ? 0 : -12,
-          scale: showLanguagePrompt ? 1 : 0.96,
+          opacity: shouldShowLanguagePrompt ? 1 : 0,
+          y: shouldShowLanguagePrompt ? 0 : -12,
+          scale: shouldShowLanguagePrompt ? 1 : 0.96,
         }}
         transition={{ duration: 0.28, ease: "easeOut" }}
-        style={{ pointerEvents: showLanguagePrompt ? "auto" : "none" }}
+        style={{ pointerEvents: shouldShowLanguagePrompt ? "auto" : "none" }}
       >
         <div>
           <strong>{copy.promptTitle}</strong>
@@ -3212,6 +3609,14 @@ function App() {
           eyebrow={copy.headers.pricing[0]}
           title={copy.headers.pricing[1]}
           text={copy.headers.pricing[2]}
+        />
+      )}
+
+      {isLearningLabPage && (
+        <PageHeader
+          eyebrow={copy.headers.learningLab[0]}
+          title={copy.headers.learningLab[1]}
+          text={copy.headers.learningLab[2]}
         />
       )}
 
@@ -3669,6 +4074,8 @@ function App() {
           items={localizedPricingPlans}
         />
       )}
+
+      {isLearningLabPage && <LearningLabPage />}
 
       {/* PROCESS */}
       {(isHome || isProcessPage) && (
