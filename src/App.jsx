@@ -361,6 +361,29 @@ const ADMIN_PASSWORD_HASH = "367edcc46c2f7e1100c608395bf39a266f02d523e02b07120c7
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").replace(/\/$/, "");
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
 const LANGUAGE_ANALYTICS_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+const DEFAULT_SITE_MODE = "business";
+const SITE_MODE_KEY = "public_site_mode";
+const SITE_MODE_STORAGE_KEY = "site-mode-cache";
+
+const normalizeSiteMode = (mode) => (mode === "learning-lab" ? "learning-lab" : "business");
+
+const siteModeOptions = {
+  business: {
+    label: "Business website",
+    description: "The web studio homepage with services, process, pricing, and contact sections.",
+    rootText: "Visitors opening / see the business website.",
+  },
+  "learning-lab": {
+    label: "Learning Lab",
+    description: "The interactive learning simulation with the agent, rewards, controls, and model activity.",
+    rootText: "Visitors opening / see the Learning Lab presentation.",
+  },
+};
+
+const readCachedSiteMode = () => {
+  if (typeof window === "undefined") return DEFAULT_SITE_MODE;
+  return normalizeSiteMode(window.localStorage.getItem(SITE_MODE_STORAGE_KEY));
+};
 
 const getCookie = (name) => {
   if (typeof document === "undefined") return "";
@@ -886,8 +909,55 @@ const readRecentVisitorEntries = async (excludedVisitorId = "") => {
   return { status: "ready", entries: await response.json() };
 };
 
+const readSiteModeSetting = async () => {
+  if (!LANGUAGE_ANALYTICS_ENABLED) {
+    return { status: "setup", mode: DEFAULT_SITE_MODE };
+  }
+
+  const query = new URLSearchParams({
+    select: "value",
+    key: `eq.${SITE_MODE_KEY}`,
+    limit: "1",
+  });
+  const response = await supabaseRequest(`/rest/v1/site_settings?${query.toString()}`);
+
+  if (!response.ok) {
+    throw new Error("Unable to read site mode.");
+  }
+
+  const rows = await response.json();
+  return { status: "ready", mode: normalizeSiteMode(rows[0]?.value ?? DEFAULT_SITE_MODE) };
+};
+
+const saveSiteModeSetting = async (mode) => {
+  if (!LANGUAGE_ANALYTICS_ENABLED) {
+    throw new Error("Supabase is not connected.");
+  }
+
+  const nextMode = normalizeSiteMode(mode);
+  const response = await supabaseRequest("/rest/v1/site_settings?on_conflict=key", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=representation",
+    },
+    body: JSON.stringify({
+      key: SITE_MODE_KEY,
+      value: nextMode,
+      updated_at: new Date().toISOString(),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to save site mode.");
+  }
+
+  return nextMode;
+};
+
 const pageRoutes = [
   { path: "/", label: "Home", title: "Home" },
+  { path: "/business/", label: "Business Site", title: "Business Site", navHidden: true },
   { path: "/about/", label: "About", title: "About Ali" },
   { path: "/services/", label: "Services", title: "Services" },
   { path: "/work/", label: "Work", title: "Work" },
@@ -917,6 +987,10 @@ const pageMeta = {
   "/": {
     title: "Ali Arhan Canbaz | Websites for Local Businesses",
     description: "Clean, modern websites for local shops, service businesses, and creators.",
+  },
+  "/business/": {
+    title: "Business Websites | Ali Arhan Canbaz Web Studio",
+    description: "The direct business website experience from Ali Arhan Canbaz Web Studio.",
   },
   "/about/": {
     title: "About Ali Arhan Canbaz | Web Designer",
@@ -2627,11 +2701,13 @@ function PrivacyPolicy({ copy, sections }) {
   );
 }
 
-function AdminPage({ navigateTo }) {
+function AdminPage({ navigateTo, siteModeState, onSiteModeChange }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+  const [modeConfirmation, setModeConfirmation] = useState("");
+  const [modeMessage, setModeMessage] = useState("");
   const [languageStats, setLanguageStats] = useState(() => ({
     status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
     en: 0,
@@ -2748,6 +2824,31 @@ function AdminPage({ navigateTo }) {
     setAnalyticsExcluded(nextValue);
   };
 
+  const handleModeChange = async (nextMode) => {
+    const normalizedMode = normalizeSiteMode(nextMode);
+    setModeMessage("");
+
+    if (normalizedMode === siteModeState.mode) {
+      setModeConfirmation("");
+      setModeMessage(`${siteModeOptions[normalizedMode].label} is already active on /.`);
+      return;
+    }
+
+    if (modeConfirmation !== normalizedMode) {
+      setModeConfirmation(normalizedMode);
+      setModeMessage(`Click again to publish ${siteModeOptions[normalizedMode].label} on /.`);
+      return;
+    }
+
+    try {
+      await onSiteModeChange(normalizedMode);
+      setModeConfirmation("");
+      setModeMessage(`${siteModeOptions[normalizedMode].label} is now active on /.`);
+    } catch {
+      setModeMessage("Could not save the homepage mode. Run the Supabase SQL setup if this is the first time.");
+    }
+  };
+
   if (!isUnlocked) {
     return (
       <section className="section adminSection">
@@ -2801,10 +2902,23 @@ function AdminPage({ navigateTo }) {
 
   const adminLinks = [
     ["Live website", "/", "Open the homepage"],
+    ["Business direct", "/business/", "Open the business version"],
+    ["Learning Lab direct", "/learning-lab/", "Open the lab version"],
     ["Pricing", "/pricing/", "Review current plans"],
     ["Privacy", "/privacy/", "Check legal copy"],
     ["Contact", "/contact/", "Test the contact path"],
   ];
+  const activeSiteMode = normalizeSiteMode(siteModeState.mode);
+  const siteModeStatus =
+    siteModeState.status === "loading"
+      ? "Loading saved mode..."
+      : siteModeState.status === "saving"
+        ? "Saving mode..."
+        : siteModeState.status === "setup"
+          ? "Connect Supabase"
+          : siteModeState.status === "error"
+            ? "Needs SQL setup"
+            : "Saved";
   const savedLanguage = getCookie("site-language") || "en";
   const savedTheme = getCookie("site-theme") === "bright" ? "Light mode" : "Dark mode";
   const introSeen = getCookie("intro-seen") === "true" ? "Seen" : "Not saved";
@@ -3056,6 +3170,49 @@ function AdminPage({ navigateTo }) {
           {analyticsExcluded ? " This browser is excluded from the analytics shown below." : ""}
         </p>
 
+        <section className="adminModePanel" aria-label="Homepage mode control">
+          <div className="adminModeHeader">
+            <div>
+              <p className="eyebrow">Homepage mode</p>
+              <h2>Choose what visitors see on /</h2>
+              <p>
+                Current mode: <strong>{siteModeOptions[activeSiteMode].label}</strong>.
+                {" "}
+                {siteModeOptions[activeSiteMode].rootText}
+              </p>
+            </div>
+            <span className="modeStatusPill">{siteModeStatus}</span>
+          </div>
+
+          <div className="modeOptionGrid">
+            {Object.entries(siteModeOptions).map(([mode, option]) => {
+              const isActive = mode === activeSiteMode;
+              const isConfirming = modeConfirmation === mode && !isActive;
+              const isDisabled = siteModeState.status === "loading" || siteModeState.status === "saving" || siteModeState.status === "setup";
+
+              return (
+                <button
+                  className={`modeOptionButton ${isActive ? "activeModeOption" : ""}`}
+                  type="button"
+                  key={mode}
+                  onClick={() => handleModeChange(mode)}
+                  disabled={isDisabled}
+                >
+                  <span>{isActive ? "Active now" : isConfirming ? "Confirm change" : "Set homepage"}</span>
+                  <strong>{option.label}</strong>
+                  <p>{option.description}</p>
+                </button>
+              );
+            })}
+          </div>
+
+          {modeMessage && <p className="modeMessage">{modeMessage}</p>}
+          {siteModeState.error && <p className="modeWarning">{siteModeState.error}</p>}
+          <p className="modeSetupNote">
+            Direct links stay available: /business/ keeps the business website, and /learning-lab/ keeps the lab.
+          </p>
+        </section>
+
         <div className="adminInsightGrid" aria-label="Website preference information">
           {adminInsights.map((item) => (
             <article className="adminInsightCard" key={item.label}>
@@ -3251,6 +3408,11 @@ function App() {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [showContactPrompt, setShowContactPrompt] = useState(false);
   const [currentRoute, setCurrentRoute] = useState(getRouteFromPath);
+  const [siteModeState, setSiteModeState] = useState(() => ({
+    status: LANGUAGE_ANALYTICS_ENABLED ? "loading" : "setup",
+    mode: readCachedSiteMode(),
+    error: "",
+  }));
   const mainRef = useRef(null);
   const pointerFrameRef = useRef(0);
   const { scrollYProgress } = useScroll();
@@ -3271,6 +3433,7 @@ function App() {
   const localizedSubscriptionPlans = isTurkish ? turkishContent.subscriptionPlans : subscriptionPlans;
   const localizedContactDetails = isTurkish ? turkishContent.contactDetails : contactDetails;
   const localizedPrivacySections = isTurkish ? turkishContent.privacySections : privacySections;
+  const activeSiteMode = normalizeSiteMode(siteModeState.mode);
 
   const projectTimeline = useMemo(() => {
     const baseDays = pageCount <= 2 ? 4 : pageCount <= 4 ? 7 : 10;
@@ -3324,6 +3487,25 @@ function App() {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleSiteModeChange = async (nextMode) => {
+    const normalizedMode = normalizeSiteMode(nextMode);
+    setSiteModeState((current) => ({ ...current, status: "saving", error: "" }));
+
+    try {
+      const savedMode = await saveSiteModeSetting(normalizedMode);
+      window.localStorage.setItem(SITE_MODE_STORAGE_KEY, savedMode);
+      setSiteModeState({ status: "ready", mode: savedMode, error: "" });
+      return savedMode;
+    } catch (modeError) {
+      setSiteModeState((current) => ({
+        ...current,
+        status: "error",
+        error: "Homepage mode could not be saved. Run the Supabase site_settings SQL setup, then try again.",
+      }));
+      throw modeError;
+    }
+  };
+
   useEffect(() => {
     const timer = window.setInterval(() => {
       setClockNow(new Date());
@@ -3365,13 +3547,42 @@ function App() {
   }, [currentRoute]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    readSiteModeSetting()
+      .then((result) => {
+        if (!isMounted) return;
+        const nextMode = normalizeSiteMode(result.mode);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(SITE_MODE_STORAGE_KEY, nextMode);
+        }
+        setSiteModeState({ status: result.status, mode: nextMode, error: "" });
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setSiteModeState((current) => ({
+          ...current,
+          status: "error",
+          error: "Homepage mode could not be loaded. Run the Supabase site_settings SQL setup.",
+        }));
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     const handlePopState = () => setCurrentRoute(getRouteFromPath());
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   useEffect(() => {
-    const meta = pageMeta[currentRoute] ?? pageMeta["/"];
+    const meta =
+      currentRoute === "/" && activeSiteMode === "learning-lab"
+        ? pageMeta["/learning-lab/"]
+        : pageMeta[currentRoute] ?? pageMeta["/"];
     const canonicalUrl = `https://aliarhancanbaz.com${currentRoute === "/" ? "/" : currentRoute}`;
     document.title = meta.title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
@@ -3381,7 +3592,7 @@ function App() {
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
     document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", meta.title);
     document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", meta.description);
-  }, [currentRoute]);
+  }, [currentRoute, activeSiteMode]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -3426,6 +3637,7 @@ function App() {
   };
 
   const isHome = currentRoute === "/";
+  const isBusinessPage = currentRoute === "/business/";
   const isAboutPage = currentRoute === "/about/";
   const isServicesPage = currentRoute === "/services/";
   const isWorkPage = currentRoute === "/work/";
@@ -3435,7 +3647,9 @@ function App() {
   const isContactPage = currentRoute === "/contact/";
   const isPrivacyPage = currentRoute === "/privacy/";
   const isAdminPage = currentRoute === "/admin/";
-  const shouldShowLanguagePrompt = showLanguagePrompt && !isLearningLabPage;
+  const isBusinessExperience = (isHome && activeSiteMode === "business") || isBusinessPage;
+  const isLearningLabExperience = (isHome && activeSiteMode === "learning-lab") || isLearningLabPage;
+  const shouldShowLanguagePrompt = showLanguagePrompt && !isLearningLabExperience;
 
   return (
     <main
@@ -3612,7 +3826,7 @@ function App() {
         />
       )}
 
-      {isLearningLabPage && (
+      {isLearningLabExperience && (
         <PageHeader
           eyebrow={copy.headers.learningLab[0]}
           title={copy.headers.learningLab[1]}
@@ -3637,7 +3851,7 @@ function App() {
       )}
 
       {/* HERO */}
-      {isHome && (
+      {isBusinessExperience && (
         <>
       <section className="hero" id="home">
         <motion.div className="heroBackdrop" style={{ y: heroBackdropY }} aria-hidden="true">
@@ -3931,7 +4145,7 @@ function App() {
       )}
 
       {/* ABOUT */}
-      {(isHome || isAboutPage) && (
+      {(isBusinessExperience || isAboutPage) && (
       <section className="section aboutSection" id="about">
         <motion.div
           variants={slideRight}
@@ -3958,7 +4172,7 @@ function App() {
       )}
 
       {/* SERVICES */}
-      {(isHome || isServicesPage) && (
+      {(isBusinessExperience || isServicesPage) && (
       <section className="section servicesSection" id="services">
         <motion.div
           className="sectionIntro interactiveIntro"
@@ -4008,7 +4222,7 @@ function App() {
       )}
 
       {/* BUDGET */}
-      {(isHome || isServicesPage || (SHOW_PRICING && isPricingPage)) && (
+      {(isBusinessExperience || isServicesPage || (SHOW_PRICING && isPricingPage)) && (
       <section className="section budgetSection" id="budget">
         <motion.div
           className="sectionIntro budgetIntro"
@@ -4062,7 +4276,7 @@ function App() {
       </section>
       )}
 
-      {SHOW_PRICING && (isHome || isPricingPage) && (
+      {SHOW_PRICING && (isBusinessExperience || isPricingPage) && (
         <PlansSection copy={copy.pricing} plans={localizedSubscriptionPlans} />
       )}
 
@@ -4075,10 +4289,10 @@ function App() {
         />
       )}
 
-      {isLearningLabPage && <LearningLabPage />}
+      {isLearningLabExperience && <LearningLabPage />}
 
       {/* PROCESS */}
-      {(isHome || isProcessPage) && (
+      {(isBusinessExperience || isProcessPage) && (
       <section className="section processShowcase" id="process">
         <ThreeWebsiteLab copy={copy.three} isTurkish={isTurkish} />
 
@@ -4189,7 +4403,7 @@ function App() {
       )}
 
       {/* PROCESS DETAILS */}
-      {(isHome || isProcessPage) && (
+      {(isBusinessExperience || isProcessPage) && (
       <section className="section processPagesSection" id="process-details">
         <motion.div
           className="sectionIntro processPagesIntro"
@@ -4248,10 +4462,16 @@ function App() {
 
       {isPrivacyPage && <PrivacyPolicy copy={copy.privacy} sections={localizedPrivacySections} />}
 
-      {isAdminPage && <AdminPage navigateTo={navigateTo} />}
+      {isAdminPage && (
+        <AdminPage
+          navigateTo={navigateTo}
+          siteModeState={siteModeState}
+          onSiteModeChange={handleSiteModeChange}
+        />
+      )}
 
       {/* CONTACT */}
-      {(isHome || isWorkPage || (SHOW_PRICING && isPricingPage) || isContactPage) && (
+      {(isBusinessExperience || isWorkPage || (SHOW_PRICING && isPricingPage) || isContactPage) && (
       <section className="section contact" id="contact">
         <motion.div
           variants={slideRight}

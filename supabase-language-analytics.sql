@@ -209,3 +209,35 @@ create policy "visitor profiles can be updated"
   for update
   using (true)
   with check (true);
+
+create table if not exists public.site_settings (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_settings enable row level security;
+
+drop policy if exists "site settings are readable" on public.site_settings;
+drop policy if exists "site settings can be inserted" on public.site_settings;
+drop policy if exists "site settings can be updated" on public.site_settings;
+
+create policy "site settings are readable"
+  on public.site_settings
+  for select
+  using (true);
+
+create policy "site settings can be inserted"
+  on public.site_settings
+  for insert
+  with check (key = 'public_site_mode' and value in ('business', 'learning-lab'));
+
+create policy "site settings can be updated"
+  on public.site_settings
+  for update
+  using (key = 'public_site_mode')
+  with check (key = 'public_site_mode' and value in ('business', 'learning-lab'));
+
+insert into public.site_settings (key, value)
+values ('public_site_mode', 'business')
+on conflict (key) do nothing;

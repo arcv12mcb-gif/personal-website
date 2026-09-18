@@ -3799,6 +3799,147 @@ input:focus-visible {
   margin-top: 26px;
 }
 
+.adminModePanel {
+  margin-top: 24px;
+  border: 1px solid rgba(94, 234, 212, 0.16);
+  border-radius: 18px;
+  padding: 18px;
+  background:
+    linear-gradient(135deg, rgba(94, 234, 212, 0.12), rgba(250, 204, 21, 0.05)),
+    rgba(2, 6, 23, 0.34);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.24);
+}
+
+.adminModeHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.adminModeHeader h2 {
+  margin: 5px 0 8px;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  line-height: 1;
+}
+
+.adminModeHeader p {
+  max-width: 660px;
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.adminModeHeader strong {
+  color: #ffffff;
+}
+
+.modeStatusPill {
+  border: 1px solid rgba(94, 234, 212, 0.24);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #5eead4;
+  background: rgba(2, 6, 23, 0.4);
+  font-size: 0.78rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.modeOptionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.modeOptionButton {
+  min-height: 154px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 14px;
+  padding: 16px;
+  color: #e2e8f0;
+  text-align: left;
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.7), rgba(15, 118, 110, 0.14)),
+    rgba(2, 6, 23, 0.28);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.modeOptionButton:hover:not(:disabled) {
+  border-color: rgba(94, 234, 212, 0.36);
+  box-shadow: 0 18px 42px rgba(94, 234, 212, 0.1);
+  transform: translateY(-3px);
+}
+
+.modeOptionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.modeOptionButton span {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #06121e;
+  background: #5eead4;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.modeOptionButton strong {
+  display: block;
+  margin-top: 14px;
+  color: #f8fafc;
+  font-size: 1.25rem;
+  line-height: 1.05;
+}
+
+.modeOptionButton p {
+  margin: 10px 0 0;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+}
+
+.activeModeOption {
+  border-color: rgba(250, 204, 21, 0.32);
+  background:
+    linear-gradient(135deg, rgba(250, 204, 21, 0.14), rgba(94, 234, 212, 0.08)),
+    rgba(2, 6, 23, 0.32);
+}
+
+.activeModeOption span {
+  color: #111827;
+  background: #facc15;
+}
+
+.modeMessage,
+.modeWarning,
+.modeSetupNote {
+  margin: 14px 0 0;
+  color: #cbd5e1;
+  font-size: 0.92rem;
+}
+
+.modeMessage {
+  color: #99f6e4;
+  font-weight: 850;
+}
+
+.modeWarning {
+  border: 1px solid rgba(251, 113, 133, 0.22);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.16);
+  font-weight: 800;
+}
+
 .adminInsightCard {
   min-height: 158px;
   border: 1px solid rgba(226, 232, 240, 0.12);
@@ -5964,6 +6105,14 @@ main.themeBright .neuronNode {
 
   .adminTopline {
     flex-direction: column;
+  }
+
+  .adminModeHeader {
+    flex-direction: column;
+  }
+
+  .modeOptionGrid {
+    grid-template-columns: 1fr;
   }
 
   .adminTopActions {
